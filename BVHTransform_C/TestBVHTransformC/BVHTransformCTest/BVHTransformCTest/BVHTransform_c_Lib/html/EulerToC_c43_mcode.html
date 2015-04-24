@@ -1,0 +1,24 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="26,1" id="srcline1"> 1</a></span><span class="line"><span class="comment">%% xyz 2015.4.5</span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,2" id="srcline2"> 2</a></span><span class="line"><span class="comment">%  EulerToC_Multi  新版 ： 可转化为 C++</span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,3" id="srcline3"> 3</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="26,4" id="srcline4"> 4</a></span><span class="line"><span class="comment">%   euler: N*3   euler(k,:) = [eu_x,eu_y,eu_z] </span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,5" id="srcline5"> 5</a></span><span class="line"><span class="comment">% store order of euler angle: the rotate order</span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,6" id="srcline6"> 6</a></span><span class="line"><span class="comment">% positive:anticlockwise rotate </span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,7" id="srcline7"> 7</a></span><span class="line"><span class="comment">% euler angle scope: [-pi,pi]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,8" id="srcline8"> 8</a></span><span class="line"><span class="comment">% unit:rad </span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,9" id="srcline9"> 9</a></span><span class="line"><span class="comment">% rotateDirection: anticlockwise(1) or clockwise(-1)  111</span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,10" id="srcline10">10</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="26,11" id="srcline11">11</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="26,12" id="srcline12">12</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S2T17U3">C</span> =  EulerToC_c( <span class="var type1" id="S3T8U6">euler</span>,<span class="mxinfo" id="T7:U3"><span class="var type2" id="S4T7V1U7">rotateOrder</span></span>,<span class="var type1" id="S5T8U8">rotateDirection</span> )</span></span>
+<span class="srcline"><span class="lineno"><a href="26,13" id="srcline13">13</a></span><span class="line">coder.inline(<span class="string">'never'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="26,14" id="srcline14">14</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="26,15" id="srcline15">15</a></span><span class="line"><span class="mxinfo" id="T2:U6"><span class="var type1" id="S7T2U17">Nframes</span> = <span class="mxinfo" id="T2:U8">size( <span class="var type1" id="S3T8U20">euler</span>,1 )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="26,16" id="srcline16">16</a></span><span class="line"><span class="mxinfo" id="T17:U10"><span class="var type1" id="S2T17U24">C</span> = <span class="mxinfo" id="T17:U12">zeros( <span class="mxinfo" id="T2:U13"><span class="var type1" id="S7T2U27">Nframes</span></span>,<span class="mxinfo" id="T2:U15">3</span>,<span class="mxinfo" id="T2:U16">3</span> )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="26,17" id="srcline17">17</a></span><span class="line"><span class="keyword">for</span> <span class="var type1" id="S10T2U32">k</span>=<span class="mxinfo" id="T2:U18">1:<span class="var type1" id="S7T2U35">Nframes</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,18" id="srcline18">18</a></span><span class="line">   <span class="mxinfo" id="T17:U20"><span class="mxinfo" id="T17:U21"><span class="var type1" id="S2T17U39">C</span>( <span class="mxinfo" id="T2:U23"><span class="var type1" id="S10T2U40">k</span></span>,:,: )</span>  = <span class="mxinfo" id="T11:U25"><span class="fcn" id="F42N27:B44">OneEulerToC_c</span>( <span class="mxinfo" id="T8:U26"><span class="var type1" id="S3T8U46">euler</span>(<span class="mxinfo" id="T2:U28"><span class="var type1" id="S10T2U47">k</span></span>,:)</span>,<span class="var type1" id="S4T7U49">rotateOrder</span>,<span class="var type1" id="S5T8U50">rotateDirection</span> )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="26,19" id="srcline19">19</a></span><span class="line"><span class="keyword"><span class="keyword">end</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="26,20" id="srcline20">20</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="26,21" id="srcline21">21</a></span><span class="line"></span></span>
+</pre>

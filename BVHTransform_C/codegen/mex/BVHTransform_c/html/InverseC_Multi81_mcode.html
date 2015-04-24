@@ -1,0 +1,20 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="1,276" id="srcline276">276</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,277" id="srcline277">277</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S294T20U1385">C21</span> = InverseC_Multi( <span class="var type1" id="S295T20U1388">C12</span> )</span></span>
+<span class="srcline"><span class="lineno"><a href="1,278" id="srcline278">278</a></span><span class="line">coder.inline(<span class="string">'never'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,279" id="srcline279">279</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,280" id="srcline280">280</a></span><span class="line"><span class="keyword">if</span> size(<span class="var type1" id="S295T20U1400">C12</span>,3)==1</span></span>
+<span class="srcline"><span class="lineno"><a href="1,281" id="srcline281">281</a></span><span class="line">    <span class="var type0" id="S294T0U1405">C21</span> = <span class="var type0" id="S295T0U1407">C12</span>' ;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,282" id="srcline282">282</a></span><span class="line">    <span class="keyword">return</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,283" id="srcline283">283</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,284" id="srcline284">284</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,285" id="srcline285">285</a></span><span class="line"><span class="mxinfo" id="T3:U4"><span class="var type1" id="S298T3U1411">Nframes</span> = <span class="mxinfo" id="T3:U6">size( <span class="var type1" id="S295T20U1414">C12</span>,1 )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,286" id="srcline286">286</a></span><span class="line"><span class="mxinfo" id="T20:U8"><span class="var type1" id="S294T20U1418">C21</span> = <span class="mxinfo" id="T20:U10">zeros(<span class="mxinfo" id="T3:U11"><span class="var type1" id="S298T3U1421">Nframes</span></span>,<span class="mxinfo" id="T3:U13">3</span>,<span class="mxinfo" id="T3:U14">3</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,287" id="srcline287">287</a></span><span class="line"><span class="keyword">for</span> <span class="var type1" id="S300T3U1426">k</span>=<span class="mxinfo" id="T3:U16">1:<span class="var type1" id="S298T3U1429">Nframes</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,288" id="srcline288">288</a></span><span class="line">    <span class="mxinfo" id="T13:U18"><span class="var type1" id="S301T13U1432">C12_k</span> = <span class="mxinfo" id="T13:U20">permute( <span class="mxinfo" id="T20:U21"><span class="var type1" id="S295T20U1436">C12</span>(<span class="mxinfo" id="T3:U23"><span class="var type1" id="S300T3U1437">k</span></span>,:,:)</span>,[2,3,1] )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,289" id="srcline289">289</a></span><span class="line">    <span class="mxinfo" id="T20:U25"><span class="mxinfo" id="T20:U26"><span class="var type1" id="S294T20U1448">C21</span>(<span class="mxinfo" id="T3:U28"><span class="var type1" id="S300T3U1449">k</span></span>,:,:)</span> = <span class="mxinfo" id="T13:U30"><span class="var type1" id="S301T13U1453">C12_k</span>'</span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,290" id="srcline290">290</a></span><span class="line"><span class="keyword"><span class="keyword">end</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,291" id="srcline291">291</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,292" id="srcline292">292</a></span><span class="line"><span class="comment">%% 使 Fun_Multi 能执行 Fun 的功能</span></span></span>
+</pre>

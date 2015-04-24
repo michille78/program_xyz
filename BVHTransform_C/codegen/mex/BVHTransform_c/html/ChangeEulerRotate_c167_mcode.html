@@ -1,0 +1,12 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="1,895" id="srcline895">895</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,896" id="srcline896">896</a></span><span class="line"><span class="comment">%% Change Euler Rotate Order</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,897" id="srcline897">897</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,898" id="srcline898">898</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S770T7U5707">euler2</span> = ChangeEulerRotate_c( <span class="var type1" id="S771T7U5710">euler1</span>,<span class="var type1" id="S772T3U5711">rotateOrder1</span>,<span class="var type1" id="S773T3U5712">rotateOrder2</span>,<span class="var type1" id="S774T7U5713">rotateDirection1</span>,<span class="var type1" id="S775T7U5714">rotateDirection2</span> )</span></span>
+<span class="srcline"><span class="lineno"><a href="1,899" id="srcline899">899</a></span><span class="line">coder.inline(<span class="string">'never'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,900" id="srcline900">900</a></span><span class="line"><span class="mxinfo" id="T20:U7"><span class="var type1" id="S777T20U5723">C</span> = <span class="mxinfo" id="T20:U9"><span class="fcn" id="F48N11:B5725">EulerToC_c</span>( <span class="var type1" id="S771T7U5726">euler1</span>,<span class="var type1" id="S772T3U5727">rotateOrder1</span>,<span class="var type1" id="S774T7U5728">rotateDirection1</span> )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,901" id="srcline901">901</a></span><span class="line"><span class="mxinfo" id="T7:U13"><span class="var type1" id="S770T7U5731">euler2</span> = <span class="mxinfo" id="T7:U15"><span class="fcn" id="F99N4:B5733">CToEuler_c</span>( <span class="var type1" id="S777T20U5734">C</span>,<span class="var type1" id="S773T3U5735">rotateOrder2</span>,<span class="var type1" id="S775T7U5736">rotateDirection2</span> )</span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,902" id="srcline902">902</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,903" id="srcline903">903</a></span><span class="line"><span class="comment">%% anticlockwise = positive</span></span></span>
+</pre>

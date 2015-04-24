@@ -1,0 +1,30 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="1,778" id="srcline778">778</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,779" id="srcline779">779</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,780" id="srcline780">780</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,781" id="srcline781">781</a></span><span class="line"><span class="comment">%% xyz 2015.4.5</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,782" id="srcline782">782</a></span><span class="line"><span class="comment">%  EulerToC_Multi  新版 ： 可转化为 C++</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,783" id="srcline783">783</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,784" id="srcline784">784</a></span><span class="line"><span class="comment">%   euler: N*3   euler(k,:) = [eu_x,eu_y,eu_z] </span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,785" id="srcline785">785</a></span><span class="line"><span class="comment">% store order of euler angle: the rotate order</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,786" id="srcline786">786</a></span><span class="line"><span class="comment">% positive:anticlockwise rotate </span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,787" id="srcline787">787</a></span><span class="line"><span class="comment">% euler angle scope: [-pi,pi]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,788" id="srcline788">788</a></span><span class="line"><span class="comment">% unit:rad </span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,789" id="srcline789">789</a></span><span class="line"><span class="comment">% rotateDirection: anticlockwise(1) or clockwise(-1)  111</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,790" id="srcline790">790</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,791" id="srcline791">791</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,792" id="srcline792">792</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S723T20U5107">C</span> =  EulerToC_c( <span class="var type1" id="S724T7U5110">euler</span>,<span class="var type1" id="S725T3U5111">rotateOrder</span>,<span class="var type1" id="S726T7U5112">rotateDirection</span> )</span></span>
+<span class="srcline"><span class="lineno"><a href="1,793" id="srcline793">793</a></span><span class="line">coder.inline(<span class="string">'never'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,794" id="srcline794">794</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,795" id="srcline795">795</a></span><span class="line"><span class="mxinfo" id="T3:U5"><span class="var type1" id="S728T3U5121">Nframes</span> = <span class="mxinfo" id="T3:U7">size( <span class="var type1" id="S724T7U5124">euler</span>,1 )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,796" id="srcline796">796</a></span><span class="line"><span class="mxinfo" id="T20:U9"><span class="var type1" id="S723T20U5128">C</span> = <span class="mxinfo" id="T20:U11">zeros( <span class="mxinfo" id="T3:U12"><span class="var type1" id="S728T3U5131">Nframes</span></span>,<span class="mxinfo" id="T3:U14">3</span>,<span class="mxinfo" id="T3:U15">3</span> )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,797" id="srcline797">797</a></span><span class="line"><span class="keyword">for</span> <span class="var type1" id="S731T3U5136">k</span>=<span class="mxinfo" id="T3:U17">1:<span class="var type1" id="S728T3U5139">Nframes</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,798" id="srcline798">798</a></span><span class="line">   <span class="mxinfo" id="T20:U19"><span class="mxinfo" id="T20:U20"><span class="var type1" id="S723T20U5143">C</span>( <span class="mxinfo" id="T3:U22"><span class="var type1" id="S731T3U5144">k</span></span>,:,: )</span>  = <span class="mxinfo" id="T13:U24"><span class="fcn" id="F47N15:B5148">OneEulerToC_c</span>( <span class="mxinfo" id="T7:U25"><span class="var type1" id="S724T7U5150">euler</span>(<span class="mxinfo" id="T3:U27"><span class="var type1" id="S731T3U5151">k</span></span>,:)</span>,<span class="var type1" id="S725T3U5153">rotateOrder</span>,<span class="var type1" id="S726T7U5154">rotateDirection</span> )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,799" id="srcline799">799</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,800" id="srcline800">800</a></span><span class="line"><span class="keyword">if</span> <span class="var type1" id="S728T3U5158">Nframes</span>==1</span></span>
+<span class="srcline"><span class="lineno"><a href="1,801" id="srcline801">801</a></span><span class="line">    <span class="mxinfo" id="T20:U32"><span class="var type1" id="S723T20U5162">C</span> = <span class="mxinfo" id="T20:U34"><span class="var type1" id="S723T20U5164">C</span>( <span class="mxinfo" id="T3:U36">1</span>,:,: )</span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,802" id="srcline802">802</a></span><span class="line"><span class="keyword"><span class="keyword">end</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,803" id="srcline803">803</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,804" id="srcline804">804</a></span><span class="line"></span></span>
+</pre>
