@@ -81,7 +81,7 @@ for k=1:Nframes-stepN+1
         end 
     end
 end
-display( sprintf('fillNum = %0.0f',fillNum) );
+% display( sprintf('fillNum = %0.0f',fillNum) );
 
 %% 判断某个点k领域内连续为1
 % 1）第k-1点为1,第k点为1,第k+1点为1

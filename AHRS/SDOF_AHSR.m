@@ -4,7 +4,7 @@
 
 function SDOF_AHSR(  )
 
-clc
+% clc
 clear all
 close all
 
@@ -60,20 +60,31 @@ time = Nframes/frequency ;
 
 %% static time judge
 %%% the threshold value to judge is being static
+%%% 动态变化过程中，0加速度时刻的判断 指标
 AHRSThreshod.GyroNormZeroThreshod = 0.7 *pi/180 ;       % 0.5 °/s  角速度为0判断下限
-AHRSThreshod.AccNormZeroThreshod = 2/1000 ;           % 3mg  加速度模为0判断下限
-AHRSThreshod.InitialIsStaticJudgeStepTime = 0.1 ;       % 初始静止判断步长时间
-AHRSThreshod.InitialIsStaticSmoothStepTime = 0.5 ;     % 动态静止平滑步长时间
+AHRSThreshod.AccNormZeroThreshod = 2/1000 ;             % 3mg  加速度模为0判断下限
+AHRSThreshod.InitialIsStaticSmoothStepTime = 0.5 ;      % 动态静止平滑步长时间
 AHRSThreshod.DynamicIsStaticSmoothStepTime = 0.05 ;     % 动态静止平滑步长时间
-AHRSThreshod.InitialStaticAbandonTime = 0.05 ;          % 初始静止时段首尾抛弃时长
-AHRSThreshod.RoateVectorCalMinAngle = 10*pi/180;        % 旋转轴计算数据选择时，旋转角度下限
-AHRSThreshod.RoateVectorCalTime  = 15 ;                 % 从静止开始多次时间的数据用于转轴计算。之后就要求输出角度。
 AHRSThreshod.GyroContinuousZeroTimeThreshod = 0.3 ;     % 角速度变化率=0判断：角速度为0保持时间
 AHRSThreshod.GyroContinuousZeroMinRate = 0.7 ;          % 角速度变化率=0判断：角速度为0在邻域内保持的比例
 AHRSThreshod.IsContinuousGyroNormZeroSmoothStepTime = 0.2  ; % 角速度变化率为0判断结果平滑步长 （可以稍微长点）
+%%% 初始零位判断指标
+AHRSThreshod.InitialIsStaticJudgeStepTime = 0.1 ;       % 初始静止判断步长时间
+AHRSThreshod.InitialStaticAbandonTime = 0.05 ;          % 初始静止时段首尾抛弃时长
+%%% 转轴计算指标
+AHRSThreshod.RoateVectorCalMinAngleFirst = 10*pi/180;   % 假设航向保持0时，俯仰和横滚转动四元数的转角大于 RoateVectorCalMinAngleFirst 角度时，用于旋转轴的第一次计算
+AHRSThreshod.RoateVectorCalMinAngleSecond = 20*pi/180;  % 根据初次转轴解算结果，选择转动角度大于 RoateVectorCalMinAngleSecond 的进行转轴的详细解算
+AHRSThreshod.RoateVectorCalMinAngleScope = 10*pi/180 ;  % 转轴计算数据选择的转角范围，如果第二次旋转的转角小于这个范围，发出警告
+AHRSThreshod.RoateVectorCalMinAngleScopeSub = 1*pi/180 ;% 正转角的转角范围 和 负转角的转角范围 的最大值
+AHRSThreshod.RoateVectorCalTime  = 15 ;                 % 从静止开始多次时间的数据用于转轴计算。之后就要求输出角度。
+
 
 % dbstop in Judge0Acceleration
 [ IsSDOFAccelerationZero,initialStaticStart,initialStaticEnd,IsSDOFAccelerationToHeartZero,IsAccNormZero ] = Judge0Acceleration( AHRSData,AHRSThreshod ) ;
+SDOFStaticFlag.IsSDOFAccelerationZero = IsSDOFAccelerationZero ;
+SDOFStaticFlag.IsSDOFAccelerationToHeartZero = IsSDOFAccelerationToHeartZero ;
+SDOFStaticFlag.IsAccNormZero = IsAccNormZero ;
+
 AHRSStateResult.IsSDOFAccelerationZero = IsSDOFAccelerationZero ;
 initialStaticTime = ( initialStaticEnd-initialStaticStart )/frequency ;
 if initialStaticTime < 1
@@ -94,10 +105,15 @@ roll_d = roll*180/pi;
 pitch_r_d = pitch_r*180/pi;
 roll_r_d = roll_r*180/pi;
 
-%%% 选择满足转轴解算的数据
-[ Qnb_RCD,Qwr_RCD ] = SelectRotateVectorCalcualteData( Qnb,Qwr,AHRSThreshod,AHRSStateResult,frequency ) ;
-%%% 转轴解算
-Ypr = CalculateRotateVector_Acc(Qnb_RCD,Qwr_RCD ) ;
+
+%% 转轴解算
+%%% 截取零位计算时段的数据 Qnb_ZeroCal
+RoateVectorCalTime = AHRSThreshod.RoateVectorCalTime ; 
+RoateVectorCalN = RoateVectorCalTime*frequency ;
+Qnb_ZeroCal = Qnb( :,1:RoateVectorCalN ) ;
+IsSDOFAccelerationZero_ZeroCal = IsSDOFAccelerationZero(1:RoateVectorCalN);
+
+Ypr = GetRotateVector_Acc( Qnb_ZeroCal,Qwr,AHRSThreshod,SDOFStaticFlag ) ;
 
 %% 纯加计转角解算
 RotateAngle = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr ) ;
@@ -156,107 +172,5 @@ else
     AHRSDataNew = AHRSData;
 end
 
-%% 纯加计解算转动角度
-function RotateAngle = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr ) 
-
-Nframes = length( Qnb ) ;
-RotateAngle = zeros( 1,Nframes );
-for k=1:Nframes
-    A = CalculateA_One( Qnb(:,k),Qwr )  ;
-    temp = -A(2,2:4)*Ypr / A(2,1) ;
-    RotateAngle(k) = acot( temp )*2;
-end
-
-figure
-plot(RotateAngle*180/pi)
-ylabel('RotateAngle');
-
-%% select data be suitable for rotate vector calculating
-
-function [ Qnb_RCD,Qwr_RCD ] = SelectRotateVectorCalcualteData( Qnb,Qwr,AHRSThreshod,AHRSStateResult,frequency )
-RoateVectorCalTime = AHRSThreshod.RoateVectorCalTime ; 
-RoateVectorCalN = RoateVectorCalTime*frequency ;
-Qnb = Qnb( :,1:RoateVectorCalN ) ;
-
-Qrw = Qinv( Qwr );
-N = size(Qnb,2);
-Qrb_false = QuaternionMultiply( repmat(Qrw,1,N),Qnb );
-angle_false = GetQAngle( Qrb_false ) ;
-RoateVectorCalMinAngle = AHRSThreshod.RoateVectorCalMinAngle ;
-IsAngleBig =  angle_false > RoateVectorCalMinAngle | angle_false < -RoateVectorCalMinAngle ;
-IsSDOFAccelerationZero = AHRSStateResult.IsSDOFAccelerationZero ;
-IsSDOFAccelerationZero = IsSDOFAccelerationZero(1:RoateVectorCalN);
-IsAngleBigStatic = IsAngleBig & IsSDOFAccelerationZero' ;
- IsAngleBigStatic = IsAngleBig ;
-
-Qnb_RCD = Qnb( :,IsAngleBigStatic );
-Qwr_RCD = Qwr;
-
-%% check
-angle_false_RCD = angle_false(IsAngleBigStatic);
-
-time = 1:N;
-time = time(IsAngleBigStatic);
-
-figure
-plot( angle_false*180/pi )
-hold on
-plot( time,angle_false_RCD*180/pi,'r.' )
-
-disp('')
-
- 
-%% Calculate Rotate Vector only by Acc when satic
-
-function Ypr = CalculateRotateVector_Acc( Qnb,Qwr )
-Nframes = size(Qnb,2);
-
-D = CalculateD( Qnb,Qwr ) ;
-
-DTD = D'*D ;
-[ V,D ] = eig( DTD );
-eigValue = diag(D);
-[ minEigValue,minEig_k ] = min( eigValue );
-X = V( :,minEig_k );
-Ypr = X( 1:3 );
-Ypr = Ypr/normest(Ypr);
-
-%% check
-DX = D*X ;
-DTDX = DTD*V( :,1 ) ;
-return
-
-resolutionNum = 3+Nframes - rank(DTD) ;     % the number of Rotate Vector equation resolutions
-if resolutionNum == 1
-    
-elseif resolutionNum>1
-    errordlg('Rotate Vector Equation more than 1 solution! ');
-elseif resolutionNum<1
-    errordlg('Rotate Vector Equation NO solution! ');
-end
-Ypr = ones(3,1) ;
-
-function D = CalculateD( Qnb,Qwr )
-Nframes = size(Qnb,2);
-D = zeros( 2*Nframes,3+Nframes );
-for i=1:Nframes
-    Ai = CalculateA_One( Qnb(:,i),Qwr ) ;
-    As_i = Ai(2:3,1);
-    Av_i = Ai(2:3,2:4);
-    D( 2*i-1:2*i,1:3 ) = Av_i ;
-    D( 2*i-1:2*i,3+i ) = As_i ;
-end
-disp('')
 
 
-function A = CalculateA_One( Qnb,Qwr ) 
-if length(Qnb)==4
-    Qbn = [ Qnb(1);-Qnb(2:4) ] ;
-    LQMwr = LeftQMultiplyMatrix( Qwr ) ;
-    RQMbn = RightQMultiplyMatrix( Qbn ) ;
-    A = RQMbn * LQMwr ;
-else
-    A = NaN;
-end
-
-       
