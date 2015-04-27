@@ -1,0 +1,1852 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TechNewLogic.GraphIT</name>
+    </assembly>
+    <members>
+        <member name="T:TechNewLogic.GraphIT.Bpp">
+            <summary>
+            Provides information of the pixel depth for drawing the <see cref="T:TechNewLogic.GraphIT.Curve"/>s.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Bpp.One">
+            <summary>
+            Defines a 1 bit per pixel value.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Bpp.Eight">
+            <summary>
+            Defines a 8 bit per pixel value.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Bpp.Value">
+            <summary>
+            Gets the value in bit per pixel.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Curve">
+            <summary>
+            Provides base functionalities for drawing on the drawing area.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Helper.NotifyPropertyChanged">
+            <summary>
+            Notifies clients that a property value has changed.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Helper.NotifyPropertyChanged.OnPropertyChanged(System.String)">
+            <summary>
+            Raises the <see cref="E:TechNewLogic.GraphIT.Helper.NotifyPropertyChanged.PropertyChanged"/> event.
+            </summary>
+            <param name="propertyName">The name of the property that's value has changed.</param>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Helper.NotifyPropertyChanged.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Curve.GetRenderOffsetOverride">
+            <summary>
+            Gets a value that is applied as a transformation by the rendering pipeline to the bitmap of this <see cref="T:TechNewLogic.GraphIT.Curve"/>.
+            </summary>
+            <returns>The rect that will be used as a 2D transformation.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Curve.GetStrokeOverride">
+            <summary>
+            Gets a value that is applied as coloring by the rendering pipeline to the bitmap of this <see cref="T:TechNewLogic.GraphIT.Curve"/>.
+            </summary>
+            <returns>The stroke color fot the <see cref="T:TechNewLogic.GraphIT.Curve"/>.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Curve.HitTestOverride(System.Int32,System.Int32)">
+            <summary>
+            Gets a value that indicates whether the <see cref="T:TechNewLogic.GraphIT.Curve"/> is hit by the given <paramref name="x"/> and <paramref name="y"/> coordinates.
+            </summary>
+            <remarks>
+            The values from the <see cref="M:TechNewLogic.GraphIT.Curve.GetRenderOffsetOverride"/> method are already applied to the
+            given <paramref name="x"/> and <paramref name="y"/> coordinates.
+            </remarks>
+            <param name="x">The horizontal screen coordinate.</param>
+            <param name="y">The vertical screen coordinate.</param>
+            <returns>The value that indicates whether the <see cref="T:TechNewLogic.GraphIT.Curve"/> was hit.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Curve.DrawOverride(System.Int32,System.Int32,System.Byte[]@,System.Byte[]@)">
+            <summary>
+            Draws the curve and it's selection.
+            </summary>
+            <remarks>
+            Bitmap formats and drawing information can be queries using the <see cref="T:TechNewLogic.GraphIT.DrawingParameter"/> class.
+            </remarks>
+            <param name="width">The width of the resulting bitmaps.</param>
+            <param name="height">The height of the resulting bitmaps.</param>
+            <param name="bitmap">The byte array of the drawn curve.</param>
+            <param name="selectionBitmap">The byte array of the drawn selection.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Curve.FreezeOverride">
+            <summary>
+            Can be used to freeze certain objects's properties at the beginning of a drawing cycle.
+            </summary>
+            <remarks>
+            The <see cref="M:TechNewLogic.GraphIT.Curve.FreezeOverride"/> method is called before the <see cref="M:TechNewLogic.GraphIT.Curve.DrawOverride(System.Int32,System.Int32,System.Byte[]@,System.Byte[]@)"/> method. 
+            Use the <see cref="M:TechNewLogic.GraphIT.Curve.FreezeOverride"/> to save axes bounds, data series, etc for a drawing cycle.
+            </remarks>
+            <seealso cref="M:TechNewLogic.GraphIT.Curve.UnfreezeOverride"/>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Curve.UnfreezeOverride">
+            <summary>
+            Can be used to unfreeze certain objects's properties at the end of a drawing cycle.
+            </summary>
+            <remarks>
+            The <see cref="M:TechNewLogic.GraphIT.Curve.FreezeOverride"/> method is called after the <see cref="M:TechNewLogic.GraphIT.Curve.DrawOverride(System.Int32,System.Int32,System.Byte[]@,System.Byte[]@)"/> method. 
+            Use the <see cref="M:TechNewLogic.GraphIT.Curve.UnfreezeOverride"/> to reset axes bounds or data series, update the render offset, etc.
+            </remarks>
+            <seealso cref="M:TechNewLogic.GraphIT.Curve.FreezeOverride"/>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Curve.RedrawRequest">
+            <summary>
+            Gets an instance of <see cref="T:TechNewLogic.GraphIT.IRedrawRequest"/> that can be used to trigger a redraw in the drawing subsystem.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Curve.Description">
+            <summary>
+            Gets the <see cref="T:TechNewLogic.GraphIT.CurveDescription"/> that is associated with this <see cref="T:TechNewLogic.GraphIT.Curve"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Curve.ContextMenuRegistrar">
+            <summary>
+            Gets the <see cref="T:TechNewLogic.GraphIT.IContextMenuRegistrar"/> implementation which is associated with this <see cref="T:TechNewLogic.GraphIT.Curve"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Curve.IsVisible">
+            <summary>
+            Gets or sets the visibility of this <see cref="T:TechNewLogic.GraphIT.Curve"/> on the drawing area.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Curve.NeedsRedraw">
+            <summary>
+            Gets or sets a value that indicates whether the <see cref="T:TechNewLogic.GraphIT.Curve"/> needs a complete redraw.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Curve.Metadata">
+            <summary>
+            Gets a dictionary in which any kind of metadata can be stored.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Curve.IsSelectedChanged">
+            <summary>
+            Occurs when the selection of the <see cref="T:TechNewLogic.GraphIT.Curve"/> has changed.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Curve.IsSelected">
+            <summary>
+            Gets or sets a value that indicates whether the <see cref="T:TechNewLogic.GraphIT.Curve"/> is selected or not.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.IContextMenuRegistrar">
+            <summary>
+            Provides functionality to register menu elements to a context menu.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.IContextMenuRegistrar.AddMenuEntry(System.Windows.UIElement)">
+            <summary>
+            Adds a <see cref="T:System.Windows.UIElement"/> to the list of menu point to the context menu.
+            </summary>
+            <param name="entry">The <see cref="T:System.Windows.UIElement"/> to add.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.IContextMenuRegistrar.AddMenuEntry(System.String,System.Action)">
+            <summary>
+            Adds a clickable element to the list of menu point to the context menu.
+            </summary>
+            <param name="header">The header text of the element.</param>
+            <param name="handler">The action that will be invoked when the menu entry is clicked.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.ContextMenuControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.CurveDescription">
+            <summary>
+            Provides textual information for a <see cref="T:TechNewLogic.GraphIT.Curve"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText1">
+            <summary>
+            1st description text.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText2">
+            <summary>
+            2nd description text.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText3">
+            <summary>
+            3rd description text.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText4">
+            <summary>
+            4th description text.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText5">
+            <summary>
+            5th description text.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.CurveDisplay">
+            <summary>
+            Defines an area containing curves and scales.
+            </summary>
+            <summary>
+            CurveDisplay
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.CurveDisplay.#ctor">
+            <summary>
+            Initializes a new instance of <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.CurveDisplay.Print(System.Int32,TechNewLogic.GraphIT.Printing.PrintContent[])">
+            <summary>
+            Opens thr print dialog and prints this instance of <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+            <param name="pageMargin">Specifies the print page margin in screen units.</param>
+            <param name="additionalPrintContent">Specifies additional content that will be placed around this instance of <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.CurveDisplay.ShowPrintPreview(TechNewLogic.GraphIT.Printing.PrintContent[])">
+            <summary>
+            Opens thr print preview dialog and prints this instance of <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+            <param name="additionalPrintContent">Specifies additional content that will be placed around this instance of <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.CurveDisplay.Dispose">
+            <summary>
+            Releases all resources used by this <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.CurveDisplay.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDisplay.TimeDoublePlottingSystem">
+            <summary>
+            Gets the instance of <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/> that is associated with this <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDisplay.Curves">
+            <summary>
+            Gets an enumeration of all curves that are associated with this instance of <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.CurveDisplay.CurveAdded">
+            <summary>
+            Occurs after a new <see cref="T:TechNewLogic.GraphIT.Curve"/> has been added.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.CurveDisplay.CurveRemoved">
+            <summary>
+            Occurs after a <see cref="T:TechNewLogic.GraphIT.Curve"/> has been removed.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.CurveDisplay.SelectedCurveChanged">
+            <summary>
+            Occurs after a <see cref="T:TechNewLogic.GraphIT.Curve"/> has changed it's <see cref="P:TechNewLogic.GraphIT.Curve.IsSelected"/> state.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDisplay.SelectedCurve">
+            <summary>
+            Gets the selected curve from the <see cref="P:TechNewLogic.GraphIT.CurveDisplay.Curves"/> enumeration.
+            </summary>
+            <remarks>
+            If no curve is selected, null is returned.
+            </remarks>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.CurveDisplay.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDisplay.GeneralForeground">
+            <summary>
+            Gets or sets a foreground brush that will be used for many visual elements of this <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.CurveDisplay.GeneralBackground">
+            <summary>
+            Gets or sets a background brush that will be used for many visual elements of this <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.IRedrawRequest">
+            <summary>
+            Informs the drawing subsystem that a visual element became invalid.
+            </summary>
+            <remarks>
+            Use the provided methods from inside a <see cref="T:TechNewLogic.GraphIT.Curve"/> to start a drawing cycle.
+            </remarks>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.IRedrawRequest.RaiseRedrawRequest">
+            <summary>
+            Raises a redraw request in the drawing subsystem.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Helper.EventArgs`1">
+            <summary>
+            A generic base class for containing event data.
+            </summary>
+            <typeparam name="T">The type of event data.</typeparam>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Helper.EventArgs`1.Arg">
+            <summary>
+            Gets the event data.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Helper.MathHelper.MapPoint(System.Double,System.Double,System.Double,System.Double,System.Double)">
+             <summary>
+             Bildet einen Wert von einer Skala auf eine andere Skala ab.
+             </summary>
+             <remarks>
+             (s, t): Wertebereich der Quell-Skala
+             (a, b): Min / Max-Bereich der Ziel-Skala
+            
+             Daraus folgt: P1(s, a) und P2(t, b)
+            
+             Punktsteigungsform:
+             y = (b - a) / (t - s) * (x - s) + a
+             </remarks>
+             <param name="a">Anfang des Wertebereichs der Ziel-Skala</param>
+             <param name="b">Ende des Wertebereichs der Ziel-Skala</param>
+             <param name="s">Anfang des Wertebereichs der Quell-Skala</param>
+             <param name="t">Ende des Wertebereichs der Quell-Skala</param>
+             <param name="value">Zu übersetzender Wert</param>
+             <returns></returns>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.HitTester">
+            <summary>
+            Ermittelt durch einen Vorher-Nachher-Vergleich zweier Pixel-Arrays, an welchen
+            Stellen sich ein Element (z.B. eine Kurve) befindet und an welchen nicht.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.AxisBase`1">
+            <summary>
+            Provides base functionality for implementing axes.
+            </summary>
+            <remarks>
+            An axis is used to represent and control the logical state of a one-dimensional unit system like <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis"/> or <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis"/>.
+            </remarks>
+            <typeparam name="T">The entry type of this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/>.</typeparam>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.AxisBase`1.SetBounds(`0,`0)">
+            <summary>
+            Sets the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> for this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/>.
+            </summary>
+            <param name="lowerBound">The actual lower bound value.</param>
+            <param name="upperBound">The actual upper bound value.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.AxisBase`1.ResetInitialBounds">
+            <summary>
+            Resets the initial lower and upper bounds to the actual bound values
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.AxisBase`1.Dispose">
+            <summary>
+            Releases all resources used by this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/>.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Hv.AxisBase`1.BoundsChanged">
+            <summary>
+            Occurs when the bounds of this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/> are changed.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Hv.AxisBase`1.BoundsChangedThrottled">
+            <summary>
+            Occurs in a throttled manner when the bounds of this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/> are changed.
+            </summary>
+            <remarks>
+            The event is throttled, which means that many changes in a short time of the bounds lead to
+            only a few events. Use this event instad of the <see cref="E:TechNewLogic.GraphIT.Hv.AxisBase`1.BoundsChanged"/>
+            event for computational intense operations (e.g. UI) or for fetching data from an underlying data source.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.AxisBase`1.LowerBound">
+            <summary>
+            The initial lower bound of this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.AxisBase`1.UpperBound">
+            <summary>
+            The initial upper bound of this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound">
+            <summary>
+            The actual lower bound of this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound">
+            <summary>
+            The actual upper bound of this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/>.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.BeltControl">
+            <summary>
+            Interaction logic for BeltControl.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.BeltControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.BinaryValueFormater">
+            <summary>
+            Maps any given value to '0' or '1'.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.IValueFormater">
+            <summary>
+            Formats a value.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.IValueFormater.GetFormattedValue(System.Object)">
+            <summary>
+            Gets a string representation of a given value.
+            </summary>
+            <param name="value">The original value.</param>
+            <returns>The string representation.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.BinaryValueFormater.GetFormattedValue(System.Object)">
+            <summary>
+            Gets a string representation of a given value.
+            </summary>
+            <param name="value">The original value.</param>
+            <returns>The string representation.</returns>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.CurveBeltSurface">
+            <summary>
+            Interaction logic for CurveBeltSurface.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.CurveBeltSurface.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.CurveDrawingMode">
+            <summary>
+            Specifies how curves shall be drawn and interpolated.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.CurveDrawingMode.SimpleLine">
+            <summary>
+            COnnects the data entries with a simple line.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.CurveDrawingMode.FilledRectangleAuto">
+            <summary>
+            The data entries are interpreted as rectangle values. The baseline is the y-coordinate of the first entry.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.CurveDrawingMode.FilledRectangleBaseline(System.Double)">
+            <summary>
+            The data entries are interpreted as rectangle values.
+            </summary>
+            <param name="baselineValue">The baseline value.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.CurveDrawingMode.FilledRectangleHighest">
+            <summary>
+            The data entries are interpreted as rectangle values. The baseline is the largest y-coordinate of all entries.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.CurveDrawingMode.FilledRectangleLowest">
+            <summary>
+            The data entries are interpreted as rectangle values. The baseline is the smallest y-coordinate of all entries.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.CurveRectControl">
+            <summary>
+            Interaction logic for CurveRectControl.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.CurveRectControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.CustomControlSurface">
+            <summary>
+            Interaction logic for CustomControlSurface.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.CustomControlSurface.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.IDynamicRulerEventBroker">
+            <summary>
+            Das Anzeigen von den DynamicRulers kann aufgrund mehrerer Ereignisse geschehen, nämlich: 
+            Die Maus ist über dem Zeichenbereich oder über einer Skala.
+            Je nachdem müssen beide (horizontal und vertikal) oder nur jeweils das h. oder v. Ruler angezeigt werden.
+            Das Zeichnen selbst übernimmt die jeweilige Ruler-Klasse (HDynamicRuler oder VDynamicRuler).
+            Die Kommunikation jedoch wird vom IDynamicRulerEventBroker übernommen.
+            An dieser Klasse können sich die unterschiedlichsten Controls anmelden, welche als "Quelle" 
+            zum Anziegen dienen (konkret: Die Skalen melden sich an und die GridSurfaces 
+            (bzw. die InputReference als deren Stellvertreter) melden sich an). Wird die Maus über die Quelle bewegt, 
+            werden Events ausgelöst, welche vom jeweiligen DynamicRuler abgefangen werden. 
+            Das DynamicRuler zeichnet sich dann selbst auf seinem GridSurface.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.IDynamicRulerEventBroker.AddSource(System.Windows.IInputElement)">
+            <summary>
+            Registriert eine Quelle, welche bei Maus-Bewegungen das jeweilige Lineal anzeigt.
+            </summary>
+            <param name="inputReference"></param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.DynamicRulerManager.AddSource(System.Windows.IInputElement)">
+            <summary>
+            Registriert eine Quelle, welche bei Maus-Bewegungen das jeweilige Lineal anzeigt.
+            </summary>
+            <param name="inputReference"></param>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.FloatingCommaValueFormater">
+            <summary>
+            Formats a given double value. The decimal count depends on how large the given number is.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.FloatingCommaValueFormater.GetFormattedValue(System.Object)">
+            <summary>
+            Gets a string representation of a given value.
+            </summary>
+            <param name="value">The original value.</param>
+            <returns>The string representation.</returns>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.GetValueMode">
+            <summary>
+            Specifies the method of how a value should be retrived from a <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.GetValueMode.MiddleValue">
+            <summary>
+            Retrives a value by linear interpolating between the values of the left and right neighbours for a given point in time.
+            </summary>
+            <remarks>
+            If the given point in time does not lie between two neighbours, <see cref="F:System.Double.NaN"/> will be returned.
+            </remarks>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.GetValueMode.LeftValue">
+            <summary>
+            Retrive a value by getting the value of the left neighbour for a given point in time.
+            </summary>
+            <remarks>
+            If the given point in time does not have a left neighbour, <see cref="F:System.Double.NaN"/> will be returned.
+            </remarks>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.GetValueMode.RightValue">
+            <summary>
+            Retrive a value by getting the value of the right neighbour for a given point in time.
+            </summary>
+            <remarks>
+            If the given point in time does not have a right neighbour, <see cref="F:System.Double.NaN"/> will be returned.
+            </remarks>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.GroupingResult">
+            <summary>
+            Indicates in which manner two <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> can be grouped.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.GroupingResult.None">
+            <summary>
+            Grouping is not possible. This is the case when the two <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/>s are identical.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.GroupingResult.Relative">
+            <summary>
+            Relative grouping is possible. This is the case when the two <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/>s have different unit of measure.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.GroupingResult.Absolute">
+            <summary>
+            Absolute grouping is possible. This is the case when the two <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/>s have identical unit of measure.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.DynamicRulerLabel">
+            <summary>
+            Dient als Anzeige-Label für den aktuellen Wert, an dem sich der Mauszeiger befindet.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.DynamicRulerLabel.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.HDynamicRuler.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.HGridLine.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.HGridSurface">
+            <summary>
+            Zeichnet das Raster sowie die Lineale.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.HGridSurface.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.HSectionLabel">
+            <summary>
+            Interaction logic for HSectionLabel.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.HSectionLabel.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler">
+            <summary>
+            Represents a horizontal ruler on the drawing area.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler.ToggleReference">
+            <summary>
+            Toggles the state of the <see cref="P:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler.IsReference"/> property.
+            </summary>
+            <remarks>
+            The ruler system ensures that only one <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> at time can be the reference ruler.
+            If another ruler has already set it's <see cref="P:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler.IsReference"/> property set to true, it will automatically be disabled.
+            </remarks>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler.PositionUpdated">
+            <summary>
+            Occurs when the position of the <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> has changed.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler.Position">
+            <summary>
+            Gets or sets the position of the <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler.IsReference">
+            <summary>
+            Gets a value that indicates whether the <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> is the reference ruler.
+            </summary>
+            <remarks>
+            When this value is true, all other <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> instances calculate their differences to this reference ruler.
+            </remarks>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRulerControl">
+            <summary>
+            Interaction logic for HStaticRulerControl.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRulerControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRulerSurface">
+            <summary>
+            Interaction logic for HStaticRulerSurface.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRulerSurface.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.IHScale">
+            <summary>
+            Ein Interface zur reinen Anzeige, ob es sich um eine Skala handelt.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.IntervalControl">
+            <summary>
+            Interaction logic for IntervalControl.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.IntervalControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.RulerManagementControl">
+            <summary>
+            Interaction logic for RulerManagementControl.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.RulerManagementControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.RulerManagementSurface">
+            <summary>
+            Interaction logic for RulerManagementSurface.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.RulerManagementSurface.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis">
+            <summary>
+            Represents an axis with a time dimension.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis.MoveBounds(System.TimeSpan)">
+            <summary>
+            Moves the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> equally by the given absolute <paramref name="diff"/>.
+            </summary>
+            <param name="diff">The absolute difference that indicates move offset.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis.MoveBoundsRelative(System.Double)">
+            <summary>
+            Moves the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> equally by the given relative <paramref name="relativeDiff"/>.
+            </summary>
+            <param name="relativeDiff">
+            The relative difference that indicates move offset. The value must be between 0 and 1.
+            A relative value of 1 (100%) is represented by the difference between 
+            <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/>.
+            </param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis.Zoom(System.Double,System.Double)">
+            <summary>
+            Zooms the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> 
+            by the given <paramref name="factor"/> and the relative center point <paramref name="relativeCenter"/>.
+            </summary>
+            <param name="factor">The zoom factor. A value between 0 and 1 zooms in. A value greater than 1 zooms out.</param>
+            <param name="relativeCenter">The relative center point of the zoom operation. A value of 0 is mapped to the 
+            <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/>, a value of 1 is mapped to the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/>.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis.Center(System.DateTime)">
+            <summary>
+            Centers  the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> equaly by around the given <paramref name="value"/>.
+            </summary>
+            <param name="value">The absolute value that will become the center of this <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis"/>.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis.MapLogicalToScreen(System.DateTime)">
+            <summary>
+            Maps a given logical axes value to the absolute screen point of the drawing area.
+            </summary>
+            <param name="value">The logical value that should be mapped.</param>
+            <returns>The screen point.</returns>
+            <seealso cref="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis.MapScreenToLogical(System.Double)"/>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis.MapScreenToLogical(System.Double)">
+            <summary>
+            Maps a given screen point of the drawing area to a logical axes value.
+            </summary>
+            <param name="value">The screen point that should be mapped.</param>
+            <returns>The logical value.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeAxis.SetBounds(System.DateTime,System.DateTime)">
+            <summary>
+            Sets the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> for this <see cref="T:TechNewLogic.GraphIT.Hv.AxisBase`1"/>.
+            </summary>
+            <param name="lowerBound">The actual lower bound value.</param>
+            <param name="upperBound">The actual upper bound value.</param>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Horizontal.TimeScale">
+            <summary>
+            Interaction logic for TimeScale.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Horizontal.TimeScale.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.InterpolationValueFetchStrategy">
+            <summary>
+            Linear interpolation between two points.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.IValueFetchStrategy">
+            <summary>
+            Decides how a logical value which lies between two physical values at a point in time is mapped.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.IValueFetchStrategy.GetMiddleValue(System.DateTime,TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry,TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry)">
+            <summary>
+            Gets a value for a given point in time.
+            </summary>
+            <param name="dateTime">The point in time.</param>
+            <param name="leftValue">The value in a series that lies directly left of the time.</param>
+            <param name="rightValue">The value in a series that lies directly right of the time.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.InterpolationValueFetchStrategy.GetMiddleValue(System.DateTime,TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry,TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry)">
+            <summary>
+            Gets a value for a given point in time.
+            </summary>
+            <param name="dateTime">The point in time.</param>
+            <param name="leftValue">The value in a series that lies directly left of the time.</param>
+            <param name="rightValue">The value in a series that lies directly right of the time.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.IndexedObservableCollection`1.#ctor(System.Func{System.Collections.Generic.IEnumerable{`0},System.String,`0},System.Func{System.String,`0})">
+            <param name="keySelector">Null, wenn nicht vorhanden</param>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Legend.TableCellControl">
+            <summary>
+            Interaction logic for TableCellControl.xaml
+            </summary>
+            <summary>
+            TableCellControl
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.TableCellControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Legend.TileControl">
+            <summary>
+            Interaction logic for TileControl.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.TileControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Legend.TableLegend">
+            <summary>
+            Defines a table-style legend for a <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+            <summary>
+            TableLegend
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.TableLegend.#ctor(TechNewLogic.GraphIT.CurveDisplay,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:TechNewLogic.GraphIT.Hv.Legend.TableLegend"/>.
+            </summary>
+            <param name="curveDisplay">The <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/> instance which is associated with this <see cref="T:TechNewLogic.GraphIT.Hv.Legend.TableLegend"/>.</param>
+            <param name="description1Header">The header text for the column that displays the <see cref="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText1"/>.</param>
+            <param name="description2Header">The header text for the column that displays the <see cref="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText2"/>.</param>
+            <param name="description3Header">The header text for the column that displays the <see cref="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText3"/>.</param>
+            <param name="description4Header">The header text for the column that displays the <see cref="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText4"/>.</param>
+            <param name="description5Header">The header text for the column that displays the <see cref="P:TechNewLogic.GraphIT.CurveDescription.DescriptionText5"/>.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.TableLegend.Dispose">
+            <summary>
+            Releases all resources used by this <see cref="T:TechNewLogic.GraphIT.Hv.Legend.TableLegend"/>.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.TableLegend.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Legend.TableLegend.ViewModel">
+            <summary>
+            Gets a value representing the logical state of the <see cref="T:TechNewLogic.GraphIT.Hv.Legend.TableLegend"/>.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Hv.Legend.TableLegend.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Legend.TileLegend">
+            <summary>
+            Defines a tile-style legend for a <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/>.
+            </summary>
+            <summary>
+            TileLegend
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.TileLegend.#ctor(TechNewLogic.GraphIT.CurveDisplay)">
+            <summary>
+            Initializes a new instance of <see cref="T:TechNewLogic.GraphIT.Hv.Legend.TileLegend"/>.
+            </summary>
+            <param name="curveDisplay">The <see cref="T:TechNewLogic.GraphIT.CurveDisplay"/> instance which is associated with this <see cref="T:TechNewLogic.GraphIT.Hv.Legend.TileLegend"/>.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.TileLegend.Dispose">
+            <summary>
+            Releases all resources used by this <see cref="T:TechNewLogic.GraphIT.Hv.Legend.TileLegend"/>.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Legend.TileLegend.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Legend.TileLegend.ViewModel">
+            <summary>
+            Gets a value representing the logical state of the <see cref="T:TechNewLogic.GraphIT.Hv.Legend.TileLegend"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Legend.TileLegend.TileWidth">
+            <summary>
+            Gets or sets the width for the tile items per curve.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.PanZoomManager.IncreaseDecreaseFactor">
+            <summary>
+            Skalierungs-Fakrot für Zoom: [0...1]
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.RedrawTime">
+            <summary>
+            Provides a time interval which is used to delay the redraw of a curve.
+            </summary>
+            <remarks>
+            The <see cref="T:TechNewLogic.GraphIT.Hv.RedrawTime"/> is used by the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>. 
+            When the curve needs to be redrawn (e.g. due to panning, zooming, changes in axis bounds, etc.),
+            the redraw is not carried out immediately. Instead, the <see cref="T:TechNewLogic.GraphIT.Hv.RedrawTime"/> is used to delay
+            the redraw process.
+            By using the <see cref="T:TechNewLogic.GraphIT.Hv.RedrawTime"/>, it is possible to control the overall performance.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.Ms50">
+            <summary>
+            Defines a redraw time of 50ms.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.Ms100">
+            <summary>
+            Defines a redraw time of 100ms.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.Ms500">
+            <summary>
+            Defines a redraw time of 500ms.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S1">
+            <summary>
+            Defines a redraw time of 1s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S2">
+            <summary>
+            Defines a redraw time of 2s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S3">
+            <summary>
+            Defines a redraw time of 3s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S4">
+            <summary>
+            Defines a redraw time of 4s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S5">
+            <summary>
+            Defines a redraw time of 5s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S6">
+            <summary>
+            Defines a redraw time of 6s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S7">
+            <summary>
+            Defines a redraw time of 7s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S8">
+            <summary>
+            Defines a redraw time of 8s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S9">
+            <summary>
+            Defines a redraw time of 9s.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.RedrawTime.S10">
+            <summary>
+            Defines a redraw time of 10s.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.SectionZoomManager">
+            <summary>
+            Interaction logic for SectionZoomManager.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.SectionZoomManager.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.SimpleValueFetchStrategy">
+            <summary>
+            Uses the first (left) point of two points.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.SimpleValueFetchStrategy.GetMiddleValue(System.DateTime,TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry,TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry)">
+            <summary>
+            Gets a value for a given point in time.
+            </summary>
+            <param name="dateTime">The point in time.</param>
+            <param name="leftValue">The value in a series that lies directly left of the time.</param>
+            <param name="rightValue">The value in a series that lies directly right of the time.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve">
+            <summary>
+            Represents a graphical curve of <see cref="T:System.DateTime"/> and <see cref="T:System.Double"/> entries.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.GetFormattedValue(System.Double)">
+            <summary>
+            Gets a string representation of a value, depending on the formatter of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+            <param name="value">The value that should be formatted.</param>
+            <returns>The formatted value.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.FreezeOverride">
+            <summary>
+            Can be used to freeze certain objects's properties at the beginning of a drawing cycle.
+            </summary>
+            <remarks>
+            The <see cref="M:TechNewLogic.GraphIT.Curve.FreezeOverride"/> method is called before the <see cref="M:TechNewLogic.GraphIT.Curve.DrawOverride(System.Int32,System.Int32,System.Byte[]@,System.Byte[]@)"/> method. 
+            Use the <see cref="M:TechNewLogic.GraphIT.Curve.FreezeOverride"/> to save axes bounds, data series, etc for a drawing cycle.
+            </remarks>
+            <seealso cref="M:TechNewLogic.GraphIT.Curve.UnfreezeOverride"/>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.UnfreezeOverride">
+            <summary>
+            Can be used to unfreeze certain objects's properties at the end of a drawing cycle.
+            </summary>
+            <remarks>
+            The <see cref="M:TechNewLogic.GraphIT.Curve.FreezeOverride"/> method is called after the <see cref="M:TechNewLogic.GraphIT.Curve.DrawOverride(System.Int32,System.Int32,System.Byte[]@,System.Byte[]@)"/> method. 
+            Use the <see cref="M:TechNewLogic.GraphIT.Curve.UnfreezeOverride"/> to reset axes bounds or data series, update the render offset, etc.
+            </remarks>
+            <seealso cref="M:TechNewLogic.GraphIT.Curve.FreezeOverride"/>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.GetRenderOffsetOverride">
+            <summary>
+            Gets a value that is applied as a transformation by the rendering pipeline to the bitmap of this <see cref="T:TechNewLogic.GraphIT.Curve"/>.
+            </summary>
+            <returns>The rect that will be used as a 2D transformation.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.GetStrokeOverride">
+            <summary>
+            Gets a value that is applied as coloring by the rendering pipeline to the bitmap of this <see cref="T:TechNewLogic.GraphIT.Curve"/>.
+            </summary>
+            <returns>The stroke color fot the <see cref="T:TechNewLogic.GraphIT.Curve"/>.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.HitTestOverride(System.Int32,System.Int32)">
+            <summary>
+            Gets a value that indicates whether the <see cref="T:TechNewLogic.GraphIT.Curve"/> is hit by the given <paramref name="x"/> and <paramref name="y"/> coordinates.
+            </summary>
+            <remarks>
+            The values from the <see cref="M:TechNewLogic.GraphIT.Curve.GetRenderOffsetOverride"/> method are already applied to the
+            given <paramref name="x"/> and <paramref name="y"/> coordinates.
+            </remarks>
+            <param name="x">The horizontal screen coordinate.</param>
+            <param name="y">The vertical screen coordinate.</param>
+            <returns>The value that indicates whether the <see cref="T:TechNewLogic.GraphIT.Curve"/> was hit.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.DrawOverride(System.Int32,System.Int32,System.Byte[]@,System.Byte[]@)">
+            <summary>
+            Draws the curve and it's selection.
+            </summary>
+            <remarks>
+            Bitmap formats and drawing information can be queries using the <see cref="T:TechNewLogic.GraphIT.DrawingParameter"/> class.
+            </remarks>
+            <param name="width">The width of the resulting bitmaps.</param>
+            <param name="height">The height of the resulting bitmaps.</param>
+            <param name="bitmap">The byte array of the drawn curve.</param>
+            <param name="selectionBitmap">The byte array of the drawn selection.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.AddCustomControl(System.DateTime,System.Windows.UIElement)">
+            <summary>
+            Adds a <see cref="T:System.Windows.UIElement"/> to this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/> and displays it on the drawing area.
+            </summary>
+            <remarks>
+            The vertical placement of the <see cref="T:System.Windows.UIElement"/> is dynamically calculated by the corresponding value for the given <paramref name="time"/>.
+            </remarks>
+            <param name="time">The point in time which determins the horizontal placement of the <see cref="T:System.Windows.UIElement"/>.</param>
+            <param name="control">The <see cref="T:System.Windows.UIElement"/> to display on the drawing area.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.AddCustomControl(System.DateTime,System.Double,System.Windows.UIElement)">
+            <summary>
+            Adds a <see cref="T:System.Windows.UIElement"/> to this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/> and displays it on the drawing area.
+            </summary>
+            <param name="time">The point in time which determins the horizontal placement of the <see cref="T:System.Windows.UIElement"/>.</param>
+            <param name="yPosition">The vertical placement refered to the DoubleAxis of <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.</param>
+            <param name="control">The <see cref="T:System.Windows.UIElement"/> to display on the drawing area.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.RemoveCustomControl(System.Windows.UIElement)">
+            <summary>
+            Removs a <see cref="T:System.Windows.UIElement"/> which was previousely added to this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+            <remarks>
+            If the given <paramref name="control"/> is not part of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>, no exception is thrown.
+            </remarks>
+            <param name="control">The <see cref="T:System.Windows.UIElement"/> to remove.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.Dispose">
+            <summary>
+            Releases all resources used by this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.DoubleAxis">
+            <summary>
+            Gets the associated <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.DoubleAxis"/> instance for this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.Stroke">
+            <summary>
+            Gets or sets the stroke of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.StrokeThickness">
+            <summary>
+            Gets or sets the stroke thickness of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.IsVisible">
+            <summary>
+            Gets or sets the visibility of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/> on the drawing area.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.CurrentValue">
+            <summary>
+            Gets the value for the current selected point in time.
+            </summary>
+            <remarks>
+            The current point in time is determined by the user. 
+            When the user moves the mouse input over the drawing area, 
+            this point in time is used to calculate the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.CurrentValue"/>.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.DataSeries">
+            <summary>
+            Gets the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/> that is associated with this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.MinMinBelt">
+            <summary>
+            Gets or sets a value for the lowest minimum belt of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+            <remarks>
+            When no belt should be visualized. use the <see cref="F:System.Double.NaN"/> value.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.MinBelt">
+            <summary>
+            Gets or sets a value for the highest minimum belt of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+            <remarks>
+            When no belt should be visualized. use the <see cref="F:System.Double.NaN"/> value.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.MaxBelt">
+            <summary>
+            Gets or sets a value for the lowest maximum belt of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+            <remarks>
+            When no belt should be visualized. use the <see cref="F:System.Double.NaN"/> value.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.MaxMaxBelt">
+            <summary>
+            Gets or sets a value for the highest maximum belt of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+            <remarks>
+            When no belt should be visualized. use the <see cref="F:System.Double.NaN"/> value.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.MinBeltColor">
+            <summary>
+            Gets or sets the color for the min and min/min belts.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleCurve.MaxBeltColor">
+            <summary>
+            Gets or sets the color for the max and max/max belts.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry">
+            <summary>
+            Represents a double value in time.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry.#ctor(System.DateTime,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> class.
+            </summary>
+            <param name="x">The moment in time of the entry.</param>
+            <param name="y">The value of the entry.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+            </returns>
+            <filterpriority>2</filterpriority>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry.X">
+            <summary>
+            The moment in time of the entry.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry.Y">
+            <summary>
+            The value of the entry.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries">
+            <summary>
+            Represents a time-ordered collection of <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> entries.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.Append(TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry)">
+            <summary>
+            Appends a <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> child to the end of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.
+            </summary>
+            <remarks>
+            The overall count of <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> entries is trimmed to the value specified in the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.MaxNumOfEntries"/> property.
+            </remarks>
+            <param name="entry">The <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> to append.</param>
+            <exception cref="T:System.Exception">The point in time of the <paramref name="entry"/> is earlier than the last entry of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.</exception>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.Append(System.Collections.Generic.IEnumerable{TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry})">
+            <summary>
+            Appends a <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> child to the end of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.
+            </summary>
+            <remarks>
+            The <paramref name="entries"/> are ordered by time automatically.
+            The overall count of entries is trimmed to the value specified in the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.MaxNumOfEntries"/> property.
+            </remarks>
+            <param name="entries">The <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/>s to append.</param>
+            <exception cref="T:System.Exception">The points in time of the <paramref name="entries"/> are earlier than the last entry of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.</exception>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.Prepend(TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry)">
+            <summary>
+            Prepends a <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> child to the end of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.
+            </summary>
+            <remarks>
+            The overall count of entries is trimmed to the value specified in the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.MaxNumOfEntries"/> property.
+            </remarks>
+            <param name="entry">The <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> to prepend.</param>
+            <exception cref="T:System.Exception">The point in time of the <paramref name="entry"/> is later than the last entry of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.</exception>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.Prepend(System.Collections.Generic.IEnumerable{TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry})">
+            <summary>
+            Prepends a <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> child to the end of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.
+            </summary>
+            <remarks>
+            The <paramref name="entries"/> are ordered by time automatically.
+            The overall count of entries is trimmed to the value specified in the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.MaxNumOfEntries"/> property.
+            </remarks>
+            <param name="entries">The <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/>s to prepend.</param>
+            <exception cref="T:System.Exception">The points in time of the <paramref name="entries"/> are later than the last entry of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.</exception>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.RemoveLeft(System.DateTime)">
+            <summary>
+            Removes all entries that are earlier than <paramref name="toTime"/>.
+            </summary>
+            <param name="toTime">The point in time to which entries are removed.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.RemoveRight(System.DateTime)">
+            <summary>
+            Removes all entries that are later than <paramref name="fromTime"/>.
+            </summary>
+            <param name="fromTime">The point in time from which entries are removed.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.Clear">
+            <summary>
+            Removes all entries from the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.GetValueAtTime(System.DateTime,TechNewLogic.GraphIT.Hv.GetValueMode)">
+            <summary>
+            Gets a value for the given time.
+            </summary>
+            <param name="dateTime">The point in time for which the value should be retrived.</param>
+            <param name="mode">The <see cref="T:TechNewLogic.GraphIT.Hv.GetValueMode"/> which is used to fetch the value.</param>
+            <returns>The value of the given point in time.</returns>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.MaxNumOfEntries">
+            <summary>
+            The maximum number of entries for this series from which the collection will be truncated when appending or prepending data.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.LogicalEntries">
+            <summary>
+            Gets an enumeration of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataEntry"/> entries of the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.UndefinedValue">
+            <summary>
+            Defines a value that can be used indicates a logical gap between the cohesive collection of entries.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem">
+            <summary>
+            Represents a two-dimensional time-based / double-valued coordinate and plotting system.
+            It exposes an API for many drawing and configuration functionalities.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.EnableOnlineMode(System.DateTime)">
+            <summary>
+            Enables the online mode.
+            </summary>
+            <remarks>
+            In online mode, the system behaves differently:
+            <list type="bullet">
+              <item>Panning and zooming is only possible vertically.</item>
+              <item>Every second, the system updates the upper bound of the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.TimeAxis"/> (by adding 1 second).</item>
+            </list>
+            </remarks>
+            <param name="referenceTime">When switching to online mode, the provided value is used as a starting time for the automatic update of the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.TimeAxis"/>.</param>
+            <seealso cref="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.DisableOnlineMode"/>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.DisableOnlineMode">
+            <summary>
+            Disables the online mode.
+            </summary>
+            <seealso cref="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.EnableOnlineMode(System.DateTime)"/>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.AddStaticRuler(System.DateTime)">
+            <summary>
+            Adds a new <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> to the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.StaticRulers"/> enumeration at the given <paramref name="position"/>.
+            </summary>
+            <param name="position">The point in time at which the ruler will be placed.</param>
+            <returns>The added ruler.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.RemoveStaticRuler(TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler)">
+            <summary>
+            Removs a <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> which was previousely added to the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.StaticRulers"/> enumeration.
+            </summary>
+            <remarks>
+            If the given <paramref name="ruler"/> is not part of the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.StaticRulers"/> enumeration, no exception is thrown.
+            </remarks>
+            <param name="ruler">The <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> to remove.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.AddCurve(System.String,System.Double,System.Double,System.Windows.Media.Color,TechNewLogic.GraphIT.Hv.RedrawTime,TechNewLogic.GraphIT.Hv.Vertical.AxisMatchingMode,TechNewLogic.GraphIT.Hv.CurveDrawingMode,TechNewLogic.GraphIT.Hv.IValueFormater,TechNewLogic.GraphIT.Hv.IValueFetchStrategy,TechNewLogic.GraphIT.Hv.Vertical.AxisFormat,System.Int32)">
+            <summary>
+            Adds a new curve to this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/>.
+            </summary>
+            <param name="uom">The unit of measure (UOM) of the curve.</param>
+            <param name="lowerBound">The starting lower bound of the curve.</param>
+            <param name="upperBound">The starting upper bound of the curve.</param>
+            <param name="color">The starting color of the curve.</param>
+            <param name="redrawTime">The <see cref="T:TechNewLogic.GraphIT.Hv.RedrawTime"/> interval of the curve.</param>
+            <param name="autoGroupBehavior">Specifies the behavior how the axes for the curve should be grouped.</param>
+            <param name="curveDrawingMode">The drawing mode of the curve.</param>
+            <param name="axisFormat">TODO</param>
+            <param name="maxNumOfEntries">
+            The maximum number of entries for the associated <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries"/> of the curve at which the entries will be truncated.
+            <seealso cref="P:TechNewLogic.GraphIT.Hv.TimeDoubleDataSeries.MaxNumOfEntries"/>.
+            </param>
+            <param name="valueFormater">TODO</param>
+            <param name="valueFetchStrategy">TODO</param>
+            <returns>The added <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/></returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.RemoveCurve(TechNewLogic.GraphIT.Hv.TimeDoubleCurve)">
+            <summary>
+            Removs a <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/> which was previousely added to this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/>.
+            </summary>
+            <param name="curve">The <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/> to remove.</param>
+            <exception cref="T:System.Exception">The <paramref name="curve"/> is not part of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/>.</exception>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.SetScalesVisibility(System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Sets the visibility of the scales which are placed at the left, the right or at the bottom of the drawing area.
+            </summary>
+            <param name="showLeft">Indicates whether the left scale section is visible or not.</param>
+            <param name="showRight">Indicates whether the left scale section is visible or not.</param>
+            <param name="showBottom">Indicates whether the bottom scale section is visible or not.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.AddCustomControl(System.DateTime,System.Double,System.Windows.UIElement)">
+            <summary>
+            Adds a <see cref="T:System.Windows.UIElement"/> to this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/> and displays it on the drawing area.
+            </summary>
+            <param name="time">The point in time which determins the horizontal placement of the <see cref="T:System.Windows.UIElement"/>.</param>
+            <param name="screenYPosition">The vertical placement in absolute screen coordinates, starting at the top left corner of the drawing area.</param>
+            <param name="control">The <see cref="T:System.Windows.UIElement"/> to display on the drawing area.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.RemoveCustomControl(System.Windows.UIElement)">
+            <summary>
+            Removs a <see cref="T:System.Windows.UIElement"/> which was previousely added to this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/>.
+            </summary>
+            <remarks>
+            If the given <paramref name="control"/> is not part of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/>, no exception is thrown.
+            </remarks>
+            <param name="control">The <see cref="T:System.Windows.UIElement"/> to remove.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.CheckGrouping(TechNewLogic.GraphIT.Hv.Vertical.IVScale,TechNewLogic.GraphIT.Hv.Vertical.IVScale)">
+            <summary>
+            Calculates in which way two <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> instances can be grouped together.
+            </summary>
+            <param name="scale1">First scale.</param>
+            <param name="scale2">Second scale.</param>
+            <returns>The <see cref="T:TechNewLogic.GraphIT.Hv.GroupingResult"/> of the calculation.</returns>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.GroupScales(TechNewLogic.GraphIT.Hv.Vertical.IVScale,TechNewLogic.GraphIT.Hv.Vertical.IVScale)">
+            <summary>
+            Groups two <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> instances.
+            </summary>
+            <param name="sourceScale">The source <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> which will be added to the <paramref name="targetScale"/>.</param>
+            <param name="targetScale">The target <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> to which the <paramref name="sourceScale"/> will be added.</param>
+            <exception cref="T:System.Exception">The <see cref="T:TechNewLogic.GraphIT.Hv.GroupingResult"/> of the given <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> instances is <see cref="F:TechNewLogic.GraphIT.Hv.GroupingResult.None"/>.</exception>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.UngroupAxesGroup(TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup)">
+            <summary>
+            Ungroups all containing <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleScale"/> objects of the given <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup"/>.
+            </summary>
+            <param name="axesGroup">The <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup"/> which shall be ungrouped.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.GetVScaleByAxis(TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis)">
+            <summary>
+            Gets the corresponding (visual) <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> of the given (logical) <paramref name="axis"/>.
+            </summary>
+            <param name="axis">The <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis"/> for which the <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> will be retrived.</param>
+            <returns>The corresponding <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/>.</returns>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.TimeAxis">
+            <summary>
+            Gets the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.TimeAxis"/> which is associates with this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.AxesGroups">
+            <summary>
+            Geta an enumeration of <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup"/> children.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.Scales">
+            <summary>
+            Gets an enumeration of all <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/> children of this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.ContextMenuRegistrar">
+            <summary>
+            Gets the <see cref="T:TechNewLogic.GraphIT.IContextMenuRegistrar"/> implementation which is associated with this <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem"/>.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.IsOnlineChanged">
+            <summary>
+            Occurs when the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.IsOnline"/> property has changed.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.IsOnline">
+            <summary>
+            Gets a value that indicates if the current state is in online mode.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.RulersChanged">
+            <summary>
+            Occurs after the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.StaticRulers"/> enumeration has changed.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.ReferenceRulerChanged">
+            <summary>
+            Occurs after a ruler in the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.StaticRulers"/> enumeration has changed it's <see cref="P:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler.IsReference"/> state.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.StaticRulers">
+            <summary>
+            Gets an enumeration of the current <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> elements.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.HasReferenceRuler">
+            <summary>
+            Gets a value indicating whether the <see cref="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.StaticRulers"/> enumeration has a <see cref="T:TechNewLogic.GraphIT.Hv.Horizontal.HStaticRuler"/> which is in reference mode.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.IsRulerManagementControlVisible">
+            <summary>
+            Gets or sets a value that indicated whether the ruler management control on the drawing area is visible or not.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.TimeDoublePlottingSystem.IsIntervalControlVisible">
+            <summary>
+            Gets or sets a value that indicated whether the ruler management control on the drawing area is visible or not.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.UiMoveHelper">
+            <summary>
+            Helper-Klasse, welche sich um das Verschieben von FrameworkElementen mit der Maus kümmert.
+            </summary>
+        </member>
+        <member name="E:TechNewLogic.GraphIT.Hv.UiMoveHelper.Moved">
+            <summary>
+            Relative Diff
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.AxisFormat">
+            <summary>
+            Specifies how the values of an axis shall be interpreted.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.Vertical.AxisFormat.Double">
+            <summary>
+            Double Axis Format.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.Vertical.AxisFormat.Binary">
+            <summary>
+            Binary Axis Format.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.AxisMatchingMode">
+            <summary>
+            Search mode that specifies how axes can be grouped together.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.Vertical.AxisMatchingMode.None">
+            <summary>
+            No grouping is possible.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.Vertical.AxisMatchingMode.UomOnly">
+            <summary>
+            Grouping can be possible if the UOM is equal.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.Vertical.AxisMatchingMode.UomAndBounds">
+            <summary>
+            Grouping is possible if the UOM and the upper and loewr bounds are equal.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup">
+            <summary>
+            Represents a group of <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis"/> elements and provides unified access via a <see cref="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup.ProxyAxis"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup.IsRelative">
+            <summary>
+            Gets a value that indicates whether the <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup"/> is in relative or absolute grouping mode.
+            </summary>
+            <seealso cref="T:TechNewLogic.GraphIT.Hv.GroupingResult"/>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup.DoubleAxes">
+            <summary>
+            Gets an enumeration of all <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis"/> elements that are associated with this <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup.ProxyAxis">
+            <summary>
+            Gets a proxy for all <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis"/> elements that are associated with this <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup"/>.
+            </summary>
+            <remarks>
+            The <see cref="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup.ProxyAxis"/> can be used to apply state changes (like zoom, changes of bounds, etc.). 
+            These changes are applied to all elements in the <see cref="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup.DoubleAxes"/> enumeration.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup.IsVisible">
+            <summary>
+             Gets or sets the UI Visibility of this <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup.IgnoreCanvasMovementOrZoom">
+            <summary>
+            Gets or sets whether the axes of this group should be moved when the canvas is moved by the user or a section zoom is made or the canvas is centered.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis">
+            <summary>
+            Represents an axis with a double value as dimension parameter. This <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis"/> is used by the <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/>.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase">
+            <summary>
+            Represents a base axis with a double value as dimension parameter.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase.MoveBounds(System.Double)">
+            <summary>
+            Moves the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> equally by the given absolute <paramref name="diff"/>.
+            </summary>
+            <param name="diff">The absolute difference that indicates move offset.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase.MoveBoundsRelative(System.Double)">
+            <summary>
+            Moves the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> equally by the given relative <paramref name="relativeDiff"/>.
+            </summary>
+            <param name="relativeDiff">
+            The relative difference that indicates move offset. The value must be between 0 and 1.
+            A relative value of 1 (100%) is represented by the difference between 
+            <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/>.
+            </param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase.Zoom(System.Double,System.Double)">
+            <summary>
+            Zooms the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> 
+            by the given <paramref name="factor"/> and the relative center point <paramref name="relativeCenter"/>.
+            </summary>
+            <param name="factor">The zoom factor. A value between 0 and 1 zooms in. A value greater than 1 zooms out.</param>
+            <param name="relativeCenter">The relative center point of the zoom operation. A value of 0 is mapped to the 
+            <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/>, a value of 1 is mapped to the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/>.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase.Center(System.Double)">
+            <summary>
+            Centers  the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualLowerBound"/> and the <see cref="P:TechNewLogic.GraphIT.Hv.AxisBase`1.ActualUpperBound"/> equaly by around the given <paramref name="value"/>.
+            </summary>
+            <param name="value">The absolute value that will become the center of this <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase"/>.</param>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase.MapLogicalToScreen(System.Double)">
+            <summary>
+            Maps a given logical axes value to the absolute screen point of the drawing area.
+            </summary>
+            <param name="value">The logical value that should be mapped.</param>
+            <returns>The screen point.</returns>
+            <seealso cref="M:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase.MapScreenToLogical(System.Double)"/>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase.MapScreenToLogical(System.Double)">
+            <summary>
+            Maps a given screen point of the drawing area to a logical axes value.
+            </summary>
+            <param name="value">The screen point that should be mapped.</param>
+            <returns>The logical value.</returns>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxisBase.Uom">
+            <summary>
+            The unit of measure for that <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis.Curve">
+            <summary>
+            The associated <see cref="T:TechNewLogic.GraphIT.Hv.TimeDoubleCurve"/> for this <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxis"/>.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleScale">
+            <summary>
+            Interaction logic for DoubleScale.xaml
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale">
+            <summary>
+            Represents a vertical scale.
+            </summary>
+            <remarks>
+            A scale is a visual object that aggregates one or more axes. It can accept usse input such as drag / drop, panning, moving, etc.
+            </remarks>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.IVScale.Position">
+            <summary>
+            Geta a value that indicates the placement relative to the drawing area.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.IVScale.AxesGroup">
+            <summary>
+            Gets the <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.DoubleAxesGroup"/> for this <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/>.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Hv.Vertical.IVScale.EnableUserInput">
+            <summary>
+            Gets or sets whether the user can modify (move or scale) this <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/>.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DoubleScale.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.DragScaleControl">
+            <summary>
+            Interaction logic for DragScaleControl.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DragScaleControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.DynamicRulerLabel">
+            <summary>
+            Dient als Anzeige-Label für den aktuellen Wert, an dem sich der Mauszeiger befindet.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.DynamicRulerLabel.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.ScalePosition">
+            <summary>
+            Specified the position of a <see cref="T:TechNewLogic.GraphIT.Hv.Vertical.IVScale"/>.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.Vertical.ScalePosition.Left">
+            <summary>
+            The position is left of the drawing area.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.Hv.Vertical.ScalePosition.Right">
+            <summary>
+            The position is right of the drawing area.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.VDynamicRuler.#ctor(TechNewLogic.GraphIT.Hv.IVDynamicRulerEventBroker)">
+            <summary>
+            Lineal ein Lineal mit "Kreuz" (für das dynamische Lineal).
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.VDynamicRuler.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.VGridLine.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.VGridSurface">
+            <summary>
+            Zeichnet das Raster sowie die Lineale.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.VGridSurface.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Hv.Vertical.VSectionLabel">
+            <summary>
+            Interaction logic for VSectionLabel.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Hv.Vertical.VSectionLabel.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Printing.PrintContent">
+            <summary>
+            Wrapper for additional visual print content.
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Printing.PrintContent.#ctor(System.Windows.Media.Visual,System.Windows.Controls.Dock)">
+            <summary>
+            Initializes a new instance of <see cref="T:TechNewLogic.GraphIT.Printing.PrintContent"/>.
+            </summary>
+            <param name="visual">The visual that will be displayed on the printed page.</param>
+            <param name="position">The position where the <paramref name="visual"/> will be placed.</param>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Printing.PrintContent.Visual">
+            <summary>
+            Gets the visual that will be displayed on the printed page.
+            </summary>
+        </member>
+        <member name="P:TechNewLogic.GraphIT.Printing.PrintContent.Position">
+            <summary>
+            Gets a value that indicates the position where the <see cref="P:TechNewLogic.GraphIT.Printing.PrintContent.Visual"/> will be placed.
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Printing.PrintLayouter">
+            <summary>
+            Interaction logic for PrintLayouter.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Printing.PrintLayouter.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Printing.PrintPreviewWindow">
+            <summary>
+            Interaction logic for PrintPreviewWindow.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Printing.PrintPreviewWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Printing.TextControl">
+            <summary>
+            Interaction logic for TextControl.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Printing.TextControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.Printing.XpsDocumentGenerator">
+            <summary>
+            Interaction logic for XpsDocumentGenerator.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.Printing.XpsDocumentGenerator.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.SimpleContextMenuAction">
+            <summary>
+            Interaction logic for SimpleContextMenuAction.xaml
+            </summary>
+        </member>
+        <member name="M:TechNewLogic.GraphIT.SimpleContextMenuAction.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TechNewLogic.GraphIT.DrawingParameter">
+            <summary>
+            Provides basic constant information for the drawing subsystem.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.DrawingParameter.Bpp">
+            <summary>
+            Specifies a value which indicates the pixel depth of the bitmaps drawn by the <see cref="T:TechNewLogic.GraphIT.Curve"/>s.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.DrawingParameter.TargetPixelFormat">
+            <summary>
+            Specifies a value which indicates the pixel format of the bitmaps drawn by the <see cref="T:TechNewLogic.GraphIT.Curve"/>s.
+            </summary>
+        </member>
+        <member name="F:TechNewLogic.GraphIT.DrawingParameter.TargetBitmapPalette">
+            <summary>
+            Specifies a value which indicates the color palette which is used to color the <see cref="T:TechNewLogic.GraphIT.Curve"/>s.
+            </summary>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,26 @@
+﻿生成启动时间为 2015/4/5 20:16:23。
+     1>项目“E:\document and program\program_xyz_noitom\BVHTransform_C\TestBVHTransformC\BVHTransformCTest\BVHTransformCTest\BVHTransformCTest.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"E:\document and program\program_xyz_noitom\BVHTransform_C\TestBVHTransformC\BVHTransformCTest\BVHTransformCTest\BVHTransform_c_Lib" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt BVHTransformCTest.cpp
+         BVHTransformCTest.cpp
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\document and program\program_xyz_noitom\BVHTransform_C\TestBVHTransformC\BVHTransformCTest\Debug\BVHTransformCTest.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\document and program\program_xyz_noitom\BVHTransform_C\TestBVHTransformC\BVHTransformCTest\BVHTransformCTest" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\document and program\program_xyz_noitom\BVHTransform_C\TestBVHTransformC\BVHTransformCTest\Debug\BVHTransformCTest.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\document and program\program_xyz_noitom\BVHTransform_C\TestBVHTransformC\BVHTransformCTest\Debug\BVHTransformCTest.lib" /MACHINE:X86 Debug\BVHTransformCTest.obj
+         Debug\BVHTransform_c.obj
+         Debug\BVHTransform_c_initialize.obj
+         Debug\BVHTransform_c_rtwutil.obj
+         Debug\BVHTransform_c_terminate.obj
+         Debug\CToEuler_c.obj
+         Debug\EulerToC_c.obj
+         Debug\eye.obj
+         Debug\FQtoCnb.obj
+         Debug\rtGetInf.obj
+         Debug\rtGetNaN.obj
+         Debug\rt_nonfinite.obj
+         Debug\stdafx.obj
+     1>BVHTransformCTest.obj : error LNK2019: 无法解析的外部符号 "void __cdecl BVHTransform_c(double const * const,double * const)" (?BVHTransform_c@@YAXQBNQAN@Z)，该符号在函数 _wmain 中被引用
+     1>E:\document and program\program_xyz_noitom\BVHTransform_C\TestBVHTransformC\BVHTransformCTest\Debug\BVHTransformCTest.exe : fatal error LNK1120: 1 个无法解析的外部命令
+     1>已完成生成项目“E:\document and program\program_xyz_noitom\BVHTransform_C\TestBVHTransformC\BVHTransformCTest\BVHTransformCTest\BVHTransformCTest.vcxproj”(Build 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:00.26
