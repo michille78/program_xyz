@@ -18,6 +18,9 @@ addpath([pwd,'\dataAnalyze'])
 addpath([pwd,'\geometry'])
 addpath([pwd,'\BVH'])
 addpath([pwd,'\coordinate_c'])
+addpath([pwd,'\SINSTraceGenerator'])
+addpath([pwd,'\SINSNav'])
+
 
 
 disp('commonFcn 加载到搜索路径中OK')

@@ -106,19 +106,17 @@ pitch_r_d = pitch_r*180/pi;
 roll_r_d = roll_r*180/pi;
 
 
-%% 转轴解算
+%% 纯加计 转轴解算
 %%% 截取零位计算时段的数据 Qnb_ZeroCal
 RoateVectorCalTime = AHRSThreshod.RoateVectorCalTime ; 
 RoateVectorCalN = RoateVectorCalTime*frequency ;
 Qnb_ZeroCal = Qnb( :,1:RoateVectorCalN ) ;
 IsSDOFAccelerationZero_ZeroCal = IsSDOFAccelerationZero(1:RoateVectorCalN);
-
 Ypr = GetRotateVector_Acc( Qnb_ZeroCal,Qwr,AHRSThreshod,SDOFStaticFlag ) ;
-
+%% 纯陀螺转轴计算
+Ypr_Gyro = GetRotateVector_Gyro(  );
 %% 纯加计转角解算
 RotateAngle = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr ) ;
-
-
 
 %%
 stepN = 20 ;
@@ -150,27 +148,5 @@ plot( RefRotateAngle(1:N)*180/pi,'r' )
 % plot(RotateAngleErr*180/pi,'k,')
 
 legend('RotateAngleNew','RefRotateAngle')
-%%
-return
-staticTime = 18 ;
-staticNum = frequency*staticTime ;   % 3 sec
-
-% DrawAHRSData( AHRSData,'raw' ) ;
-
-meam_gyro = GetStaticStateFeature( AHRSData,staticNum ) ;
-if staticTime>15
-     gyroNew = gyro - repmat( meam_gyro,Nframes,1 );
-     gyroNormNew = gyroNorm ;
- for k=1:Nframes
-     gyroNormNew(k,1) = normest( gyroNew(k,:) );
- end
-     AHRSDataNew = AHRSData ;
-     AHRSDataNew.gyro = gyroNew ;
-     AHRSDataNew.gyroNorm = gyroNormNew ;
-     meam_gyro_new = GetStaticStateFeature( AHRSDataNew,staticNum ) ;
-else
-    AHRSDataNew = AHRSData;
-end
-
 
 
