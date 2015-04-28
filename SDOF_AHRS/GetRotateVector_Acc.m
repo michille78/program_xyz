@@ -4,32 +4,32 @@
 %% Calculate Rotate Vector only by Acc 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Input
-% Qnb_ZeroCal： 转轴解算时间段的 Qnb
+% Qnb_RVCal： 转轴解算时间段的 Qnb
 % Qwr： 初始时刻的地理系 到 初始时刻的本体系
 % AHRSThreshod： 相关判断指标
 % SDOFStaticFlag： Qnb_ZeroCal的是否0加速度判断结果
 
-function [ Ypr,RecordStr ] = GetRotateVector_Acc( Qnb_ZeroCal,Qwr,AHRSThreshod,SDOFStaticFlag )
+function [ Ypr_Acc,RecordStr ] = GetRotateVector_Acc( Qnb_RVCal,Qwr,AHRSThreshod,SDOFStaticFlag )
 RoateVectorCalMinAngleFirst = AHRSThreshod.RoateVectorCalMinAngleFirst ;
 RoateVectorCalMinAngleSecond = AHRSThreshod.RoateVectorCalMinAngleSecond ;
 RoateVectorCalMinAngleScope = AHRSThreshod.RoateVectorCalMinAngleScope ;
 RoateVectorCalMinAngleScopeSub = AHRSThreshod.RoateVectorCalMinAngleScopeSub ;
 %%% 粗算转轴： 假设航向为0，粗略选择满足转轴计算的数据：转角较大
-[ Qnb_RCD,Qwr_RCD,RecordStr1 ] = SelectRotateVectorCalcualteData_First( Qnb_ZeroCal,Qwr,RoateVectorCalMinAngleFirst,SDOFStaticFlag,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub ) ;
-dbstop in CalculateRotateVector_Acc
-Ypr1 = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD ) ;
+[ Qnb_RCD,Qwr_RCD,RecordStr1 ] = SelectRotateVectorCalcualteData_First( Qnb_RVCal,Qwr,RoateVectorCalMinAngleFirst,SDOFStaticFlag,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub ) ;
+% dbstop in CalculateRotateVector_Acc
+Ypr_Acc1 = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD ) ;
 %%% 精算转轴： 
 [ Qnb_RCD,Qwr_RCD,RecordStr2 ] = SelectRotateVectorCalcualteData_Second...
-    ( Qnb_ZeroCal,Qwr,Ypr1,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,SDOFStaticFlag ) ;
-Ypr = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD ) ;
+    ( Qnb_RVCal,Qwr,Ypr_Acc1,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,SDOFStaticFlag ) ;
+Ypr_Acc = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD ) ;
 
-Ypr1Str = sprintf( '%0.4f  ',Ypr1 );
-Ypr2Str = sprintf( '%0.4f  ',Ypr );
-RecordStr = sprintf( '%s Ypr1 = %s  \n %s Ypr2 = %s \n',RecordStr1,Ypr1Str,RecordStr2,Ypr2Str );
+Ypr1Str = sprintf( '%0.5f  ',Ypr_Acc1 );
+Ypr2Str = sprintf( '%0.5f  ',Ypr_Acc );
+RecordStr = sprintf( '%s Ypr_Acc1 = %s  \n %s Ypr_Acc2 = %s \n',RecordStr1,Ypr1Str,RecordStr2,Ypr2Str );
 disp( RecordStr );
 
-%% 根据适合转角计算的四元数 Qnb_RCD 和 Qwr_RCD 计算转轴 Ypr
-function  [ Ypr,RotateAngle_RCD ] = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD )
+%% 根据适合转角计算的四元数 Qnb_RCD 和 Qwr_RCD 计算转轴 Ypr_Acc
+function  [ Ypr_Acc,RotateAngle_RCD ] = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD )
 D = CalculateD( Qnb_RCD,Qwr_RCD ) ;
 
 DTD = D'*D ;
@@ -38,7 +38,8 @@ eigValue = diag(eigD);
 [ minEigValue,minEig_k ] = min( eigValue );
 X = eigV( :,minEig_k );
 X = X/normest(X( 1:3 )) ;
-Ypr = X( 1:3 );
+Ypr_Acc = X( 1:3 );
+Ypr_Acc = MakeVectorDirectionSame( Ypr_Acc ) ;
 
 RotateAngle_RCD= (acot(X(4:length(X))))*180/pi*2 ;
 
@@ -76,19 +77,19 @@ else
 end
 
 %% Second : select data be suitable for rotate vector calculating
-%%% 根据第一次计算的粗略转轴 Ypr，计算转动角度， 大于 RoateVectorCalMinAngleSecond
+%%% 根据第一次计算的粗略转轴 Ypr_Acc，计算转动角度， 大于 RoateVectorCalMinAngleSecond
 %%% 的数据认为是有效的，用于进行第二次转轴计算
 function [ Qnb_RCD,Qwr_RCD,RecordStr ] = SelectRotateVectorCalcualteData_Second...
-    ( Qnb_ZeroCal,Qwr,Ypr,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,SDOFStaticFlag )
-RotateAngleSecond = CalculateRotateAngle_Acc( Qnb_ZeroCal,Qwr,Ypr ) ;
+    ( Qnb_RVCal,Qwr,Ypr_Acc,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,SDOFStaticFlag )
+RotateAngleSecond = CalculateRotateAngle_Acc( Qnb_RVCal,Qwr,Ypr_Acc ) ;
 %% 第二次数据选择规则
 % 1） 转角大于 RoateVectorCalMinAngleSecond
 % 2） 静止状态
 % 3） 角度范围大于 
 IsAngleBig = abs(RotateAngleSecond)>RoateVectorCalMinAngleSecond ;
-IsAngleBigStatic1 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationZero(1:length(IsAngleBig))' ;
-IsAngleBigStatic2 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationToHeartZero(1:length(IsAngleBig))' ;
-IsAngleBigStatic3 = IsAngleBig & SDOFStaticFlag.IsAccNormZero(1:length(IsAngleBig))' ;
+IsAngleBigStatic1 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic2 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationToHeartZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic3 = IsAngleBig & SDOFStaticFlag.IsAccNormZero(1:length(IsAngleBig)) ;
 
 %% 优先选择严格的 0 加速度判断
 
@@ -136,7 +137,7 @@ if IsAngleBigStatic_SeclectFlag == 0
    return;
 end
 
-Qnb_RCD = Qnb_ZeroCal( :,IsAngleBigStatic );
+Qnb_RCD = Qnb_RVCal( :,IsAngleBigStatic );
 Qwr_RCD = Qwr;
 
 %% check
@@ -177,9 +178,9 @@ angleFirst = GetQAngle( Qrb_false ) ;
 
 IsAngleBig =  angleFirst > RoateVectorCalMinAngleFirst | angleFirst < -RoateVectorCalMinAngleFirst ;
 
-IsAngleBigStatic1 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationZero(1:length(IsAngleBig))' ;
-IsAngleBigStatic2 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationToHeartZero(1:length(IsAngleBig))' ;
-IsAngleBigStatic3 = IsAngleBig & SDOFStaticFlag.IsAccNormZero(1:length(IsAngleBig))' ;
+IsAngleBigStatic1 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic2 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationToHeartZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic3 = IsAngleBig & SDOFStaticFlag.IsAccNormZero(1:length(IsAngleBig)) ;
 
 %% 优先选择严格的 0 加速度判断
 

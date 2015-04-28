@@ -16,6 +16,7 @@ format long
 
 %% 不更新g方案：为了简化计算，直接取实验当地的重力加速度（仿真时不这么处理）
 earth_const.g0=9.80665; 
+earth_const.gNorm=9.80665; 
 
 earth_const.gk1 = 0 ;
 earth_const.gk2 = 0 ;

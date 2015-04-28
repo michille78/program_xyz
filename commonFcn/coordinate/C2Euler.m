@@ -12,7 +12,7 @@
 %%%  NOTE: There are two kinds of Euler Angles applied to the C. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Output
-% euler:  [N*3];   euler(k,:) = [eu_1,eu_2,eu_3];   rad   
+% euler:  [3*N];   euler(:,k) = [eu_1,eu_2,eu_3];   rad   
 %       store order of euler angle: the rotate order
 %       eu_1,eu_3: [-pi,pi]
 %       eu_2:   CosBeitaSign=1: [-pi/2,pi/2]      
@@ -40,10 +40,10 @@ if numel(CosBeitaSign)==1
    CosBeitaSign = repmat( CosBeitaSign,Nframes,1 ); 
 end
 
-euler = zeros( Nframes,3 );
+euler = zeros( 3,Nframes );
 for k=1:Nframes
     C_k = C(:,:,k);
-    euler(k,:) = C2Euler_One( C_k,rotateOrder,rotateDirection,CosBeitaSign(k) );
+    euler(:,k) = C2Euler_One( C_k,rotateOrder,rotateDirection,CosBeitaSign(k) );
 end
 euler = MakeEuler_In2Pi( euler ) ;
 

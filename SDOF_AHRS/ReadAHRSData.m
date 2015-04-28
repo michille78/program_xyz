@@ -2,13 +2,13 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
-
+% 1*N
 
 %% 
 function ReadAHRSData(  )
 
 %   path = 'E:\data_xyz_noitom\AHRS Data\staticData_4.21_250HZ';
-path = 'E:\data_xyz_noitom\AHRS Data\ahrs_raw_data_4.20\Xu';
+path = 'E:\data_xyz\AHRS Data\ahrs_raw_data_4.20\Xu';
 
 listing = dir( [path,'\*.txt'] ) ;
 dataN = length(listing) ;
@@ -27,12 +27,12 @@ for list_k = 1:dataN
         AHRSData.frequency = 50 ;
                 
         %%% get the normest
-        Nframes = size(gyro,1);
-        gyroNorm = zeros(Nframes,1);
-        accNorm = zeros(Nframes,1);
+        Nframes = length(gyro);
+        gyroNorm = zeros(1,Nframes);
+        accNorm = zeros(1,Nframes);
         for k=1:Nframes
-            gyroNorm(k) = normest( gyro(k,:) );
-            accNorm(k) = normest(acc(k,:));
+            gyroNorm(k) = normest( gyro(:,k) );
+            accNorm(k) = normest(acc(:,k));
         end
         AHRSData.gyroNorm = gyroNorm ;
         AHRSData.accNorm = accNorm ;
@@ -49,27 +49,27 @@ for list_k = 1:dataN
         end
         figure('name',[pureName,'-euler'])
         subplot(3,1,1)
-        plot( euler(:,1)*180/pi )
+        plot( euler(1,:)*180/pi )
         ylabel('yaw ^o')
         title(get(gcf,'name'))
         subplot(3,1,2)
-        plot( euler(:,2)*180/pi )
+        plot( euler(2,:)*180/pi )
         ylabel('pitch ^o')
         subplot(3,1,3)
-        plot( euler(:,3)*180/pi )
+        plot( euler(3,:)*180/pi )
         ylabel('roll ^o')
         saveas(gcf,[resPath,'\',get(gcf,'name'),'.fig'])
         
         figure('name',[pureName,'-gyro'])
         subplot(3,1,1)
-        plot( gyro(:,1)*180/pi )
+        plot( gyro(1,:)*180/pi )
         ylabel('wx ^o/s')
         title(get(gcf,'name'))
         subplot(3,1,2)
-        plot( gyro(:,2)*180/pi )
+        plot( gyro(2,:)*180/pi )
         ylabel('wy ^o/s')
         subplot(3,1,3)
-        plot( gyro(:,3)*180/pi )
+        plot( gyro(3,:)*180/pi )
         ylabel('wz ^o/s')
         saveas(gcf,[resPath,'\',get(gcf,'name'),'.fig'])
         
@@ -81,14 +81,14 @@ for list_k = 1:dataN
         
         figure('name',[pureName,'-acc'])
         subplot(3,1,1)
-        plot( acc(:,1)*1000 )
+        plot( acc(1,:)*1000 )
         ylabel('ax mg')
         title(get(gcf,'name'))
         subplot(3,1,2)
-        plot( acc(:,2)*1000 )
+        plot( acc(2,:)*1000 )
         ylabel('ay mg')
         subplot(3,1,3)
-        plot( acc(:,3)*1000 )
+        plot( acc(3,:)*1000 )
         ylabel('az mg')
         saveas(gcf,[resPath,'\',get(gcf,'name'),'.fig'])
         
@@ -104,14 +104,15 @@ end
 disp('OK')
 
 
-
+% 3*N
+% 4*N
 
 function [ quaternion,gyro,acc ] = readHexRaw( filePath )
 fid = fopen(filePath,'r' ) ;
 BytesNum = 29;      % Ò»Ö¡×Ö½ÚÊý
-quaternion = zeros(1000,4) ;  % N*3
-gyro = zeros(1000,3) ;
-acc = zeros(1000,3) ;
+quaternion = zeros(4,1000) ;  % 
+gyro = zeros(3,1000) ;
+acc = zeros(3,1000) ;
 
 sprintf('in process of reading Hex Raw data')
 k = 0 ;
@@ -176,9 +177,9 @@ while ~feof(fid)
         
 
         k = k+1 ;
-        quaternion(k,:) = [ qs qx qy qz ];
-        gyro(k,:) = [ wx wy wz ];
-        acc(k,:) = [ ax ay az ];
+        quaternion(:,k) = [ qs qx qy qz ]';
+        gyro(:,k) = [ wx wy wz ]';
+        acc(:,k) = [ ax ay az ]';
     else
         
         findFD05 = 0;
@@ -208,9 +209,9 @@ while ~feof(fid)
          display( sprintf('in process of reading Hex Raw data: k = %0.0f',k) )
     end
 end
-quaternion = quaternion( 1:k,: );
-gyro = gyro( 1:k,: );
-acc = acc( 1:k,: );
+quaternion = quaternion( :,1:k );
+gyro = gyro( :,1:k );
+acc = acc( :,1:k );
 
 %% transform to stand unit
 gyro = gyro*0.1*pi/180 ;    % rad/s

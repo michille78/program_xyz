@@ -12,7 +12,7 @@
 %%%  NOTE: There are two kinds of Euler Angles applied to the C. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Output
-% euler:  [N*3];   euler(k,:) = [eu_1,eu_2,eu_3];   rad   
+% euler:  [3*N];   euler(:,k) = [eu_1,eu_2,eu_3];   rad   
 %       store order of euler angle: the rotate order
 %       eu_1,eu_3: [-pi,pi]
 %       eu_2:   CosBeitaSign=1: [-pi/2,pi/2]      

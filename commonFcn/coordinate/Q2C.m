@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Intput
 % Q: quaternion from n to b
-%       [ Nframes,4 ]
+%       [ 4*Nframes ]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Output
 % C: [3*3*N]
@@ -12,7 +12,7 @@ function C = Q2C(Q) %#codegen
 format long
 coder.inline('never');
 
-Q = Make_Const_N( 4,Q ) ; 
+Q = Make_Const_N( Q,4 ) ; 
 Nframes = size( Q,2 );
 C = zeros( 3,3,Nframes );
 for k=1:Nframes
