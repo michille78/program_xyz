@@ -1,6 +1,21 @@
 %% xyz 2015.4.8
 % Test coordinate common functions
 
+
+
+euler = [20 -30 150]'*pi/180 ;
+Cab = Euler2C(euler,'YXZ',[1,1,1]);
+Qab = C2Q(Cab);
+Va = [1 -2 3]';
+
+
+Vb1 = QuaternionRotate( Va,Qab ) 
+Vb2 = Cab*Va
+
+
+
+
+
 E = [ 30 -50 120; 40 20 -120 ;20 -20 122 ]*pi/180  ;
 % E = [ 30 -50 120; 40 20 -120  ]*pi/180  ;
 rotateOrder = 'XYZ';

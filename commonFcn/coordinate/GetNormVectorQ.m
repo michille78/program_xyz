@@ -31,5 +31,6 @@ Qnew = Q/normest(Qv) ;
 % elseif abs(vector(3))>1e-3   vector(3)>0
 % elseif abs(vector(2))>1e-3   vector(2)>0
 
-Qnew(2:4,:) = MakeVectorDirectionSame( Qnew(2:4,:) ) ;
+[ Qnew(2:4,:),signMultiply ] = MakeVectorDirectionSame( Qnew(2:4,:) ) ;
 
+Qnew(1,:) = Qnew(1,:).*signMultiply ;  % 标量部分跟着矢量部分一起改变符号：改变符号的时候即改变转角方向

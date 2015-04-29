@@ -127,10 +127,14 @@ imuInputData_RVCal.frequency = frequency ;
 Ypr_Gyro_Acc_difAngle = acos( Ypr_Acc'*Ypr_Gyro )*180/pi ;
 Ypr_Gyro_Acc_difAngleStr = sprintf( 'difference angle 0f Ypr_Gyro and Ypr_Acc = %0.2f degree',Ypr_Gyro_Acc_difAngle );
 disp(Ypr_Gyro_Acc_difAngleStr)
-%% 纯加计转角解算
-RotateAngle = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr_Gyro ) ;
-
+%% calculate the rotate angle only by Acc
+RotateAngle_Acc = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr_Acc ) ;
+%% calculate the rotate angle only by Gyro
+dbstop in CalculateRotateAngle_Gyro
+RotateAngle_Gyro = CalculateRotateAngle_Gyro( imuInputData,InitialData,Ypr_Gyro );
 %%
+RotateAngle = RotateAngle_Gyro ;
+%% 取第一个正弦的0点作为起点，从而与参考数据进行对比
 stepN = 20 ;
 k=stepN+1;
 while k<length(RotateAngle)-stepN
@@ -150,15 +154,18 @@ RotateAngleErr = RotateAngleNew(1:N) - RefRotateAngle(1:N) ;
 RotateAngleErr_Mean = mean(RotateAngleErr)*180/pi;
 RotateAngleErr_Std = std(RotateAngleErr)*180/pi;
 
-figure
-plot(RotateAngleErr*180/pi)
+%% draw
+timeData = (1:N)/frequency ;
+figure('name','RotateAngleErr')
+plot(timeData,RotateAngleErr*180/pi)
+xlabel('time /s')
 
-figure
-plot( RotateAngleNew(1:N)*180/pi,'b' )
+figure('name','RotateAngle')
+plot( timeData,RotateAngleNew(1:N)*180/pi,'b' )
 hold on
-plot( RefRotateAngle(1:N)*180/pi,'r' )
+plot( timeData,RefRotateAngle(1:N)*180/pi,'r' )
 % plot(RotateAngleErr*180/pi,'k,')
 
 legend('RotateAngleNew','RefRotateAngle')
-
+xlabel('time /s')
 

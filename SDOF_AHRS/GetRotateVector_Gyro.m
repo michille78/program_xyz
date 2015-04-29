@@ -14,18 +14,13 @@ Qrb_NormVector = GetNormVectorQ( Qrb ) ;
 
 %% when rotate angle is too small , calcualtion error of Qrb_NormVector and Ypr_Gyro is too big
 Index_BigAngle = abs(Qrb_NormVector(1,:)) < abs(cot( RoateVectorCalMinAngleSecond/2 ));
-Qrb_NormVector_BigAngle = Qrb_NormVector(:,Index_BigAngle);
+Qrb_NormVector_BigAngle = Qrb_NormVector(:,Index_BigAngle);   % get big rotate angle data
 Qrb_NormVector_BigAngle_V = Qrb_NormVector_BigAngle( 2:4,: );
 % make Qrb_NormVector_BigAngle_V direction same
-[temp,j] = max( abs(Qrb_NormVector_BigAngle_V(:,1)) );
-Nframes = size(Qrb_NormVector_BigAngle_V,2);
-for k=1:Nframes
-    if sign(Qrb_NormVector_BigAngle_V(j,k)) ~= sign(Qrb_NormVector_BigAngle_V(j,1))
-        Qrb_NormVector_BigAngle_V(:,k) = -Qrb_NormVector_BigAngle_V(:,k) ;
-    end
-end
+Qrb_NormVector_BigAngle_V = MakeVectorDirectionSame( Qrb_NormVector_BigAngle_V ) ;
 
-Ypr_Gyro = mean( Qrb_NormVector_BigAngle_V,2) ;
+Ypr_Gyro = mean( Qrb_NormVector_BigAngle_V,2) ;     % get the mean roate vector
+
 Ypr_GyroStr = sprintf( '%0.5f  ',Ypr_Gyro );
 RecordStr = sprintf( ' Ypr_Gyro = %s ;',Ypr_GyroStr );
 disp(RecordStr);

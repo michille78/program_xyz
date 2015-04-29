@@ -24,7 +24,7 @@ if ~exist('rotateDirection','var')
     rotateDirection = [];
 end
 
-euler = Make_Const_N( 3,euler ) ; 
+euler = Make_Const_N( euler,3 ) ; 
 
 Nframes = size( euler,2 );
 C = zeros( 3,3,Nframes );

@@ -7,36 +7,40 @@
 % elseif abs(vector(3))>1e-3   vector(3)>0
 % elseif abs(vector(2))>1e-3   vector(2)>0
 
-function vector = MakeVectorDirectionSame( vector )
+function [ vector,signMultiply ] = MakeVectorDirectionSame( vector )
 
 format long
 coder.inline('never');
 
 vector = Make_Const_N( vector,3 ) ; 
 Nframes = size( vector,2 );
+signMultiply = zeros(1,Nframes);
 for k=1:Nframes
-   vector(:,k)  = MakeVectorDirectionSame_One( vector(:,k) );
+   [ vector(:,k),signMultiply(k) ]  = MakeVectorDirectionSame_One( vector(:,k) );
 end
 
-function vector = MakeVectorDirectionSame_One( vector )
+function [ vector,signMultiply ] = MakeVectorDirectionSame_One( vector )
 
 vector = vector/normest(vector);
-
+signMultiply = 1 ;
 if abs( vector(1) )>1e-3 
     % vector(1)>0
    if  vector(1)<0
        vector = -vector ;
+       signMultiply = -1 ;
    end
 else
     if abs( vector(3) )>1e-3 
        % vector(3)>0
        if  vector(3)<0
            vector = -vector ;
+           signMultiply = -1 ;
        end
     else
         % vector(2)>0
         if  vector(2)<0
            vector = -vector ;
+           signMultiply = -1 ;
        end
     end
 end
