@@ -49,13 +49,14 @@ NavigationFrame = 'NED';
 %%% 动态变化过程中，0加速度时刻的判断 指标
 AHRSThreshod.GyroNormZeroThreshod = 0.7 *pi/180 ;       % 0.5 °/s  角速度为0判断下限
 AHRSThreshod.AccNormZeroThreshod = 2/1000 ;             % 3mg  加速度模为0判断下限
+AHRSThreshod.InitialIsStaticSmoothStepTime = 0.5 ;      % 动态静止平滑步长时间
 AHRSThreshod.DynamicIsStaticSmoothStepTime = 0.05 ;     % 动态静止平滑步长时间
 AHRSThreshod.GyroContinuousZeroTimeThreshod = 0.3 ;     % 角速度变化率=0判断：角速度为0保持时间
 AHRSThreshod.GyroContinuousZeroMinRate = 0.7 ;          % 角速度变化率=0判断：角速度为0在邻域内保持的比例
 AHRSThreshod.IsContinuousGyroNormZeroSmoothStepTime = 0.2  ; % 角速度变化率为0判断结果平滑步长 （可以稍微长点）
-%%% 长时间保持 0加速度 判断指标： 初始零位判断、替代零位判断
-AHRSThreshod.IsLongContinuousOnes_SmoothStepTime = 0.3 ;  % 长时间保持 0加速度 判断 前的 平滑步长时间
-AHRSThreshod.IsLongContinuousOnes_JudgeStepTime = 0.2 ;   % 长时间保持 0加速度 判断的 判断步长时间
+%%% 长时间
+AHRSThreshod.IsLongContinuousOnes_SmoothStepTime = 0.3 ;  % 
+AHRSThreshod.IsLongContinuousOnes_JudgeStepTime = 0.2 ;  
 
 %%% 转轴计算指标
 AHRSThreshod.RoateVectorCalMinAngleFirst = 10*pi/180;   % 假设航向保持0时，俯仰和横滚转动四元数的转角大于 RoateVectorCalMinAngleFirst 角度时，用于旋转轴的第一次计算
@@ -91,18 +92,11 @@ InitialData.Vwb0 = zeros(3,1);
 InitialData.rwb0 = zeros(3,1);
 
 %% Calculate time of initial static state 
-%  dbstop in Judge0Acceleration
-[ AccelerationZeroJudge,initialStaticStart,initialStaticEnd ]= Judge0Acceleration( AHRSData,AHRSThreshod ) ;
+% dbstop in Judge0Acceleration
+[ IsSDOFAccelerationZero,initialStaticStart,initialStaticEnd,IsSDOFAccelerationToHeartZero,IsAccNormZero ] = Judge0Acceleration( AHRSData,AHRSThreshod ) ;
 SDOFStaticFlag.IsSDOFAccelerationZero = IsSDOFAccelerationZero ;
 SDOFStaticFlag.IsSDOFAccelerationToHeartZero = IsSDOFAccelerationToHeartZero ;
 SDOFStaticFlag.IsAccNormZero = IsAccNormZero ;
-
-IsSDOFAccelerationZero = AccelerationZeroJudge.IsSDOFAccelerationZero  ;
-IsSDOFAccelerationToHeartZero = AccelerationZeroJudge.IsSDOFAccelerationToHeartZero  ;
-IsAccNormZero = AccelerationZeroJudge.IsAccNormZero  ;
-IsLongSDOFAccelerationZero = AccelerationZeroJudge.IsLongSDOFAccelerationZero ;
-IsLongSDOFAccelerationToHeartZero = AccelerationZeroJudge.IsLongSDOFAccelerationToHeartZero ;
-IsLongAccNormZero = AccelerationZeroJudge.IsLongAccNormZero ;
 
 initialStaticTime = ( initialStaticEnd-initialStaticStart )/frequency ;
 if initialStaticTime < 1

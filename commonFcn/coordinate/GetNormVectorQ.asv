@@ -17,44 +17,44 @@
 % % when rotate angle is too small , calcualtion error of Qrb_NormVector is
 % very big!
 
-function [ Q_NormVector,sinHalfAfaSign ] = GetNormVectorQ( Q )
+function [ Q_NormVector,signMultiply ] = GetNormVectorQ( Q )
 
 format long
 coder.inline('never');
 
 Q = Make_Const_N( Q,4 ) ; 
 Nframes = size( Q,2 );
-sinHalfAfaSign = zeros(1,Nframes);  % sign of sinHalfAfa
-Q_NormVector = zeros(4,N);
+signMultiply = zeros(1,Nframes);
+Q_NormVector = size
 for k=1:Nframes
-   [ Q_NormVector(:,k),sinHalfAfaSign(k) ]  = GetNormVectorQ_One( Q(:,k) );
+   [ Q(:,k),signMultiply(k) ]  = GetNormVectorQ_One( Q(:,k) );
 end
 
-function [ Q,sinHalfAfaSign ] = GetNormVectorQ_One( Q )
+function [ Q,signMultiply ] = GetNormVectorQ_One( Q )
 
 %% make norm(qv)=1
 qv = [ Q(2);Q(3);Q(4) ];
 Q = Q/normest( qv ) ;
 %% make direction of qv  the same
-sinHalfAfaSign = 1 ;
+signMultiply = 1 ;
 if abs( qv(1) )>1e-3 
     % qv(1)>0
    if  qv(1)<0
        Q = -Q ;
-       sinHalfAfaSign = -1 ;
+       signMultiply = -1 ;
    end
 else
     if abs( qv(3) )>1e-3 
        % qv(3)>0
        if  qv(3)<0
            Q = -Q ;
-           sinHalfAfaSign = -1 ;
+           signMultiply = -1 ;
        end
     else
         % qv(2)>0
         if  qv(2)<0
            Q = -Q ;
-           sinHalfAfaSign = -1 ;
+           signMultiply = -1 ;
        end
     end
 end

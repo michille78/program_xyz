@@ -251,13 +251,7 @@ plot( time(IsAngleBigStatic),angleFirst_RCD*180/pi,'r.' )
 % 从角度最小的点开始搜索，找到一个点的 IsSDOFAccelerationZero 为1，且前后 0.1 S 的时间均
 function New_r_k = SelectNewFrame_r( RotateAngle,IsSDOFAccelerationZero )
 
-[ RotateAngleSorted,Index ] = sort( RotateAngle,'ascend' );
 N = length(RotateAngle) ;
-for k=1:N
-   i =  Index(k);
-   if IsSDOFAccelerationZero(i)==1
-       
-   end
-end
 
+[ RotateAngleSorted,Index ] = sort( RotateAngle,'ascend' );
 

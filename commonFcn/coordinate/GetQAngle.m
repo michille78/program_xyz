@@ -1,22 +1,17 @@
 %% xyz 2015.4.23
-% 
+% 从四元数中提取角度和单位矢量
+% angle： -pi ~ pi  [1*N]
+% vectorNormed： [3*N]  单位矢量，方向一致
 
-function angle = GetQAngle( Q )
+function [ QAngle,QVectorNormed] = GetQAngle( Q )
+
+
 Q = Make_Const_N(Q,4);
+Q_NormVector = GetNormVectorQ( Q );
+QVectorNormed = Q_NormVector( 2:4,: );
+
 N = size(Q,2);
-angle =  zeros(1,N);
+QAngle =  zeros(1,N);
 for k=1:N
-    angle(k) = GetQAngle_One( Q(:,k) ) ;
+    QAngle(k) = acot( Q_NormVector )*2 ;
 end
-
-
-function angle = GetQAngle_One( Q )
-cosHalfAngle = Q(1) ;
-if sign(Q(2))~=0
-    signQv = sign(Q(2)) ;   
-else
-    signQv = sign(Q(3))   
-end
-sinHalfAngle = normest(Q(2:4)) * signQv ;      % 很粗糙的 符号 判断
-angle = atan2( sinHalfAngle,cosHalfAngle );
-

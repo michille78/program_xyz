@@ -46,12 +46,12 @@ IsSDOFAccelerationToHeartZero = IsGyroNormZero.*IsAccNormZero ;  %  仅向心加速度
 
 IsSDOFAccelerationZero = SmoothJudgeData( IsSDOFAccelerationZero,DynamicIsStaticSmoothStepN,0.6 ) ;
 %% 判断初始零位静止时间长度
-%  dbstop in JudgeLongContinuousOnes
+ dbstop in JudgeLongContinuousOnes
 [ LongSDOFAccelerationZeroStart,LongSDOFAccelerationZeroEnd,IsLongSDOFAccelerationZero ] = JudgeLongContinuousOnes...
     ( IsSDOFAccelerationZero,IsLongContinuousOnes_SmoothStepTime,IsLongContinuousOnes_JudgeStepTime,frequency ) ;
 % 第一次长时间保持0位表示为零位角度
 initialStaticStart = LongSDOFAccelerationZeroStart(1);
-initialStaticEnd = LongSDOFAccelerationZeroEnd(1);
+initialStaticEnd = LongSDOFAccelerationZeroEnd(2);
 
 %% Output All the Acceleration Zero result
 [ ~,~,IsLongSDOFAccelerationToHeartZero ] = JudgeLongContinuousOnes...
@@ -71,20 +71,16 @@ DrawIsAccelerationZero( AHRSData,IsSDOFAccelerationZero,'IsSDOFAccelerationZero'
 
 figure('name','Judge0Acceleration')
 axes('YLim',[-0.2 1.2])
-subplot(2,1,1)
 hold on
-plot(IsSDOFAccelerationZero,'k.')
-plot(IsSDOFAccelerationToHeartZero*0.97,'b.')
-plot(IsAccNormZero*0.95,'ro')
-legend('IsSDOFAccelerationZero','IsSDOFAccelerationToHeartZero','IsAccNormZero')
+plot(IsSDOFAccelerationZero,'k')
+plot(IsSDOFAccelerationToHeartZero*0.97,'b')
+plot(IsAccNormZero*0.95,'r')
 
-subplot(2,1,2)
-hold on
-plot(IsLongSDOFAccelerationZero,'k.')
-plot(IsLongSDOFAccelerationToHeartZero*0.97,'b.')
-plot(IsLongAccNormZero*0.95,'ro')
-legend('IsLongSDOFAccelerationZero','IsLongSDOFAccelerationToHeartZero','IsLongAccNormZero')
+plot(IsLongSDOFAccelerationZero*0.93,'k.')
+plot(IsLongSDOFAccelerationToHeartZero*0.91,'b.')
+plot(IsLongAccNormZero*0.89,'r.')
 
+legend('IsSDOFAccelerationZero','IsSDOFAccelerationToHeartZero','IsAccNormZero','IsLongSDOFAccelerationZero','IsOnesSmooth','IsLongContinuous')
 
 
 %% 计算初始时刻静止状态的时间长度
