@@ -15,11 +15,9 @@ Qrb = LeftQMultiplyMatrix(  Qinv(Qwr) )*Qwb ;
 %% when rotate angle is too small , calcualtion error of Qrb_NormVector and Ypr_Gyro is too big
 % first, select the largest 10 degree angle data
 QAngleMax= max(abs(QAngle)) ;
-Index_BigAngleSection = abs(QAngle) >  QAngleMax-5*pi/180 ;
-% second , select  angle data bigger than RoateVectorCalMinAngleSecond
-Index_BigAngler = abs(QAngle) > abs(RoateVectorCalMinAngleSecond );   
+Index_BigAngleSection = abs(QAngle) >  QAngleMax-10*pi/180 
 
-Index_BigAngle = Index_BigAngler & Index_BigAngleSection ;
+Index_BigAngle = abs(QAngle) < abs(RoateVectorCalMinAngleSecond );   
 Qrb_NormVector_BigAngle_V = QVectorNormed( :,Index_BigAngle );   % get big rotate angle data
 
 Ypr_Gyro = mean( Qrb_NormVector_BigAngle_V,2) ;     % get the mean roate vector

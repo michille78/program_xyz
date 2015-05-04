@@ -13,5 +13,5 @@ QVectorNormed = Q_NormVector( 2:4,: );
 N = size(Q,2);
 QAngle =  zeros(1,N);
 for k=1:N
-    QAngle(k) = acot( Q_NormVector )*2 ;
+    QAngle(k) = acot( Q_NormVector(1,k) )*2 ;
 end

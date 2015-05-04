@@ -8,20 +8,20 @@
 % Qnb_RVCal： 转轴解算时间段的 Qnb
 % Qwr： 初始时刻的地理系 到 初始时刻的本体系
 % AHRSThreshod： 相关判断指标
-% SDOFStaticFlag： Qnb_ZeroCal的是否0加速度判断结果
+% AccelerationZeroJudge： Qnb_ZeroCal的是否0加速度判断结果
 
-function [ Ypr_Acc,RecordStr ] = GetRotateVector_Acc( Qnb_RVCal,Qwr,AHRSThreshod,SDOFStaticFlag )
+function [ Ypr_Acc,RecordStr ] = GetRotateVector_Acc( Qnb_RVCal,Qwr,AHRSThreshod,AccelerationZeroJudge )
 RoateVectorCalMinAngleFirst = AHRSThreshod.RoateVectorCalMinAngleFirst ;
 RoateVectorCalMinAngleSecond = AHRSThreshod.RoateVectorCalMinAngleSecond ;
 RoateVectorCalMinAngleScope = AHRSThreshod.RoateVectorCalMinAngleScope ;
 RoateVectorCalMinAngleScopeSub = AHRSThreshod.RoateVectorCalMinAngleScopeSub ;
 %%% 粗算转轴： 假设航向为0，粗略选择满足转轴计算的数据：转角较大
-[ Qnb_RCD,Qwr_RCD,RecordStr1 ] = SelectRotateVectorCalcualteData_First( Qnb_RVCal,Qwr,RoateVectorCalMinAngleFirst,SDOFStaticFlag,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub ) ;
+[ Qnb_RCD,Qwr_RCD,RecordStr1 ] = SelectRotateVectorCalcualteData_First( Qnb_RVCal,Qwr,RoateVectorCalMinAngleFirst,AccelerationZeroJudge,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub ) ;
 % dbstop in CalculateRotateVector_Acc
 Ypr_Acc1 = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD ) ;
 %%% 精算转轴： 
 [ Qnb_RCD,Qwr_RCD,RecordStr2 ] = SelectRotateVectorCalcualteData_Second...
-    ( Qnb_RVCal,Qwr,Ypr_Acc1,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,SDOFStaticFlag ) ;
+    ( Qnb_RVCal,Qwr,Ypr_Acc1,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,AccelerationZeroJudge ) ;
 Ypr_Acc = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD ) ;
 
 Ypr1Str = sprintf( '%0.5f  ',Ypr_Acc1 );
@@ -81,16 +81,16 @@ end
 %%% 根据第一次计算的粗略转轴 Ypr_Acc，计算转动角度， 大于 RoateVectorCalMinAngleSecond
 %%% 的数据认为是有效的，用于进行第二次转轴计算
 function [ Qnb_RCD,Qwr_RCD,RecordStr ] = SelectRotateVectorCalcualteData_Second...
-    ( Qnb_RVCal,Qwr,Ypr_Acc,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,SDOFStaticFlag )
+    ( Qnb_RVCal,Qwr,Ypr_Acc,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,AccelerationZeroJudge )
 RotateAngleSecond = CalculateRotateAngle_Acc( Qnb_RVCal,Qwr,Ypr_Acc ) ;
 %% 第二次数据选择规则
 % 1） 转角大于 RoateVectorCalMinAngleSecond
 % 2） 静止状态
 % 3） 角度范围大于 
 IsAngleBig = abs(RotateAngleSecond)>RoateVectorCalMinAngleSecond ;
-IsAngleBigStatic1 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationZero(1:length(IsAngleBig)) ;
-IsAngleBigStatic2 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationToHeartZero(1:length(IsAngleBig)) ;
-IsAngleBigStatic3 = IsAngleBig & SDOFStaticFlag.IsAccNormZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic1 = IsAngleBig & AccelerationZeroJudge.IsSDOFAccelerationZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic2 = IsAngleBig & AccelerationZeroJudge.IsSDOFAccelerationToHeartZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic3 = IsAngleBig & AccelerationZeroJudge.IsAccNormZero(1:length(IsAngleBig)) ;
 
 %% 优先选择严格的 0 加速度判断
 
@@ -139,7 +139,15 @@ if IsAngleBigStatic_SeclectFlag == 0
 end
 
 Qnb_RCD = Qnb_RVCal( :,IsAngleBigStatic );
-Qwr_RCD = Qwr;
+%% 选择旋转角度在最端点的数据作为新的参考系 rNew，用于优化转轴的计算
+% 同时要求这个点满足最强的 0 加速度判断条件
+% dbstop in GetQwrNew
+QwrNew = GetQwrNew( Qnb_RVCal,RotateAngleSecond,AccelerationZeroJudge.IsLongSDOFAccelerationZero );
+if QwrNew==0
+    Qwr_RCD = Qwr;
+else
+    Qwr_RCD = QwrNew ;
+end
 
 %% check
 RotateAngleSecond_RCD = RotateAngleSecond(IsAngleBigStatic);
@@ -171,7 +179,7 @@ AngleScopeSub = max( AngleScopePositive,AngleScopeNegtive );
 
 %% Firts : select data be suitable for rotate vector calculating
 %%% 假设航向保持0时，俯仰和横滚转动四元数的转角大于 RoateVectorCalMinAngleFirst 角度时，用于旋转轴的第一次计算
-function [ Qnb_RCD,Qwr_RCD,RecordStr ] = SelectRotateVectorCalcualteData_First( Qnb,Qwr,RoateVectorCalMinAngleFirst,SDOFStaticFlag,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub )
+function [ Qnb_RCD,Qwr_RCD,RecordStr ] = SelectRotateVectorCalcualteData_First( Qnb,Qwr,RoateVectorCalMinAngleFirst,AccelerationZeroJudge,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub )
 
 Qrw = Qinv( Qwr );
 N = size(Qnb,2);
@@ -180,9 +188,9 @@ angleFirst = GetQAngle( Qrb_false ) ;
 
 IsAngleBig =  angleFirst > RoateVectorCalMinAngleFirst | angleFirst < -RoateVectorCalMinAngleFirst ;
 
-IsAngleBigStatic1 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationZero(1:length(IsAngleBig)) ;
-IsAngleBigStatic2 = IsAngleBig & SDOFStaticFlag.IsSDOFAccelerationToHeartZero(1:length(IsAngleBig)) ;
-IsAngleBigStatic3 = IsAngleBig & SDOFStaticFlag.IsAccNormZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic1 = IsAngleBig & AccelerationZeroJudge.IsSDOFAccelerationZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic2 = IsAngleBig & AccelerationZeroJudge.IsSDOFAccelerationToHeartZero(1:length(IsAngleBig)) ;
+IsAngleBigStatic3 = IsAngleBig & AccelerationZeroJudge.IsAccNormZero(1:length(IsAngleBig)) ;
 
 %% 优先选择严格的 0 加速度判断
 
@@ -224,7 +232,7 @@ end
 RecordStr = sprintf( 'SelectRotateVectorCalcualteData_First 转轴数据选择标志 IsAngleBigStatic_SeclectFlag = %0.0f \n',IsAngleBigStatic_SeclectFlag );
 %% 以上均不满足时说明找不到求转轴的数据
 if IsAngleBigStatic_SeclectFlag == 0
-   errordlg( '找不到转轴计算数据（SelectRotateVectorCalcualteData_First）' ); 
+   errordlg( '找不到转轴计算数据，检查RoateVectorCalMinAngleFirst参数（SelectRotateVectorCalcualteData_First）' ); 
    Qnb_RCD = [];
    Qwr_RCD = [];
    return;
@@ -234,10 +242,13 @@ Qnb_RCD = Qnb( :,IsAngleBigStatic );
 
 %% 选择旋转角度在最端点的数据作为新的参考系 rNew，用于优化转轴的计算
 % 同时要求这个点满足最强的 0 加速度判断条件
-
-
-Qwr_RCD = Qwr;
-
+% dbstop in GetQwrNew
+QwrNew = GetQwrNew( Qnb,angleFirst,AccelerationZeroJudge.IsLongSDOFAccelerationZero );
+if QwrNew==0
+    Qwr_RCD = Qwr;
+else
+    Qwr_RCD = QwrNew ;
+end
 %% check
 angleFirst_RCD = angleFirst(IsAngleBigStatic);
 time = 1:N;
@@ -248,16 +259,60 @@ plot( time(IsAngleBigStatic),angleFirst_RCD*180/pi,'r.' )
 
 %% 选择旋转角度在最端点的数据作为新的参考系 rNew，用于优化转轴的计算
 % 同时要求这个点满足最强的 0 加速度判断条件
-% 从角度最小的点开始搜索，找到一个点的 IsSDOFAccelerationZero 为1，且前后 0.1 S 的时间均
-function New_r_k = SelectNewFrame_r( RotateAngle,IsSDOFAccelerationZero )
+% 从角度最小的点开始搜索，找到一个点的 IsLongAccelerationZeroFlag 为1，且前后 0.1 S 的时间均
+
+% IsLongAccelerationZeroFlag(k)：第k点是否连续保持0加速度状态
+function QwrNew = GetQwrNew( Qnb,RotateAngle,IsLongAccelerationZeroFlag )
+
 
 [ RotateAngleSorted,Index ] = sort( RotateAngle,'ascend' );
 N = length(RotateAngle) ;
+New_r_k = 0;
 for k=1:N
    i =  Index(k);
-   if IsSDOFAccelerationZero(i)==1
-       
+   if IsLongAccelerationZeroFlag(i) == 1
+       % 这个点的转动角度臂原始的小 10 度以上才有意义，才进行替换
+       if RotateAngle(i) < -10 *pi/180
+           New_r_k = i;     % 连续保持0加速度状态 中角度最小的数据的 序号
+           break;
+       end
    end
 end
+%%% 找到 New_r_k 所在连续保持0加速度状态 区间的起点和结束点
+if New_r_k~=0
+    % 起点
+    k=New_r_k ;
+    while k>1 && IsLongAccelerationZeroFlag(k)==1
+        k = k-1 ;
+    end
+    startNew_r_k = k ;
+    % 结束点
+    k=New_r_k ;
+    while k<N && IsLongAccelerationZeroFlag(k)==1
+        k = k+1 ;
+    end
+    endNew_r_k = k ;
+    
+    % 
+    Qnb_New_r = Qnb( :,startNew_r_k:endNew_r_k );
+    QwrNew = mean(Qnb_New_r,2) ;
+    QwrNew = QwrNew/normest(QwrNew) ;
+    
+    
+    QwrNewStr = sprintf( '%0.3f ',QwrNew );
+    fprintf('QwrNew = %s \n',QwrNewStr);
+    time = 1:N;
+    timeNew = time(startNew_r_k:endNew_r_k);
+    RotateAngleNew = RotateAngle(startNew_r_k:endNew_r_k);
+    
+    figure('name','GetQwrNew')
+    hold on
+    plot( RotateAngle )
+    plot( timeNew,RotateAngleNew,'r.' )
+else
+    QwrNew = 0;% 找不到
+    disp('找不到可用于优化转轴计算的替代参考零位');
+end
+
 
 

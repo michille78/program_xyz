@@ -49,18 +49,17 @@ NavigationFrame = 'NED';
 %%% 动态变化过程中，0加速度时刻的判断 指标
 AHRSThreshod.GyroNormZeroThreshod = 0.7 *pi/180 ;       % 0.5 °/s  角速度为0判断下限
 AHRSThreshod.AccNormZeroThreshod = 2/1000 ;             % 3mg  加速度模为0判断下限
-AHRSThreshod.InitialIsStaticSmoothStepTime = 0.5 ;      % 动态静止平滑步长时间
 AHRSThreshod.DynamicIsStaticSmoothStepTime = 0.05 ;     % 动态静止平滑步长时间
 AHRSThreshod.GyroContinuousZeroTimeThreshod = 0.3 ;     % 角速度变化率=0判断：角速度为0保持时间
 AHRSThreshod.GyroContinuousZeroMinRate = 0.7 ;          % 角速度变化率=0判断：角速度为0在邻域内保持的比例
 AHRSThreshod.IsContinuousGyroNormZeroSmoothStepTime = 0.2  ; % 角速度变化率为0判断结果平滑步长 （可以稍微长点）
-%%% 长时间
-AHRSThreshod.IsLongContinuousOnes_SmoothStepTime = 0.3 ;  % 
-AHRSThreshod.IsLongContinuousOnes_JudgeStepTime = 0.2 ;  
+%%% 长时间保持 0加速度 判断指标： 初始零位判断、替代零位判断
+AHRSThreshod.IsLongContinuousOnes_SmoothStepTime = 0.3 ;  % 长时间保持 0加速度 判断 前的 平滑步长时间
+AHRSThreshod.IsLongContinuousOnes_JudgeStepTime = 0.2 ;   % 长时间保持 0加速度 判断的 判断步长时间
 
 %%% 转轴计算指标
 AHRSThreshod.RoateVectorCalMinAngleFirst = 10*pi/180;   % 假设航向保持0时，俯仰和横滚转动四元数的转角大于 RoateVectorCalMinAngleFirst 角度时，用于旋转轴的第一次计算
-AHRSThreshod.RoateVectorCalMinAngleSecond = 40*pi/180;  % 根据初次转轴解算结果，选择转动角度大于 RoateVectorCalMinAngleSecond 的进行转轴的详细解算
+AHRSThreshod.RoateVectorCalMinAngleSecond = 20*pi/180;  % 根据初次转轴解算结果，选择转动角度大于 RoateVectorCalMinAngleSecond 的进行转轴的详细解算
 AHRSThreshod.RoateVectorCalMinAngleScope = 10*pi/180 ;  % 转轴计算数据选择的转角范围，如果第二次旋转的转角小于这个范围，发出警告
 AHRSThreshod.RoateVectorCalMinAngleScopeSub = 1*pi/180 ;% 正转角的转角范围 和 负转角的转角范围 的最大值
 AHRSThreshod.RoateVectorCalTime  = 15 ;                 % 从静止开始多次时间的数据用于转轴计算。之后就要求输出角度。
@@ -68,7 +67,7 @@ AHRSThreshod.RoateVectorCalTime  = 15 ;                 % 从静止开始多次时间的数
 %%
 RotateAngle = SDOF_AHSR_One( AHRSData,AHRSRefData,NavigationFrame,AHRSThreshod ) ;
 
-disp( 'SDOF_AHSR finish ' );
+disp( '     SDOF_AHSR finished ' );
 %% 
 function RotateAngle = SDOF_AHSR_One( AHRSData,AHRSRefData,NavigationFrame,AHRSThreshod )
 
@@ -92,11 +91,15 @@ InitialData.Vwb0 = zeros(3,1);
 InitialData.rwb0 = zeros(3,1);
 
 %% Calculate time of initial static state 
-% dbstop in Judge0Acceleration
-[ IsSDOFAccelerationZero,initialStaticStart,initialStaticEnd,IsSDOFAccelerationToHeartZero,IsAccNormZero ] = Judge0Acceleration( AHRSData,AHRSThreshod ) ;
-SDOFStaticFlag.IsSDOFAccelerationZero = IsSDOFAccelerationZero ;
-SDOFStaticFlag.IsSDOFAccelerationToHeartZero = IsSDOFAccelerationToHeartZero ;
-SDOFStaticFlag.IsAccNormZero = IsAccNormZero ;
+%   dbstop in Judge0Acceleration
+[ AccelerationZeroJudge,initialStaticStart,initialStaticEnd ]= Judge0Acceleration( AHRSData,AHRSThreshod ) ;
+
+IsSDOFAccelerationZero = AccelerationZeroJudge.IsSDOFAccelerationZero  ;
+IsSDOFAccelerationToHeartZero = AccelerationZeroJudge.IsSDOFAccelerationToHeartZero  ;
+IsAccNormZero = AccelerationZeroJudge.IsAccNormZero  ;
+IsLongSDOFAccelerationZero = AccelerationZeroJudge.IsLongSDOFAccelerationZero ;
+IsLongSDOFAccelerationToHeartZero = AccelerationZeroJudge.IsLongSDOFAccelerationToHeartZero ;
+IsLongAccNormZero = AccelerationZeroJudge.IsLongAccNormZero ;
 
 initialStaticTime = ( initialStaticEnd-initialStaticStart )/frequency ;
 if initialStaticTime < 1
@@ -117,13 +120,14 @@ InitialData.Qwb0 = Qwr ;
 RoateVectorCalTime = AHRSThreshod.RoateVectorCalTime ; 
 RoateVectorCalN = RoateVectorCalTime*frequency ;
 Qnb_RVCal = Qnb( :,1:RoateVectorCalN ) ;
-[ Ypr_Acc,RecordStr_Ypr_Acc ] = GetRotateVector_Acc( Qnb_RVCal,Qwr,AHRSThreshod,SDOFStaticFlag ) ;
+% dbstop in GetRotateVector_Acc
+[ Ypr_Acc,RecordStr_Ypr_Acc ] = GetRotateVector_Acc( Qnb_RVCal,Qwr,AHRSThreshod,AccelerationZeroJudge ) ;
 %% calculate the rotate vector only by Gyro
 imuInputData_RVCal.wibb = gyro(:,initialStaticEnd:RoateVectorCalN); 
 imuInputData_RVCal.fb_g = acc(:,initialStaticEnd:RoateVectorCalN); 
 imuInputData_RVCal.frequency = frequency ;
-% dbstop in GetRotateVector_Gyro
-[ Ypr_Gyro,RecordStr_Ypr_Gyro ] = GetRotateVector_Gyro( imuInputData_RVCal,InitialData,AHRSThreshod,SDOFStaticFlag );
+%  dbstop in GetRotateVector_Gyro
+[ Ypr_Gyro,RecordStr_Ypr_Gyro ] = GetRotateVector_Gyro( imuInputData_RVCal,InitialData,AHRSThreshod,AccelerationZeroJudge );
 
 Ypr_Gyro_Acc_difAngle = acos( Ypr_Acc'*Ypr_Gyro )*180/pi ;
 Ypr_Gyro_Acc_difAngleStr = sprintf( 'difference angle 0f Ypr_Gyro and Ypr_Acc = %0.2f degree',Ypr_Gyro_Acc_difAngle );
@@ -131,10 +135,16 @@ disp(Ypr_Gyro_Acc_difAngleStr)
 %% calculate the rotate angle only by Acc
 RotateAngle_Acc = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr_Acc ) ;
 %% calculate the rotate angle only by Gyro
-dbstop in CalculateRotateAngle_Gyro
+% dbstop in CalculateRotateAngle_Gyro
 RotateAngle_Gyro = CalculateRotateAngle_Gyro( imuInputData,InitialData,Ypr_Gyro );
 %%
 RotateAngle = RotateAngle_Gyro ;
+
+RotateAngleErrStr1 = AnalyseRotateAngle( RotateAngle,RefRotateAngle,dataName ) ;
+RotateAngleErrStr = AnalyseRotateAngle( RotateAngle,RefRotateAngle,dataName ) ;
+
+
+function RotateAngleErrStr = AnalyseRotateAngle( RotateAngle,RefRotateAngle,dataName )
 %% 取第一个正弦的0点作为起点，从而与参考数据进行对比
 stepN = 20 ;
 k=stepN+1;
@@ -155,13 +165,15 @@ RotateAngleErr = RotateAngleNew(1:N) - RefRotateAngle(1:N) ;
 RotateAngleErr_Mean = mean(RotateAngleErr)*180/pi;
 RotateAngleErr_Std = std(RotateAngleErr)*180/pi;
 
+RotateAngleErrStr = sprintf( ' RotateAngleErr_Mean=%0.2f \n RotateAngleErr_Std=%0.2f \n',RotateAngleErr_Mean,RotateAngleErr_Std );
+disp(RotateAngleErrStr);
 %% draw
 timeData = (1:N)/frequency ;
-figure('name','RotateAngleErr')
+figure('name',[dataName,'-RotateAngleErr'])
 plot(timeData,RotateAngleErr*180/pi)
 xlabel('time /s')
 
-figure('name','RotateAngle')
+figure('name',[dataName,'-RotateAngle'])
 plot( timeData,RotateAngleNew(1:N)*180/pi,'b' )
 hold on
 plot( timeData,RefRotateAngle(1:N)*180/pi,'r' )
@@ -169,4 +181,3 @@ plot( timeData,RefRotateAngle(1:N)*180/pi,'r' )
 
 legend('RotateAngleNew','RefRotateAngle')
 xlabel('time /s')
-

@@ -12,7 +12,7 @@ dataFolder = 'E:\data_xyz\AHRS Data\ahrs_raw_data_4.20\Xu';
 refDataFolder = [dataFolder,'\ref'];
 %  dataFolder = 'E:\data_xyz_noitom\AHRS Data\staticData_4.21_250HZ';
 % dataFolder = 'E:\data_xyz_noitom\AHRS Data\staticData_4.21';
-dataName = 'ahrs1' ;
+dataName = 'ahrs2-fast' ;
 % dataName = 'static3';
 
 AHRSData = importdata( [ dataFolder,'\',dataName,'.mat' ] );
@@ -59,7 +59,7 @@ AHRSThreshod.IsLongContinuousOnes_JudgeStepTime = 0.2 ;   % ³¤Ê±¼ä±£³Ö 0¼ÓËÙ¶È Å
 
 %%% ×ªÖá¼ÆËãÖ¸±ê
 AHRSThreshod.RoateVectorCalMinAngleFirst = 10*pi/180;   % ¼ÙÉèº½Ïò±£³Ö0Ê±£¬¸©ÑöºÍºá¹ö×ª¶¯ËÄÔªÊýµÄ×ª½Ç´óÓÚ RoateVectorCalMinAngleFirst ½Ç¶ÈÊ±£¬ÓÃÓÚÐý×ªÖáµÄµÚÒ»´Î¼ÆËã
-AHRSThreshod.RoateVectorCalMinAngleSecond = 40*pi/180;  % ¸ù¾Ý³õ´Î×ªÖá½âËã½á¹û£¬Ñ¡Ôñ×ª¶¯½Ç¶È´óÓÚ RoateVectorCalMinAngleSecond µÄ½øÐÐ×ªÖáµÄÏêÏ¸½âËã
+AHRSThreshod.RoateVectorCalMinAngleSecond = 20*pi/180;  % ¸ù¾Ý³õ´Î×ªÖá½âËã½á¹û£¬Ñ¡Ôñ×ª¶¯½Ç¶È´óÓÚ RoateVectorCalMinAngleSecond µÄ½øÐÐ×ªÖáµÄÏêÏ¸½âËã
 AHRSThreshod.RoateVectorCalMinAngleScope = 10*pi/180 ;  % ×ªÖá¼ÆËãÊý¾ÝÑ¡ÔñµÄ×ª½Ç·¶Î§£¬Èç¹ûµÚ¶þ´ÎÐý×ªµÄ×ª½ÇÐ¡ÓÚÕâ¸ö·¶Î§£¬·¢³ö¾¯¸æ
 AHRSThreshod.RoateVectorCalMinAngleScopeSub = 1*pi/180 ;% Õý×ª½ÇµÄ×ª½Ç·¶Î§ ºÍ ¸º×ª½ÇµÄ×ª½Ç·¶Î§ µÄ×î´óÖµ
 AHRSThreshod.RoateVectorCalTime  = 15 ;                 % ´Ó¾²Ö¹¿ªÊ¼¶à´ÎÊ±¼äµÄÊý¾ÝÓÃÓÚ×ªÖá¼ÆËã¡£Ö®ºó¾ÍÒªÇóÊä³ö½Ç¶È¡£
@@ -67,7 +67,7 @@ AHRSThreshod.RoateVectorCalTime  = 15 ;                 % ´Ó¾²Ö¹¿ªÊ¼¶à´ÎÊ±¼äµÄÊý
 %%
 RotateAngle = SDOF_AHSR_One( AHRSData,AHRSRefData,NavigationFrame,AHRSThreshod ) ;
 
-disp( 'SDOF_AHSR finish ' );
+disp( '     SDOF_AHSR finished ' );
 %% 
 function RotateAngle = SDOF_AHSR_One( AHRSData,AHRSRefData,NavigationFrame,AHRSThreshod )
 
@@ -91,11 +91,8 @@ InitialData.Vwb0 = zeros(3,1);
 InitialData.rwb0 = zeros(3,1);
 
 %% Calculate time of initial static state 
-%  dbstop in Judge0Acceleration
+%   dbstop in Judge0Acceleration
 [ AccelerationZeroJudge,initialStaticStart,initialStaticEnd ]= Judge0Acceleration( AHRSData,AHRSThreshod ) ;
-SDOFStaticFlag.IsSDOFAccelerationZero = IsSDOFAccelerationZero ;
-SDOFStaticFlag.IsSDOFAccelerationToHeartZero = IsSDOFAccelerationToHeartZero ;
-SDOFStaticFlag.IsAccNormZero = IsAccNormZero ;
 
 IsSDOFAccelerationZero = AccelerationZeroJudge.IsSDOFAccelerationZero  ;
 IsSDOFAccelerationToHeartZero = AccelerationZeroJudge.IsSDOFAccelerationToHeartZero  ;
@@ -123,13 +120,14 @@ InitialData.Qwb0 = Qwr ;
 RoateVectorCalTime = AHRSThreshod.RoateVectorCalTime ; 
 RoateVectorCalN = RoateVectorCalTime*frequency ;
 Qnb_RVCal = Qnb( :,1:RoateVectorCalN ) ;
-[ Ypr_Acc,RecordStr_Ypr_Acc ] = GetRotateVector_Acc( Qnb_RVCal,Qwr,AHRSThreshod,SDOFStaticFlag ) ;
+% dbstop in GetRotateVector_Acc
+[ Ypr_Acc,RecordStr_Ypr_Acc ] = GetRotateVector_Acc( Qnb_RVCal,Qwr,AHRSThreshod,AccelerationZeroJudge ) ;
 %% calculate the rotate vector only by Gyro
 imuInputData_RVCal.wibb = gyro(:,initialStaticEnd:RoateVectorCalN); 
 imuInputData_RVCal.fb_g = acc(:,initialStaticEnd:RoateVectorCalN); 
 imuInputData_RVCal.frequency = frequency ;
-% dbstop in GetRotateVector_Gyro
-[ Ypr_Gyro,RecordStr_Ypr_Gyro ] = GetRotateVector_Gyro( imuInputData_RVCal,InitialData,AHRSThreshod,SDOFStaticFlag );
+%  dbstop in GetRotateVector_Gyro
+[ Ypr_Gyro,RecordStr_Ypr_Gyro ] = GetRotateVector_Gyro( imuInputData_RVCal,InitialData,AHRSThreshod,AccelerationZeroJudge );
 
 Ypr_Gyro_Acc_difAngle = acos( Ypr_Acc'*Ypr_Gyro )*180/pi ;
 Ypr_Gyro_Acc_difAngleStr = sprintf( 'difference angle 0f Ypr_Gyro and Ypr_Acc = %0.2f degree',Ypr_Gyro_Acc_difAngle );
@@ -137,10 +135,16 @@ disp(Ypr_Gyro_Acc_difAngleStr)
 %% calculate the rotate angle only by Acc
 RotateAngle_Acc = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr_Acc ) ;
 %% calculate the rotate angle only by Gyro
-dbstop in CalculateRotateAngle_Gyro
+% dbstop in CalculateRotateAngle_Gyro
 RotateAngle_Gyro = CalculateRotateAngle_Gyro( imuInputData,InitialData,Ypr_Gyro );
 %%
 RotateAngle = RotateAngle_Gyro ;
+
+RotateAngleErrStrAcc = AnalyseRotateAngle( RotateAngle_Acc,AHRSRefData,frequency,'Acc' ) ;
+RotateAngleErrStrGyro = AnalyseRotateAngle( RotateAngle_Gyro,AHRSRefData,frequency,'Gyro' ) ;
+
+
+function RotateAngleErrStr = AnalyseRotateAngle( RotateAngle,AHRSRefData,frequency,dataName )
 %% È¡µÚÒ»¸öÕýÏÒµÄ0µã×÷ÎªÆðµã£¬´Ó¶øÓë²Î¿¼Êý¾Ý½øÐÐ¶Ô±È
 stepN = 20 ;
 k=stepN+1;
@@ -161,13 +165,15 @@ RotateAngleErr = RotateAngleNew(1:N) - RefRotateAngle(1:N) ;
 RotateAngleErr_Mean = mean(RotateAngleErr)*180/pi;
 RotateAngleErr_Std = std(RotateAngleErr)*180/pi;
 
+RotateAngleErrStr = sprintf( ' RotateAngleErr_Mean=%0.2f \n RotateAngleErr_Std=%0.2f \n',RotateAngleErr_Mean,RotateAngleErr_Std );
+disp(RotateAngleErrStr);
 %% draw
 timeData = (1:N)/frequency ;
-figure('name','RotateAngleErr')
+figure('name',[dataName,'-RotateAngleErr'])
 plot(timeData,RotateAngleErr*180/pi)
 xlabel('time /s')
 
-figure('name','RotateAngle')
+figure('name',[dataName,'-RotateAngle'])
 plot( timeData,RotateAngleNew(1:N)*180/pi,'b' )
 hold on
 plot( timeData,RefRotateAngle(1:N)*180/pi,'r' )
@@ -175,4 +181,3 @@ plot( timeData,RefRotateAngle(1:N)*180/pi,'r' )
 
 legend('RotateAngleNew','RefRotateAngle')
 xlabel('time /s')
-

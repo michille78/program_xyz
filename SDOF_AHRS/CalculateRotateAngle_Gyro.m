@@ -49,6 +49,7 @@ f_drift_BigWibbMean = mean( f_drift_BigWibb )*180/pi;
 timeData = 1:N ;
 timeData_BigWibb = timeData(IsWibbBig);
 %%
+return
 
 figure('name','f_parallel')
 subplot(2,1,1)

@@ -127,4 +127,4 @@ if initialStaticEnd-initialStaticStart > abandonNum*5
     initialStaticStart = initialStaticStart+abandonNum ;
     initialStaticEnd = initialStaticEnd-abandonNum ;
 end
-disp('');
+

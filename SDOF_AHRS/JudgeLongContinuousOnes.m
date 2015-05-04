@@ -30,7 +30,7 @@ LongContinuousOnsEnd = zeros(1,10);
 LongContinuousOnes_k = 0;
 
 while k<Nframes-stepN
-    disp('JudgeLongContinuousOnes...')
+%     disp('JudgeLongContinuousOnes...')
     %% find LongContinuousOnsStart
     findStartOK = 0;
     findEndOK = 0;
@@ -85,12 +85,12 @@ for k=1:LongContinuousOnes_k
     IsLongContinuous( temp ) = 1 ;
 end
 
-figure('name','JudgeLongContinuousOnes')
-axes('YLim',[-0.2 1.2])
-hold on
-plot(IsOnes,'k.')
-plot(IsOnesSmooth*0.97,'b.')
-plot(IsLongContinuous*0.95,'ro')
-
-legend('IsOnes','IsOnesSmooth','IsLongContinuous')
+% figure('name','JudgeLongContinuousOnes')
+% axes('YLim',[-0.2 1.2])
+% hold on
+% plot(IsOnes,'k.')
+% plot(IsOnesSmooth*0.97,'b.')
+% plot(IsLongContinuous*0.95,'ro')
+% 
+% legend('IsOnes','IsOnesSmooth','IsLongContinuous')
 

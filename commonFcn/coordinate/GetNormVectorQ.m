@@ -25,6 +25,7 @@ coder.inline('never');
 Q = Make_Const_N( Q,4 ) ; 
 Nframes = size( Q,2 );
 sinHalfAfaSign = zeros(1,Nframes);  % sign of sinHalfAfa
+N = size(Q,2);
 Q_NormVector = zeros(4,N);
 for k=1:Nframes
    [ Q_NormVector(:,k),sinHalfAfaSign(k) ]  = GetNormVectorQ_One( Q(:,k) );
@@ -36,27 +37,6 @@ function [ Q,sinHalfAfaSign ] = GetNormVectorQ_One( Q )
 qv = [ Q(2);Q(3);Q(4) ];
 Q = Q/normest( qv ) ;
 %% make direction of qv  the same
-sinHalfAfaSign = 1 ;
-if abs( qv(1) )>1e-3 
-    % qv(1)>0
-   if  qv(1)<0
-       Q = -Q ;
-       sinHalfAfaSign = -1 ;
-   end
-else
-    if abs( qv(3) )>1e-3 
-       % qv(3)>0
-       if  qv(3)<0
-           Q = -Q ;
-           sinHalfAfaSign = -1 ;
-       end
-    else
-        % qv(2)>0
-        if  qv(2)<0
-           Q = -Q ;
-           sinHalfAfaSign = -1 ;
-       end
-    end
-end
-
+[ ~,sinHalfAfaSign ] = MakeVectorDirectionSame( qv ) ;
+Q = Q*sinHalfAfaSign ;
 
