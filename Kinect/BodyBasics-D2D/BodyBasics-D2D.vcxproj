@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\document and program\program_xyz\commonFcnCpp\kinectXyz.cpp" />
     <ClCompile Include="BodyBasics.cpp" />
+    <ClCompile Include="ImageRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="app.ico" />

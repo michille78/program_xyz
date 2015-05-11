@@ -42,32 +42,43 @@ int APIENTRY wWinMain(
 /// Constructor
 /// </summary>
 CBodyBasics::CBodyBasics() :
-    m_hWnd(NULL),
-    m_nStartTime(0),
-    m_nLastCounter(0),
-    m_nFramesSinceUpdate(0),
-    m_fFreq(0),
-    m_nNextStatusTime(0LL),
-    m_pKinectSensor(NULL),
-    m_pCoordinateMapper(NULL),
-    m_pBodyFrameReader(NULL),
-    m_pD2DFactory(NULL),
-    m_pRenderTarget(NULL),
-    m_pBrushJointTracked(NULL),
-    m_pBrushJointInferred(NULL),
-    m_pBrushBoneTracked(NULL),
-    m_pBrushBoneInferred(NULL),
-    m_pBrushHandClosed(NULL),
-    m_pBrushHandOpen(NULL),
-    m_pBrushHandLasso(NULL)
+m_hWnd(NULL),
+m_nStartTime(0),
+m_nLastCounter(0),
+m_nFramesSinceUpdate(0),
+m_fFreq(0),
+m_nNextStatusTime(0LL),
+m_pKinectSensor(NULL),
+m_pCoordinateMapper(NULL),
+m_pBodyFrameReader(NULL),
+m_pD2DFactory(NULL),
+m_pRenderTarget(NULL),
+m_pBrushJointTracked(NULL),
+m_pBrushJointInferred(NULL),
+m_pBrushBoneTracked(NULL),
+m_pBrushBoneInferred(NULL),
+m_pBrushHandClosed(NULL),
+m_pBrushHandOpen(NULL),
+m_pBrushHandLasso(NULL),
+m_pColorFrameReader(NULL),
+m_pDrawColor(NULL),
+m_pColorRGBX(NULL),
+m_bSaveScreenshot(false),
+IsDrawBoneLength(true),
+IsDrawSpineBasePosition(true),
+IsDrawColorBase(true)
 {
     LARGE_INTEGER qpf = {0};
     if (QueryPerformanceFrequency(&qpf))
     {
         m_fFreq = double(qpf.QuadPart);
     }
+	if (IsDrawColorBase)
+	{
+		// create heap storage for color pixel data in RGBX format
+		m_pColorRGBX = new RGBQUAD[cColorWidth * cColorHeight];
+	}
 }
-  
 
 /// <summary>
 /// Destructor
@@ -75,6 +86,23 @@ CBodyBasics::CBodyBasics() :
 CBodyBasics::~CBodyBasics()
 {
     DiscardDirect2DResources();
+
+	// clean up Direct2D renderer
+	if (m_pDrawColor)
+	{
+		delete m_pDrawColor;
+		m_pDrawColor = NULL;
+	}
+
+	if (m_pColorRGBX)
+	{
+		delete[] m_pColorRGBX;
+		m_pColorRGBX = NULL;
+	}
+
+	// done with color frame reader
+	SafeRelease(m_pColorFrameReader);
+
 
     // clean up Direct2D
     SafeRelease(m_pD2DFactory);
@@ -92,6 +120,8 @@ CBodyBasics::~CBodyBasics()
     }
 
     SafeRelease(m_pKinectSensor);
+
+	
 }
 
 /// <summary>
@@ -189,6 +219,253 @@ void CBodyBasics::Update()
     }
 
     SafeRelease(pBodyFrame);
+
+	/// Update Color Frame
+	if (IsDrawColorBase)
+	{
+		if (!m_pColorFrameReader)
+		{
+			return;
+		}
+
+		IColorFrame* pColorFrame = NULL;
+
+		HRESULT hr = m_pColorFrameReader->AcquireLatestFrame(&pColorFrame);
+
+		if (SUCCEEDED(hr))
+		{
+			INT64 nTime = 0;
+			IFrameDescription* pFrameDescription = NULL;
+			int nWidth = 0;
+			int nHeight = 0;
+			ColorImageFormat imageFormat = ColorImageFormat_None;
+			UINT nBufferSize = 0;
+			RGBQUAD *pBuffer = NULL;
+
+			hr = pColorFrame->get_RelativeTime(&nTime);
+
+			if (SUCCEEDED(hr))
+			{
+				hr = pColorFrame->get_FrameDescription(&pFrameDescription);
+			}
+
+			if (SUCCEEDED(hr))
+			{
+				hr = pFrameDescription->get_Width(&nWidth);
+			}
+
+			if (SUCCEEDED(hr))
+			{
+				hr = pFrameDescription->get_Height(&nHeight);
+			}
+
+			if (SUCCEEDED(hr))
+			{
+				hr = pColorFrame->get_RawColorImageFormat(&imageFormat);
+			}
+
+			if (SUCCEEDED(hr))
+			{
+				if (imageFormat == ColorImageFormat_Bgra)
+				{
+					hr = pColorFrame->AccessRawUnderlyingBuffer(&nBufferSize, reinterpret_cast<BYTE**>(&pBuffer));
+				}
+				else if (m_pColorRGBX)
+				{
+					pBuffer = m_pColorRGBX;
+					nBufferSize = cColorWidth * cColorHeight * sizeof(RGBQUAD);
+					hr = pColorFrame->CopyConvertedFrameDataToArray(nBufferSize, reinterpret_cast<BYTE*>(pBuffer), ColorImageFormat_Bgra);
+				}
+				else
+				{
+					hr = E_FAIL;
+				}
+			}
+
+			if (SUCCEEDED(hr))
+			{
+				ProcessColor(nTime, pBuffer, nWidth, nHeight);
+			}
+
+			SafeRelease(pFrameDescription);
+		}
+
+		SafeRelease(pColorFrame);
+	}
+
+}
+
+/// <summary>
+/// Handle new color data
+/// <param name="nTime">timestamp of frame</param>
+/// <param name="pBuffer">pointer to frame data</param>
+/// <param name="nWidth">width (in pixels) of input image data</param>
+/// <param name="nHeight">height (in pixels) of input image data</param>
+/// </summary>
+void CBodyBasics::ProcessColor(INT64 nTime, RGBQUAD* pBuffer, int nWidth, int nHeight)
+{
+	if (m_hWnd)
+	{
+		if (!m_nStartTime)
+		{
+			m_nStartTime = nTime;
+		}
+
+		double fps = 0.0;
+
+		LARGE_INTEGER qpcNow = { 0 };
+		if (m_fFreq)
+		{
+			if (QueryPerformanceCounter(&qpcNow))
+			{
+				if (m_nLastCounter)
+				{
+					m_nFramesSinceUpdate++;
+					fps = m_fFreq * m_nFramesSinceUpdate / double(qpcNow.QuadPart - m_nLastCounter);
+				}
+			}
+		}
+
+		WCHAR szStatusMessage[64];
+		StringCchPrintf(szStatusMessage, _countof(szStatusMessage), L" FPS = %0.2f    Time = %I64d", fps, (nTime - m_nStartTime));
+
+		if (SetStatusMessage(szStatusMessage, 1000, false))
+		{
+			m_nLastCounter = qpcNow.QuadPart;
+			m_nFramesSinceUpdate = 0;
+		}
+	}
+
+	// Make sure we've received valid data
+	if (pBuffer && (nWidth == cColorWidth) && (nHeight == cColorHeight))
+	{
+		// Draw the data with Direct2D
+		m_pDrawColor->Draw(reinterpret_cast<BYTE*>(pBuffer), cColorWidth * cColorHeight * sizeof(RGBQUAD));
+
+		if (m_bSaveScreenshot)
+		{
+			WCHAR szScreenshotPath[MAX_PATH];
+
+			// Retrieve the path to My Photos
+			GetScreenshotFileName(szScreenshotPath, _countof(szScreenshotPath));
+
+			// Write out the bitmap to disk
+			HRESULT hr = SaveBitmapToFile(reinterpret_cast<BYTE*>(pBuffer), nWidth, nHeight, sizeof(RGBQUAD)* 8, szScreenshotPath);
+
+			WCHAR szStatusMessage[64 + MAX_PATH];
+			if (SUCCEEDED(hr))
+			{
+				// Set the status bar to show where the screenshot was saved
+				StringCchPrintf(szStatusMessage, _countof(szStatusMessage), L"Screenshot saved to %s", szScreenshotPath);
+			}
+			else
+			{
+				StringCchPrintf(szStatusMessage, _countof(szStatusMessage), L"Failed to write screenshot to %s", szScreenshotPath);
+			}
+
+			SetStatusMessage(szStatusMessage, 5000, true);
+
+			// toggle off so we don't save a screenshot again next frame
+			m_bSaveScreenshot = false;
+		}
+	}
+}
+
+/// <summary>
+/// Get the name of the file where screenshot will be stored.
+/// </summary>
+/// <param name="lpszFilePath">string buffer that will receive screenshot file name.</param>
+/// <param name="nFilePathSize">number of characters in lpszFilePath string buffer.</param>
+/// <returns>
+/// S_OK on success, otherwise failure code.
+/// </returns>
+HRESULT CBodyBasics::GetScreenshotFileName(_Out_writes_z_(nFilePathSize) LPWSTR lpszFilePath, UINT nFilePathSize)
+{
+	WCHAR* pszKnownPath = NULL;
+	HRESULT hr = SHGetKnownFolderPath(FOLDERID_Pictures, 0, NULL, &pszKnownPath);
+
+	if (SUCCEEDED(hr))
+	{
+		// Get the time
+		WCHAR szTimeString[MAX_PATH];
+		GetTimeFormatEx(NULL, 0, NULL, L"hh'-'mm'-'ss", szTimeString, _countof(szTimeString));
+
+		// File name will be KinectScreenshotColor-HH-MM-SS.bmp
+		StringCchPrintfW(lpszFilePath, nFilePathSize, L"%s\\KinectScreenshot-Color-%s.bmp", pszKnownPath, szTimeString);
+	}
+
+	if (pszKnownPath)
+	{
+		CoTaskMemFree(pszKnownPath);
+	}
+
+	return hr;
+}
+
+/// <summary>
+/// Save passed in image data to disk as a bitmap
+/// </summary>
+/// <param name="pBitmapBits">image data to save</param>
+/// <param name="lWidth">width (in pixels) of input image data</param>
+/// <param name="lHeight">height (in pixels) of input image data</param>
+/// <param name="wBitsPerPixel">bits per pixel of image data</param>
+/// <param name="lpszFilePath">full file path to output bitmap to</param>
+/// <returns>indicates success or failure</returns>
+HRESULT CBodyBasics::SaveBitmapToFile(BYTE* pBitmapBits, LONG lWidth, LONG lHeight, WORD wBitsPerPixel, LPCWSTR lpszFilePath)
+{
+	DWORD dwByteCount = lWidth * lHeight * (wBitsPerPixel / 8);
+
+	BITMAPINFOHEADER bmpInfoHeader = { 0 };
+
+	bmpInfoHeader.biSize = sizeof(BITMAPINFOHEADER);  // Size of the header
+	bmpInfoHeader.biBitCount = wBitsPerPixel;             // Bit count
+	bmpInfoHeader.biCompression = BI_RGB;                    // Standard RGB, no compression
+	bmpInfoHeader.biWidth = lWidth;                    // Width in pixels
+	bmpInfoHeader.biHeight = -lHeight;                  // Height in pixels, negative indicates it's stored right-side-up
+	bmpInfoHeader.biPlanes = 1;                         // Default
+	bmpInfoHeader.biSizeImage = dwByteCount;               // Image size in bytes
+
+	BITMAPFILEHEADER bfh = { 0 };
+
+	bfh.bfType = 0x4D42;                                           // 'M''B', indicates bitmap
+	bfh.bfOffBits = bmpInfoHeader.biSize + sizeof(BITMAPFILEHEADER);  // Offset to the start of pixel data
+	bfh.bfSize = bfh.bfOffBits + bmpInfoHeader.biSizeImage;        // Size of image + headers
+
+	// Create the file on disk to write to
+	HANDLE hFile = CreateFileW(lpszFilePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	// Return if error opening file
+	if (NULL == hFile)
+	{
+		return E_ACCESSDENIED;
+	}
+
+	DWORD dwBytesWritten = 0;
+
+	// Write the bitmap file header
+	if (!WriteFile(hFile, &bfh, sizeof(bfh), &dwBytesWritten, NULL))
+	{
+		CloseHandle(hFile);
+		return E_FAIL;
+	}
+
+	// Write the bitmap info header
+	if (!WriteFile(hFile, &bmpInfoHeader, sizeof(bmpInfoHeader), &dwBytesWritten, NULL))
+	{
+		CloseHandle(hFile);
+		return E_FAIL;
+	}
+
+	// Write the RGB Data
+	if (!WriteFile(hFile, pBitmapBits, bmpInfoHeader.biSizeImage, &dwBytesWritten, NULL))
+	{
+		CloseHandle(hFile);
+		return E_FAIL;
+	}
+
+	// Close the file
+	CloseHandle(hFile);
+	return S_OK;
 }
 
 /// <summary>
@@ -282,6 +559,18 @@ LRESULT CALLBACK CBodyBasics::DlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				return E_FAIL;
 			}
 			
+			if (IsDrawColorBase)
+			{
+				// Create and initialize a new Direct2D image renderer (take a look at ImageRenderer.h)
+				// We'll use this to draw the data we receive from the Kinect to the screen
+				m_pDrawColor = new ImageRenderer();
+				HRESULT hr = m_pDrawColor->Initialize(GetDlgItem(m_hWnd, IDC_VIDEOVIEW), m_pD2DFactory, cColorWidth, cColorHeight, cColorWidth * sizeof(RGBQUAD));
+				if (FAILED(hr))
+				{
+					SetStatusMessage(L"Failed to initialize the Direct2D draw device.", 10000, true);
+				}
+			}
+
             // Get and initialize the default Kinect sensor
             InitializeDefaultSensor();
         }
@@ -296,6 +585,15 @@ LRESULT CALLBACK CBodyBasics::DlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
             // Quit the main message pump
             PostQuitMessage(0);
             break;
+
+		// Handle button press
+		case WM_COMMAND:
+			// If it was for the screenshot control and a button clicked event, save a screenshot next frame 
+			if (IDC_BUTTON_SCREENSHOT == LOWORD(wParam) && BN_CLICKED == HIWORD(wParam))
+			{
+				m_bSaveScreenshot = true;
+			}
+			break;
     }
 
     return FALSE;
@@ -340,6 +638,25 @@ HRESULT CBodyBasics::InitializeDefaultSensor()
         }
 
         SafeRelease(pBodyFrameSource);
+		if (IsDrawColorBase)
+		{
+			// Initialize the Kinect and get the color reader
+			IColorFrameSource* pColorFrameSource = NULL;
+
+			hr = m_pKinectSensor->Open();
+
+			if (SUCCEEDED(hr))
+			{
+				hr = m_pKinectSensor->get_ColorFrameSource(&pColorFrameSource);
+			}
+
+			if (SUCCEEDED(hr))
+			{
+				hr = pColorFrameSource->OpenReader(&m_pColorFrameReader);
+			}
+
+			SafeRelease(pColorFrameSource);
+		}
     }
 
     if (!m_pKinectSensor || FAILED(hr))
@@ -412,8 +729,11 @@ void CBodyBasics::ProcessBody(INT64 nTime, int nBodyCount, IBody** ppBodies)
 
 							// draw position of spine base
 							StringCchPrintf(szSpineBase, _countof(szSpineBase), L"SpineBase = %0.4f   %0.4f   %0.4f", joints[0].Position.X, joints[0].Position.Y, joints[0].Position.Z);
-							DrawSpineBasePosition(joints, jointPoints);
+							if (IsDrawSpineBasePosition)
+							{
+								DrawSpineBasePosition(joints, jointPoints);
 							}
+						}
                     }
 				}
 			}
@@ -463,6 +783,7 @@ void CBodyBasics::ProcessBody(INT64 nTime, int nBodyCount, IBody** ppBodies)
 void    CBodyBasics::DrawSpineBasePosition(const Joint* pJoints, const D2D1_POINT_2F* pJointPoints)
 {
 	WCHAR szSpineBase[20];
+	StringCchPrintf(szSpineBase, _countof(szSpineBase), L"                           ");
 	StringCchPrintf(szSpineBase, _countof(szSpineBase), L"(%0.2f,%0.2f,%0.2f)", pJoints[0].Position.X, pJoints[0].Position.Y, pJoints[0].Position.Z);
 	float boneCenterX, boneCenterY;
 	boneCenterX = (pJointPoints[0].x + pJointPoints[0].x) / 2;
@@ -473,7 +794,7 @@ void    CBodyBasics::DrawSpineBasePosition(const Joint* pJoints, const D2D1_POIN
 		m_pTextFormat,
 		D2D1::RectF(boneCenterX - 140, boneCenterY + 10, boneCenterX + 140, boneCenterY - 10),
 		m_pBrushTextPosition
-		);
+		); 
 }
 
 void    CBodyBasics::DrawBoneLength(const Joint* pJoints, const D2D1_POINT_2F* pJointPoints, JointType joint0, JointType joint1)
@@ -685,35 +1006,37 @@ void CBodyBasics::DrawBody(const Joint* pJoints, const D2D1_POINT_2F* pJointPoin
         }
     }
 
-	// BoneLength
-	DrawBoneLength(pJoints, pJointPoints, JointType_Head, JointType_Neck);
-//	DrawBoneLength(pJoints, pJointPoints, JointType_Neck, JointType_SpineShoulder);
-	DrawBoneLength(pJoints, pJointPoints, JointType_SpineShoulder, JointType_SpineMid);
-	DrawBoneLength(pJoints, pJointPoints, JointType_SpineMid, JointType_SpineBase);
-	
-	DrawBoneLength(pJoints, pJointPoints, JointType_HipRight, JointType_KneeRight);
-	DrawBoneLength(pJoints, pJointPoints, JointType_KneeRight, JointType_AnkleRight);	
-	DrawBoneLength(pJoints, pJointPoints, JointType_HipLeft, JointType_KneeLeft);
-	DrawBoneLength(pJoints, pJointPoints, JointType_KneeLeft, JointType_AnkleLeft);	
-	DrawBoneLength(pJoints, pJointPoints, JointType_SpineShoulder, JointType_ShoulderRight);
-	DrawBoneLength(pJoints, pJointPoints, JointType_SpineShoulder, JointType_ShoulderLeft);
-	DrawBoneLength(pJoints, pJointPoints, JointType_ShoulderLeft, JointType_ElbowLeft);
-	DrawBoneLength(pJoints, pJointPoints, JointType_ShoulderRight, JointType_ElbowRight);
-	DrawBoneLength(pJoints, pJointPoints, JointType_ElbowRight, JointType_WristRight);
-	DrawBoneLength(pJoints, pJointPoints, JointType_ElbowLeft, JointType_WristLeft);
+	if (IsDrawBoneLength)
+	{
+		// BoneLength
+		DrawBoneLength(pJoints, pJointPoints, JointType_Head, JointType_Neck);
+		//	DrawBoneLength(pJoints, pJointPoints, JointType_Neck, JointType_SpineShoulder);
+		DrawBoneLength(pJoints, pJointPoints, JointType_SpineShoulder, JointType_SpineMid);
+		DrawBoneLength(pJoints, pJointPoints, JointType_SpineMid, JointType_SpineBase);
 
-	/*
-	DrawBoneLength(pJoints, pJointPoints, JointType_SpineBase, JointType_HipLeft);
-	DrawBoneLength(pJoints, pJointPoints, JointType_SpineBase, JointType_HipRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_HipRight, JointType_KneeRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_KneeRight, JointType_AnkleRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_HipLeft, JointType_KneeLeft);
+		DrawBoneLength(pJoints, pJointPoints, JointType_KneeLeft, JointType_AnkleLeft);
+		DrawBoneLength(pJoints, pJointPoints, JointType_SpineShoulder, JointType_ShoulderRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_SpineShoulder, JointType_ShoulderLeft);
+		DrawBoneLength(pJoints, pJointPoints, JointType_ShoulderLeft, JointType_ElbowLeft);
+		DrawBoneLength(pJoints, pJointPoints, JointType_ShoulderRight, JointType_ElbowRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_ElbowRight, JointType_WristRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_ElbowLeft, JointType_WristLeft);
 
-	DrawBoneLength(pJoints, pJointPoints, JointType_AnkleRight, JointType_FootRight);
-	DrawBoneLength(pJoints, pJointPoints, JointType_AnkleLeft, JointType_FootLeft);
-	DrawBoneLength(pJoints, pJointPoints, JointType_WristLeft, JointType_HandLeft);
-	DrawBoneLength(pJoints, pJointPoints, JointType_WristRight, JointType_HandRight);
-	DrawBoneLength(pJoints, pJointPoints, JointType_HandRight, JointType_HandTipRight);
-	DrawBoneLength(pJoints, pJointPoints, JointType_HandLeft, JointType_HandTipLeft);
-	*/
+		/*
+		DrawBoneLength(pJoints, pJointPoints, JointType_SpineBase, JointType_HipLeft);
+		DrawBoneLength(pJoints, pJointPoints, JointType_SpineBase, JointType_HipRight);
 
+		DrawBoneLength(pJoints, pJointPoints, JointType_AnkleRight, JointType_FootRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_AnkleLeft, JointType_FootLeft);
+		DrawBoneLength(pJoints, pJointPoints, JointType_WristLeft, JointType_HandLeft);
+		DrawBoneLength(pJoints, pJointPoints, JointType_WristRight, JointType_HandRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_HandRight, JointType_HandTipRight);
+		DrawBoneLength(pJoints, pJointPoints, JointType_HandLeft, JointType_HandTipLeft);
+		*/
+	}
 
 }
 

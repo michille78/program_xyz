@@ -7,11 +7,15 @@
 #pragma once
 
 #include "resource.h"
+#include "ImageRenderer.h"
 
 class CBodyBasics
 {
     static const int        cDepthWidth  = 512;
     static const int        cDepthHeight = 424;
+
+	static const int        cColorWidth = 1920;
+	static const int        cColorHeight = 1080;
 
 public:
     /// <summary>
@@ -59,6 +63,12 @@ private:
     INT64                   m_nNextStatusTime;
     DWORD                   m_nFramesSinceUpdate;
 
+	bool                    m_bSaveScreenshot;
+	// Function active flag
+	BOOL					IsDrawBoneLength;
+	BOOL					IsDrawSpineBasePosition;
+	BOOL					IsDrawColorBase;
+
     // Current Kinect
     IKinectSensor*          m_pKinectSensor;
     ICoordinateMapper*      m_pCoordinateMapper;
@@ -66,10 +76,17 @@ private:
     // Body reader
     IBodyFrameReader*       m_pBodyFrameReader;
 
+	// Color reader
+	IColorFrameReader*      m_pColorFrameReader;
+
     // Direct2D
     ID2D1Factory*           m_pD2DFactory;
+
 	IDWriteFactory*      m_pDWriteFactory;
 	IDWriteTextFormat*      m_pTextFormat;
+
+	ImageRenderer*          m_pDrawColor;
+	RGBQUAD*                m_pColorRGBX;
 
     // Body/hand drawing
     ID2D1HwndRenderTarget*  m_pRenderTarget;
@@ -159,5 +176,9 @@ private:
 	/// draw the length of the bones on the bone
 	void                   DrawBoneLength(const Joint* pJoints, const D2D1_POINT_2F* pJointPoints, JointType joint0, JointType joint1);
 	void                   DrawSpineBasePosition(const Joint* pJoints, const D2D1_POINT_2F* pJointPoints);
+
+	void				   ProcessColor(INT64 nTime, RGBQUAD* pBuffer, int nWidth, int nHeight);
+	HRESULT				   GetScreenshotFileName(_Out_writes_z_(nFilePathSize) LPWSTR lpszFilePath, UINT nFilePathSize);
+	HRESULT				   SaveBitmapToFile(BYTE* pBitmapBits, LONG lWidth, LONG lHeight, WORD wBitsPerPixel, LPCWSTR lpszFilePath);
 };
 
