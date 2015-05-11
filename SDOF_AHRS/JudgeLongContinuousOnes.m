@@ -80,9 +80,11 @@ LongContinuousOnsEnd = LongContinuousOnsEnd(1:LongContinuousOnes_k) ;
 
 %% IsLongContinuous
 IsLongContinuous = zeros( 1,Nframes );
+LongContinuesTime = zeros( 1,Nframes );
 for k=1:LongContinuousOnes_k
     temp = LongContinuousOnsStart(k):LongContinuousOnsEnd(k) ;
     IsLongContinuous( temp ) = 1 ;
+    LongContinuesTime( LongContinuousOnsStart(k) ) = ( LongContinuousOnsEnd(k)-LongContinuousOnsStart(k)+1 )/frequency ;
 end
 
 % figure('name','JudgeLongContinuousOnes')

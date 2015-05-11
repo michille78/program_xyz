@@ -1,0 +1,54 @@
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.exe.config
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.exe
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.pdb
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\bin\Debug\Microsoft.Kinect.dll
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\bin\Debug\Microsoft.Kinect.xml
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\MainWindow.baml
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\MainWindow.g.cs
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\App.g.cs
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\Multi-Kinect2BodyTracking_Client_MarkupCompile.cache
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.g.resources
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\Kinect2.MultiKinect2BodyTracking.Client.Properties.Resources.resources
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.csproj.GenerateResource.Cache
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.exe
+C:\Users\geminoid\Documents\Github\Multi-Kinect2Fusion_Client\Multi-Kinect2Fusion_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.pdb
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.exe.config
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.exe
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.pdb
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\Microsoft.Kinect.dll
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\Microsoft.Kinect.xml
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\MainWindow.baml
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\MainWindow.g.cs
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\App.g.cs
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client_MarkupCompile.cache
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.g.resources
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.csproj.GenerateResource.Cache
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.exe
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.pdb
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\WriteableBitmapEx.Wpf.dll
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\WriteableBitmapEx.Wpf.pdb
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\WriteableBitmapEx.Wpf.xml
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\Kinect2.MultiKinects2BodyTracking.Client.Properties.Resources.resources
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\MathNet.Numerics.dll
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\bin\Debug\MathNet.Numerics.xml
+C:\Users\geminoid\Documents\Github\Multi-Kinect2BodyTracking_Client\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.csprojResolveAssemblyReference.cache
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.exe.config
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.exe
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.pdb
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.exe
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\Multi-Kinect2BodyTracking_Client.pdb
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\MathNet.Numerics.dll
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\Microsoft.Kinect.dll
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\WriteableBitmapEx.Wpf.dll
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\MathNet.Numerics.xml
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\Microsoft.Kinect.xml
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\WriteableBitmapEx.Wpf.pdb
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\bin\Debug\WriteableBitmapEx.Wpf.xml
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.csprojResolveAssemblyReference.cache
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\MainWindow.baml
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\MainWindow.g.cs
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\App.g.cs
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client_MarkupCompile.cache
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.g.resources
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\Kinect2.MultiKinects2BodyTracking.Client.Properties.Resources.resources
+E:\document and program\program_xyz\Kinect\BodyTrackingThroughKinect2s\Multi-Kinect2BodyTracking_Client\obj\Debug\Multi-Kinect2BodyTracking_Client.csproj.GenerateResource.Cache

@@ -16,10 +16,12 @@ RoateVectorCalMinAngleSecond = AHRSThreshod.RoateVectorCalMinAngleSecond ;
 RoateVectorCalMinAngleScope = AHRSThreshod.RoateVectorCalMinAngleScope ;
 RoateVectorCalMinAngleScopeSub = AHRSThreshod.RoateVectorCalMinAngleScopeSub ;
 %%% 粗算转轴： 假设航向为0，粗略选择满足转轴计算的数据：转角较大
+
 [ Qnb_RCD,Qwr_RCD,RecordStr1 ] = SelectRotateVectorCalcualteData_First( Qnb_RVCal,Qwr,RoateVectorCalMinAngleFirst,AccelerationZeroJudge,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub ) ;
 % dbstop in CalculateRotateVector_Acc
 Ypr_Acc1 = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD ) ;
 %%% 精算转轴： 
+% dbstop in SelectRotateVectorCalcualteData_Second
 [ Qnb_RCD,Qwr_RCD,RecordStr2 ] = SelectRotateVectorCalcualteData_Second...
     ( Qnb_RVCal,Qwr,Ypr_Acc1,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,AccelerationZeroJudge ) ;
 Ypr_Acc = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD ) ;
@@ -31,6 +33,11 @@ disp( RecordStr );
 
 %% 根据适合转角计算的四元数 Qnb_RCD 和 Qwr_RCD 计算转轴 Ypr_Acc
 function  [ Ypr_Acc,RotateAngle_RCD ] = CalculateRotateVector_Acc( Qnb_RCD,Qwr_RCD )
+if isempty(Qnb_RCD)
+    Ypr_Acc = NaN;
+    RotateAngle_RCD = NaN;
+    return;
+end
 D = CalculateD( Qnb_RCD,Qwr_RCD ) ;
 
 DTD = D'*D ;
@@ -82,7 +89,8 @@ end
 %%% 的数据认为是有效的，用于进行第二次转轴计算
 function [ Qnb_RCD,Qwr_RCD,RecordStr ] = SelectRotateVectorCalcualteData_Second...
     ( Qnb_RVCal,Qwr,Ypr_Acc,RoateVectorCalMinAngleSecond,RoateVectorCalMinAngleScope,RoateVectorCalMinAngleScopeSub,AccelerationZeroJudge )
-RotateAngleSecond = CalculateRotateAngle_Acc( Qnb_RVCal,Qwr,Ypr_Acc ) ;
+AccCalNum = 1:size(Qnb_RVCal,2);
+RotateAngleSecond = CalculateRotateAngle_Acc( Qnb_RVCal,Qwr,Ypr_Acc,AccCalNum ) ;
 %% 第二次数据选择规则
 % 1） 转角大于 RoateVectorCalMinAngleSecond
 % 2） 静止状态
@@ -139,6 +147,9 @@ if IsAngleBigStatic_SeclectFlag == 0
 end
 
 Qnb_RCD = Qnb_RVCal( :,IsAngleBigStatic );
+
+Qwr_RCD = Qwr;
+return
 %% 选择旋转角度在最端点的数据作为新的参考系 rNew，用于优化转轴的计算
 % 同时要求这个点满足最强的 0 加速度判断条件
 % dbstop in GetQwrNew
@@ -240,6 +251,8 @@ end
 
 Qnb_RCD = Qnb( :,IsAngleBigStatic );
 
+Qwr_RCD = Qwr;
+return
 %% 选择旋转角度在最端点的数据作为新的参考系 rNew，用于优化转轴的计算
 % 同时要求这个点满足最强的 0 加速度判断条件
 % dbstop in GetQwrNew

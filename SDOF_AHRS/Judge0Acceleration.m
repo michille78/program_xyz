@@ -4,7 +4,7 @@
 % IsSDOFAccelerationZero:N*1  利用 SDOF运动特点综合判断的
 % IsSDOFAccelerationZero(k)==1: 判定为静止
 % IsSDOFAccelerationZero(k)==1: 判定为非静止
-function [ AccelerationZeroJudge,initialStaticStart,initialStaticEnd ] = Judge0Acceleration( AHRSData,AHRSThreshod )
+function [ AccelerationZeroJudge,initialStaticStart,initialStaticEnd ] = Judge0Acceleration( AHRSData,AHRSThreshod,RefRotateAngle )
 % load data
 % gyro = AHRSData.gyro ;
 % acc = AHRSData.acc ;
@@ -12,6 +12,9 @@ gyroNorm = AHRSData.gyroNorm ;
 accNorm = AHRSData.accNorm ;
 frequency = AHRSData.frequency ;
 Nframes = AHRSData.Nframes ;
+
+IsDoSmooth = 1;
+IsDraw = 0 ;
 
 %%% the threshold value to judge is being static
 AccNormZeroThreshod = AHRSThreshod.AccNormZeroThreshod ;
@@ -24,14 +27,16 @@ IsLongContinuousOnes_SmoothStepTime = AHRSThreshod.IsLongContinuousOnes_SmoothSt
 IsLongContinuousOnes_JudgeStepTime = AHRSThreshod.IsLongContinuousOnes_JudgeStepTime ;
 
 DynamicIsStaticSmoothStepN = fix( DynamicIsStaticSmoothStepTime*frequency ) ;
-%% （1）加速度的模与重力加速度相差小于 AccNormZeroThreshod = 1~3mg
+%% （1）IsAccNormZero：加速度的模与重力加速度相差小于 AccNormZeroThreshod = 1~3mg
 accNormErr = abs( accNorm-1 ) ;
 IsAccNormZero = accNormErr < AccNormZeroThreshod ;
-IsAccNormZero = SmoothJudgeData( IsAccNormZero,DynamicIsStaticSmoothStepN,0.6 ) ; 
-%% (2) 陀螺测量得到的角速度的模小于 GyroNormZeroThreshod = 0.3~0.5 °/s
+if IsDoSmooth==1
+    IsAccNormZero = SmoothJudgeData( IsAccNormZero,DynamicIsStaticSmoothStepN,0.6 ) ; 
+end
+%% (2) IsGyroNormZero：陀螺测量得到的角速度的模小于 GyroNormZeroThreshod = 0.3~0.5 °/s
 IsGyroNormZero = gyroNorm < GyroNormZeroThreshod ;
 IsGyroNormZero = SmoothJudgeData( IsGyroNormZero,DynamicIsStaticSmoothStepN,0.6 ) ; 
-%% (3) 角速度变化率为0：  IsGyroNormZero = 1 的点是否连续在 GyroVelocityZeroTimeThreshod = 0.05 S 内保持为0
+%% (3) IsContinuousGyroNormZero：角速度为0且变化率为0：  IsGyroNormZero = 1 的点是否连续在 GyroVelocityZeroTimeThreshod = 0.05 S 内保持为0
 frontT = GyroContinuousZeroTimeThreshod*0.8 ;
 laterT = GyroContinuousZeroTimeThreshod*0.2 ;
 minRateFront = GyroContinuousZeroMinRate ;
@@ -39,19 +44,30 @@ minRateLater = GyroContinuousZeroMinRate ;
 % dbstop in JudgeContinuousOnes
 IsContinuousGyroNormZero = JudgeContinuousOnes( IsGyroNormZero,frontT,laterT,frequency,minRateFront,minRateLater ) ;
 stepN = fix( IsContinuousGyroNormZeroSmoothStepTime*frequency ) ;
-IsContinuousGyroNormZero = SmoothJudgeData( IsContinuousGyroNormZero,stepN,0.6 ) ;      % 
-%% 同时满足以上条件认定为0加速度
+if IsDoSmooth==1
+    IsContinuousGyroNormZero = SmoothJudgeData( IsContinuousGyroNormZero,stepN,0.6 ) ;      % 
+end
+%% IsSDOFAccelerationZero： 加速度模小 + 角速度为0 + 角速度变化率为0 
+%% IsSDOFAccelerationToHeartZero： 加速度模小 + 角速度为0
 IsSDOFAccelerationZero = IsContinuousGyroNormZero.*IsAccNormZero ;  %  切向加速度和法向加速度都为0
+% IsSDOFAccelerationZero = IsContinuousGyroNormZero ;
 IsSDOFAccelerationToHeartZero = IsGyroNormZero.*IsAccNormZero ;  %  仅向心加速度为0
-
-IsSDOFAccelerationZero = SmoothJudgeData( IsSDOFAccelerationZero,DynamicIsStaticSmoothStepN,0.6 ) ;
+% IsSDOFAccelerationToHeartZero = IsGyroNormZero ;
+if IsDoSmooth==1
+    IsSDOFAccelerationZero = SmoothJudgeData( IsSDOFAccelerationZero,DynamicIsStaticSmoothStepN,0.6 ) ;
+end
 %% 判断初始零位静止时间长度
 %  dbstop in JudgeLongContinuousOnes
 [ LongSDOFAccelerationZeroStart,LongSDOFAccelerationZeroEnd,IsLongSDOFAccelerationZero ] = JudgeLongContinuousOnes...
     ( IsSDOFAccelerationZero,IsLongContinuousOnes_SmoothStepTime,IsLongContinuousOnes_JudgeStepTime,frequency ) ;
 % 第一次长时间保持0位表示为零位角度
-initialStaticStart = LongSDOFAccelerationZeroStart(1);
-initialStaticEnd = LongSDOFAccelerationZeroEnd(1);
+if ~isempty(LongSDOFAccelerationZeroStart)
+    initialStaticStart = LongSDOFAccelerationZeroStart(1);
+    initialStaticEnd = LongSDOFAccelerationZeroEnd(1);
+else
+    initialStaticStart = [] ;
+    initialStaticEnd = [] ;
+end
 
 %% Output All the Acceleration Zero result
 [ ~,~,IsLongSDOFAccelerationToHeartZero ] = JudgeLongContinuousOnes...
@@ -67,25 +83,34 @@ AccelerationZeroJudge.IsLongSDOFAccelerationToHeartZero = IsLongSDOFAcceleration
 AccelerationZeroJudge.IsLongAccNormZero = IsLongAccNormZero ;
 
 %%%
-DrawIsAccelerationZero( AHRSData,IsSDOFAccelerationZero,'IsSDOFAccelerationZero' ) ;
 
-figure('name','Judge0Acceleration')
-axes('YLim',[-0.2 1.2])
-subplot(2,1,1)
-hold on
-plot(IsSDOFAccelerationZero,'k.')
-plot(IsSDOFAccelerationToHeartZero*0.97,'b.')
-plot(IsAccNormZero*0.95,'ro')
-legend('IsSDOFAccelerationZero','IsSDOFAccelerationToHeartZero','IsAccNormZero')
+if IsDraw==1
+    DrawIsAccelerationZero( AHRSData,IsAccNormZero,'IsAccNormZero',RefRotateAngle ) ;
+    DrawIsAccelerationZero( AHRSData,IsSDOFAccelerationToHeartZero,'IsSDOFAccelerationToHeartZero' ,RefRotateAngle) ;
+    DrawIsAccelerationZero( AHRSData,IsSDOFAccelerationZero,'IsSDOFAccelerationZero' ,RefRotateAngle ) ;
+    DrawIsAccelerationZero( AHRSData,IsLongSDOFAccelerationZero,'IsLongSDOFAccelerationZero' ,RefRotateAngle ) ;
 
-subplot(2,1,2)
-hold on
-plot(IsLongSDOFAccelerationZero,'k.')
-plot(IsLongSDOFAccelerationToHeartZero*0.97,'b.')
-plot(IsLongAccNormZero*0.95,'ro')
-legend('IsLongSDOFAccelerationZero','IsLongSDOFAccelerationToHeartZero','IsLongAccNormZero')
+    figure('name','Judge0Acceleration')
+    subplot1=subplot(2,1,1);
+    ylim(subplot1,[0.9 1.05]);
+    hold on
+    plot(IsSDOFAccelerationZero,'k.')
+    plot(IsSDOFAccelerationToHeartZero*0.97,'b.')
+    plot(IsAccNormZero*0.95,'r.')
+    legend1=legend('IsSDOFAccelerationZero','IsSDOFAccelerationToHeartZero','IsAccNormZero');
+    set(legend1,...
+        'Position',[0.3 0.86 0.44 0.145]);
 
-
+    subplot2=subplot(2,1,2);
+    ylim(subplot2,[0.9 1.05]);
+    hold on
+    plot(IsLongSDOFAccelerationZero,'k.')
+    plot(IsLongSDOFAccelerationToHeartZero*0.97,'b.')
+    plot(IsLongAccNormZero*0.95,'r.')
+    legend2=legend('IsLongSDOFAccelerationZero','IsLongSDOFAccelerationToHeartZero','IsLongAccNormZero');
+    set(legend2,...
+        'Position',[0.267 0.396 0.489 0.145]);
+end
 
 %% 计算初始时刻静止状态的时间长度
 % IsSDOFAccelerationZero ： [1*N]

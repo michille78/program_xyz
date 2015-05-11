@@ -6,7 +6,9 @@
 % Ypr  ：提前算好的转轴
 
 %% 纯加计解算转动角度
-function RotateAngle = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr ) 
+function RotateAngle = CalculateRotateAngle_Acc( Qnb,Qwr,Ypr,AccCalNum ) 
+
+Qnb = Qnb( :,AccCalNum );
 
 Nframes = length( Qnb ) ;
 RotateAngle = zeros( 1,Nframes );

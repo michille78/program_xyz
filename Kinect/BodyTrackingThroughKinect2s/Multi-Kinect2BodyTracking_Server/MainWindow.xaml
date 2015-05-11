@@ -1,0 +1,31 @@
+﻿<Window x:Class="Kinect2.MultiKinects2BodyTracking.Server.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Inter3D="clr-namespace:_3DTools;assembly=3DTools"
+        Title="Kinect Admin GUI"
+        Height="Auto" Width="Auto" mc:Ignorable="d"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        d:DesignHeight="459" d:DesignWidth="602" SizeToContent="WidthAndHeight"
+        Closing="Window_Closing">
+    
+    <ScrollViewer Name="viewer" Visibility="Visible" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility ="Auto">
+        <Grid Name="rootGrid">
+            <Inter3D:TrackballDecorator Name="trackball" >
+                <Inter3D:Interactive3DDecorator>
+                    <Viewport3D HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Name="show_viewport3D">
+                        <Viewport3D.Camera>
+                            <PerspectiveCamera 
+	                  FarPlaneDistance="100"
+	                  LookDirection="-1,-1,-1"
+	                  UpDirection="0,1,0"
+	                  NearPlaneDistance="1" 
+	                  Position="3,3,3" 
+	                  FieldOfView="70" />
+                        </Viewport3D.Camera>
+                    </Viewport3D>
+                </Inter3D:Interactive3DDecorator>
+            </Inter3D:TrackballDecorator>
+        </Grid>
+    </ScrollViewer>
+</Window>

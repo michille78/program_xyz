@@ -8,9 +8,9 @@
 function ReadAHRSData(  )
 
 %   path = 'E:\data_xyz_noitom\AHRS Data\staticData_4.21_250HZ';
-path = 'E:\data_xyz\AHRS Data\ahrs_raw_data_4.20\Xu';
+path = 'E:\data_xyz\AHRS Data\TurntableData_5.4-AllData';
 
-listing = dir( [path,'\*.txt'] ) ;
+listing = dir( [path,'\IMU_TurntableData*.txt'] ) ;
 dataN = length(listing) ;
 
 for list_k = 1:dataN
@@ -24,7 +24,7 @@ for list_k = 1:dataN
         AHRSData.gyro = gyro ;
         AHRSData.acc = acc ;
         AHRSData.euler = euler ;
-        AHRSData.frequency = 50 ;
+        AHRSData.frequency = 250 ;
                 
         %%% get the normest
         Nframes = length(gyro);
