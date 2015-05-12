@@ -9,7 +9,7 @@ clear all
 close all
 
 dataFolder = 'E:\data_xyz\AHRS Data\TurntableData_5.4-AllData';
-dataName = 'TurntableData_0.5' ;
+dataName = 'TurntableData_1' ;
 
 AHRSData = importdata( [ dataFolder,'\IMU_',dataName,'.mat' ] );
 Nframes  = length(AHRSData.accNorm);
@@ -18,8 +18,8 @@ AHRSData.frequency = 250 ;
 save( [ dataFolder,'\IMU_',dataName,'.mat' ],'AHRSData' )
 
 
-% spanTime = 0.1;
-% AHRSData = IMUDataPreprocess( AHRSData,spanTime );
+spanTime = 0.1;
+AHRSData = IMUDataPreprocess( AHRSData,spanTime );
 
 %% 转台参考数据：第二列是测量值，°，1000HZ
 RefRotateAngle = importdata( [ dataFolder,'\Ref_',dataName,'.mat' ] );
@@ -48,21 +48,26 @@ AHRSRefData.RefRotateAngle = RefRotateAngleNew ;
 NavigationFrame = 'NED';
 %%% the threshold value to judge .. state
 %%% 动态变化过程中，0加速度时刻的判断 指标
-AHRSThreshod.GyroNormZeroThreshod = 0.7 *pi/180 ;       % 0.7 °/s  角速度为0判断下限
-AHRSThreshod.AccNormZeroThreshod = 3/1000 ;             % 3mg  加速度模为0判断下限
-AHRSThreshod.DynamicIsStaticSmoothStepTime = 0.05 ;     % 动态静止平滑步长时间
-AHRSThreshod.GyroContinuousZeroTimeThreshod = 0.3 ;     % 角速度变化率=0判断：角速度为0保持时间
-AHRSThreshod.GyroContinuousZeroMinRate = 0.7 ;          % 角速度变化率=0判断：角速度为0在邻域内保持的比例
+AHRSThreshod.GyroNormZeroThreshod = 0.8 *pi/180 ;       % 0.7 °/s  角速度为0判断下限    ( 1°/s的向心加速度时0.031 mg -> 可接受 )
+AHRSThreshod.AccNormZeroThreshod = 3/1000 ;             % 3mg  加速度模为0判断下限 （这个要求是次要判断指标，不需要给太严格，主要还是通过角速度判断。）
+AHRSThreshod.DynamicIsStaticSmoothStepTime = 0.1 ;      % 动态静止平滑步长时间
+
+AHRSThreshod.maxAngularAcc_GyroZero = 2*pi/180 ;             % 角速度变化率=0判断：直线拟合的角加速度 °/s^2
+AHRSThreshod.minGyroZeroContinuesT = 0.05 ;                   % 角速度变化率=0判断：角速度为0保持时间最小值
 AHRSThreshod.IsContinuousGyroNormZeroSmoothStepTime = 0.2  ; % 角速度变化率为0判断结果平滑步长 （可以稍微长点）
 %%% 长时间保持 0加速度 判断指标： 初始零位判断、替代零位判断
-AHRSThreshod.IsLongContinuousOnes_SmoothStepTime = 0.3 ;  % 长时间保持 0加速度 判断 前的 平滑步长时间
-AHRSThreshod.IsLongContinuousOnes_JudgeStepTime = 0.1 ;   % 长时间保持 0加速度 判断的 判断步长时间
+AHRSThreshod.IsDoSmoothIsAccZero = 1;                              % 是否对初始0加速度判断结果做平滑
+AHRSThreshod.SmoothRate = 0.8;                            % 平滑IsOne数据时采用的判断比例，窗口中大于换这个比例则认为全为1，（判断长时间未1时先进行平滑）
+AHRSThreshod.IsLongContinuousOnes_SmoothStepTime = 0 ;     % 长时间保持 0加速度 判断 前的 平滑步长时间
+AHRSThreshod.IsLongContinuousOnes_JudgeStepTime = 0.3 ;   % 长时间保持 0加速度 判断的 判断步长时间
+%%% 零位的保持时长
 
 %%% 转轴计算指标
 AHRSThreshod.RoateVectorCalMinAngleFirst = 10*pi/180;   % 假设航向保持0时，俯仰和横滚转动四元数的转角大于 RoateVectorCalMinAngleFirst 角度时，用于旋转轴的第一次计算
 AHRSThreshod.RoateVectorCalMinAngleSecond = 20*pi/180;  % 根据初次转轴解算结果，选择转动角度大于 RoateVectorCalMinAngleSecond 的进行转轴的详细解算
 AHRSThreshod.RoateVectorCalMinAngleScope = 10*pi/180 ;  % 转轴计算数据选择的转角范围，如果第二次旋转的转角小于这个范围，发出警告
 AHRSThreshod.RoateVectorCalMinAngleScopeSub = 1*pi/180 ;% 正转角的转角范围 和 负转角的转角范围 的最大值
+
 AHRSThreshod.RoateVectorAccCalTime  = 25 ;              % 从零位静止停止后多长时间的数据用于纯加计转轴计算。之后就要求输出角度。
 
 %%
@@ -92,7 +97,7 @@ InitialData.Vwb0 = zeros(3,1);
 InitialData.rwb0 = zeros(3,1);
 
 %% Calculate time of initial static state 
-%   dbstop in Judge0Acceleration
+  dbstop in JudgeContinuousOnes
 [ AccelerationZeroJudge,initialStaticStart,initialStaticEnd ]= Judge0Acceleration( AHRSData,AHRSThreshod,RefRotateAngle ) ;
 
 IsSDOFAccelerationZero = AccelerationZeroJudge.IsSDOFAccelerationZero  ;

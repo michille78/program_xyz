@@ -6,21 +6,21 @@
 % IsSDOFAccelerationZero(k)==1: ≈–∂®Œ™∑«æ≤÷π
 function [ AccelerationZeroJudge,initialStaticStart,initialStaticEnd ] = Judge0Acceleration( AHRSData,AHRSThreshod,RefRotateAngle )
 % load data
-% gyro = AHRSData.gyro ;
+gyro = AHRSData.gyro ;
 % acc = AHRSData.acc ;
 gyroNorm = AHRSData.gyroNorm ;
 accNorm = AHRSData.accNorm ;
 frequency = AHRSData.frequency ;
 Nframes = AHRSData.Nframes ;
 
-IsDoSmooth = 1;
-IsDraw = 0 ;
+IsDoSmoothIsAccZero = AHRSThreshod.IsDoSmoothIsAccZero;
+IsDraw = 1 ;
 
 %%% the threshold value to judge is being static
 AccNormZeroThreshod = AHRSThreshod.AccNormZeroThreshod ;
 GyroNormZeroThreshod = AHRSThreshod.GyroNormZeroThreshod ;
-GyroContinuousZeroTimeThreshod = AHRSThreshod.GyroContinuousZeroTimeThreshod ;
-GyroContinuousZeroMinRate = AHRSThreshod.GyroContinuousZeroMinRate ;
+maxAngularAcc_GyroZero = AHRSThreshod.maxAngularAcc_GyroZero ;
+minGyroZeroContinuesT = AHRSThreshod.minGyroZeroContinuesT ;
 IsContinuousGyroNormZeroSmoothStepTime = AHRSThreshod.IsContinuousGyroNormZeroSmoothStepTime ;
 DynamicIsStaticSmoothStepTime = AHRSThreshod.DynamicIsStaticSmoothStepTime ;
 IsLongContinuousOnes_SmoothStepTime = AHRSThreshod.IsLongContinuousOnes_SmoothStepTime ;
@@ -30,22 +30,22 @@ DynamicIsStaticSmoothStepN = fix( DynamicIsStaticSmoothStepTime*frequency ) ;
 %% £®1£©IsAccNormZero£∫º”ÀŸ∂»µƒƒ£”Î÷ÿ¡¶º”ÀŸ∂»œ‡≤Ó–°”⁄ AccNormZeroThreshod = 1~3mg
 accNormErr = abs( accNorm-1 ) ;
 IsAccNormZero = accNormErr < AccNormZeroThreshod ;
-if IsDoSmooth==1
-    IsAccNormZero = SmoothJudgeData( IsAccNormZero,DynamicIsStaticSmoothStepN,0.6 ) ; 
+if IsDoSmoothIsAccZero==1
+    IsAccNormZero = SmoothJudgeData( IsAccNormZero,DynamicIsStaticSmoothStepN,AHRSThreshod.SmoothRate ) ; 
 end
 %% (2) IsGyroNormZero£∫Õ”¬›≤‚¡øµ√µΩµƒΩ«ÀŸ∂»µƒƒ£–°”⁄ GyroNormZeroThreshod = 0.3~0.5 °„/s
 IsGyroNormZero = gyroNorm < GyroNormZeroThreshod ;
-IsGyroNormZero = SmoothJudgeData( IsGyroNormZero,DynamicIsStaticSmoothStepN,0.6 ) ; 
+if IsDoSmoothIsAccZero==1
+    IsGyroNormZero = SmoothJudgeData( IsGyroNormZero,DynamicIsStaticSmoothStepN,AHRSThreshod.SmoothRate ) ; 
+end
 %% (3) IsContinuousGyroNormZero£∫Ω«ÀŸ∂»Œ™0«“±‰ªØ¬ Œ™0£∫  IsGyroNormZero = 1 µƒµ„ «∑Ò¡¨–¯‘⁄ GyroVelocityZeroTimeThreshod = 0.05 S ƒ⁄±£≥÷Œ™0
-frontT = GyroContinuousZeroTimeThreshod*0.8 ;
-laterT = GyroContinuousZeroTimeThreshod*0.2 ;
-minRateFront = GyroContinuousZeroMinRate ;
-minRateLater = GyroContinuousZeroMinRate ;
+minContinuesN = minGyroZeroContinuesT*frequency ;
 % dbstop in JudgeContinuousOnes
-IsContinuousGyroNormZero = JudgeContinuousOnes( IsGyroNormZero,frontT,laterT,frequency,minRateFront,minRateLater ) ;
+IsContinuousGyroNormZero = JudgeContinuousOnes( IsGyroNormZero,gyro,frequency,minContinuesN,maxAngularAcc_GyroZero ) ;
+
 stepN = fix( IsContinuousGyroNormZeroSmoothStepTime*frequency ) ;
-if IsDoSmooth==1
-    IsContinuousGyroNormZero = SmoothJudgeData( IsContinuousGyroNormZero,stepN,0.6 ) ;      % 
+if IsDoSmoothIsAccZero==1
+    IsContinuousGyroNormZero = SmoothJudgeData( IsContinuousGyroNormZero,stepN,AHRSThreshod.SmoothRate ) ;      % 
 end
 %% IsSDOFAccelerationZero£∫ º”ÀŸ∂»ƒ£–° + Ω«ÀŸ∂»Œ™0 + Ω«ÀŸ∂»±‰ªØ¬ Œ™0 
 %% IsSDOFAccelerationToHeartZero£∫ º”ÀŸ∂»ƒ£–° + Ω«ÀŸ∂»Œ™0
@@ -53,8 +53,8 @@ IsSDOFAccelerationZero = IsContinuousGyroNormZero.*IsAccNormZero ;  %  «–œÚº”ÀŸ∂
 % IsSDOFAccelerationZero = IsContinuousGyroNormZero ;
 IsSDOFAccelerationToHeartZero = IsGyroNormZero.*IsAccNormZero ;  %  ΩˆœÚ–ƒº”ÀŸ∂»Œ™0
 % IsSDOFAccelerationToHeartZero = IsGyroNormZero ;
-if IsDoSmooth==1
-    IsSDOFAccelerationZero = SmoothJudgeData( IsSDOFAccelerationZero,DynamicIsStaticSmoothStepN,0.6 ) ;
+if IsDoSmoothIsAccZero==1
+    IsSDOFAccelerationZero = SmoothJudgeData( IsSDOFAccelerationZero,DynamicIsStaticSmoothStepN,AHRSThreshod.SmoothRate ) ;
 end
 %% ≈–∂œ≥ı º¡„Œªæ≤÷π ±º‰≥§∂»
 %  dbstop in JudgeLongContinuousOnes
@@ -89,7 +89,7 @@ if IsDraw==1
     DrawIsAccelerationZero( AHRSData,IsSDOFAccelerationToHeartZero,'IsSDOFAccelerationToHeartZero' ,RefRotateAngle) ;
     DrawIsAccelerationZero( AHRSData,IsSDOFAccelerationZero,'IsSDOFAccelerationZero' ,RefRotateAngle ) ;
     DrawIsAccelerationZero( AHRSData,IsLongSDOFAccelerationZero,'IsLongSDOFAccelerationZero' ,RefRotateAngle ) ;
-
+end
     figure('name','Judge0Acceleration')
     subplot1=subplot(2,1,1);
     ylim(subplot1,[0.9 1.05]);
@@ -110,7 +110,7 @@ if IsDraw==1
     legend2=legend('IsLongSDOFAccelerationZero','IsLongSDOFAccelerationToHeartZero','IsLongAccNormZero');
     set(legend2,...
         'Position',[0.267 0.396 0.489 0.145]);
-end
+
 
 %% º∆À„≥ı º ±øÃæ≤÷π◊¥Ã¨µƒ ±º‰≥§∂»
 % IsSDOFAccelerationZero £∫ [1*N]
@@ -120,7 +120,7 @@ end
 function [ initialStaticStart,initialStaticEnd ] = CalInitialStaticN( IsSDOFAccelerationZero,InitialIsStaticSmoothStepTime,InitialIsStaticJudgeStepTime,InitialStaticAbandonTime,frequency ) 
 JudgeRate = 0.8 ;
 SmoothStepN = fix( InitialIsStaticSmoothStepTime*frequency ) ;
-IsSDOFAccelerationZero = SmoothJudgeData( IsSDOFAccelerationZero,SmoothStepN,0.6 ) ;  % Ω¯––Ωœ¥Ûµƒ≤Ω≥§∆Ωª¨∫Û‘Ÿ◊ˆ≈–∂œ
+IsSDOFAccelerationZero = SmoothJudgeData( IsSDOFAccelerationZero,SmoothStepN,AHRSThreshod.SmoothRate ) ;  % Ω¯––Ωœ¥Ûµƒ≤Ω≥§∆Ωª¨∫Û‘Ÿ◊ˆ≈–∂œ
 
 stepN = fix( InitialIsStaticJudgeStepTime*frequency ) ;
 Nframes = length(IsSDOFAccelerationZero) ;

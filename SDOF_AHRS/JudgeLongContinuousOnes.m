@@ -6,7 +6,7 @@
 % 2）转轴优化时需要寻找 转角最小的替代零位，需要满足  长时间0加速度 条件
 
 
-%% 计算初始时刻静止状态的时间长度
+%% 判断某个时刻的 IsOnes=1 是否长时间保持
 % IsOnes ： [1*N]
 % 动态的是否0加速度判断结果，利用这个判断初始静止状态持续的时间长度。使用前先做一个较长时间（IsLongContinuousOnes_SmoothStepTime）的平滑
 % 当出现连续 IsLongContinuousOnes_JudgeStepTime 长时间0加速度时判断为静止状态开始
