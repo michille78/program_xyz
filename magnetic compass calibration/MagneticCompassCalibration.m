@@ -6,12 +6,12 @@ function ellipseResultStr = MagneticCompassCalibration(  )
 % clc
 close all
 clear all
-run('E:\document and program\program_xyz_noitom\commonFcn\add_CommonFcn_ToPath.m')
+run('E:\document and program\program_xyz\commonFcn\add_CommonFcn_ToPath.m')
 
 dataName = { '2_StandardPlane','2_InclinedPlane', '2_InclinedPlane2LargeData','2_InclinedPlane3LargeData' };
 % dataName = {'2_InclinedPlane2LargeData'};
 %dataFolder = 'E:\data_xyz_noitom\magneticData\Calibrated_4.9B_Stand\8';
-dataFolder = 'E:\data_xyz_noitom\magneticData\magnetic data 4.13';
+dataFolder = 'E:\data_xyz\magneticData\magnetic data 4.13';
 % dataFolder = 'E:\xyz\research\program_xyz_noitom\magnetic compass calibration\magn_sphere' ;
 
 N = length( dataName );

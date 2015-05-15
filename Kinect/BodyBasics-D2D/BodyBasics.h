@@ -105,6 +105,8 @@ private:
     /// </summary>
     void                    Update();
 
+	void					UpdateColorBase();
+
     /// <summary>
     /// Initializes the default Kinect sensor
     /// </summary>

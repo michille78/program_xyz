@@ -30,7 +30,7 @@ fillNum = 0;
 %% 实时搜索待平滑的区间 NeedSmoothWin
 
 winStart = 0;
-for k=clipN+1:Nframes
+for k=clipN+1:Nframes-clipN+1
     % 记录所有的0连续区间，当区间长度<=stepN时进行详细判定
     if JudgeData(k)==0
         if JudgeData(k-1) == 1
@@ -55,9 +55,11 @@ for k=clipN+1:Nframes
                     if sum( JudgeData(winStart-M:winStart-1) )==M && sum( JudgeData(winEnd+1:winEnd+M) )==M
                        %%% 判断这个区间OK：均置为1  (优)
                        IsDoSmooth = 1;
-                    elseif  sum( JudgeData(winStart-M*2+1:winEnd+M) ) >= M*3*SmoothRate && sum( JudgeData(winEnd+1:winEnd+M) )>=M*0.5
-                        %%% 判断这个区间OK：均置为1  (次优)
-                        IsDoSmooth = 1;
+                    elseif winStart-M*2+1>1 && winEnd+M<Nframes
+                        if sum( JudgeData(winStart-M*2+1:winEnd+M) ) >= M*3*SmoothRate && sum( JudgeData(winEnd+1:winEnd+M) )>=M*0.5
+                            %%% 判断这个区间OK：均置为1  (次优)
+                            IsDoSmooth = 1;
+                        end
                     end
                     %%% 判断这个区间OK：均置为1
                     if IsDoSmooth == 1

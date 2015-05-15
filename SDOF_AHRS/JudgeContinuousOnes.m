@@ -21,7 +21,7 @@ IsContinuousOnes = zeros( size(IsOnes) );
 MeanGyroData = mean( abs(GyroData),2 );
 [ ~,I ] = max(MeanGyroData);
 GyroData_1Dim = GyroData(I,:);
-
+winStart = 0;
 for k=2:Nframes
     if IsOnes(k)==1
         if IsOnes(k-1)==0 || k==2  
@@ -32,7 +32,9 @@ for k=2:Nframes
     else
         if IsOnes(k-1)==1
            %  1->0
-     
+            if winStart==0
+                continue;
+            end
             winEnd = k-1;
             M = winEnd-winStart+1 ;
             if M>minContinuesN

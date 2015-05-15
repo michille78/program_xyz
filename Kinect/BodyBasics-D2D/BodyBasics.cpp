@@ -223,76 +223,81 @@ void CBodyBasics::Update()
 	/// Update Color Frame
 	if (IsDrawColorBase)
 	{
-		if (!m_pColorFrameReader)
-		{
-			return;
-		}
+		UpdateColorBase();
+	}
 
-		IColorFrame* pColorFrame = NULL;
+}
 
-		HRESULT hr = m_pColorFrameReader->AcquireLatestFrame(&pColorFrame);
+void CBodyBasics::UpdateColorBase()
+{
+	if (!m_pColorFrameReader)
+	{
+		return;
+	}
+
+	IColorFrame* pColorFrame = NULL;
+
+	HRESULT hr = m_pColorFrameReader->AcquireLatestFrame(&pColorFrame);
+
+	if (SUCCEEDED(hr))
+	{
+		INT64 nTime = 0;
+		IFrameDescription* pFrameDescription = NULL;
+		int nWidth = 0;
+		int nHeight = 0;
+		ColorImageFormat imageFormat = ColorImageFormat_None;
+		UINT nBufferSize = 0;
+		RGBQUAD *pBuffer = NULL;
+
+		hr = pColorFrame->get_RelativeTime(&nTime);
 
 		if (SUCCEEDED(hr))
 		{
-			INT64 nTime = 0;
-			IFrameDescription* pFrameDescription = NULL;
-			int nWidth = 0;
-			int nHeight = 0;
-			ColorImageFormat imageFormat = ColorImageFormat_None;
-			UINT nBufferSize = 0;
-			RGBQUAD *pBuffer = NULL;
-
-			hr = pColorFrame->get_RelativeTime(&nTime);
-
-			if (SUCCEEDED(hr))
-			{
-				hr = pColorFrame->get_FrameDescription(&pFrameDescription);
-			}
-
-			if (SUCCEEDED(hr))
-			{
-				hr = pFrameDescription->get_Width(&nWidth);
-			}
-
-			if (SUCCEEDED(hr))
-			{
-				hr = pFrameDescription->get_Height(&nHeight);
-			}
-
-			if (SUCCEEDED(hr))
-			{
-				hr = pColorFrame->get_RawColorImageFormat(&imageFormat);
-			}
-
-			if (SUCCEEDED(hr))
-			{
-				if (imageFormat == ColorImageFormat_Bgra)
-				{
-					hr = pColorFrame->AccessRawUnderlyingBuffer(&nBufferSize, reinterpret_cast<BYTE**>(&pBuffer));
-				}
-				else if (m_pColorRGBX)
-				{
-					pBuffer = m_pColorRGBX;
-					nBufferSize = cColorWidth * cColorHeight * sizeof(RGBQUAD);
-					hr = pColorFrame->CopyConvertedFrameDataToArray(nBufferSize, reinterpret_cast<BYTE*>(pBuffer), ColorImageFormat_Bgra);
-				}
-				else
-				{
-					hr = E_FAIL;
-				}
-			}
-
-			if (SUCCEEDED(hr))
-			{
-				ProcessColor(nTime, pBuffer, nWidth, nHeight);
-			}
-
-			SafeRelease(pFrameDescription);
+			hr = pColorFrame->get_FrameDescription(&pFrameDescription);
 		}
 
-		SafeRelease(pColorFrame);
+		if (SUCCEEDED(hr))
+		{
+			hr = pFrameDescription->get_Width(&nWidth);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			hr = pFrameDescription->get_Height(&nHeight);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			hr = pColorFrame->get_RawColorImageFormat(&imageFormat);
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			if (imageFormat == ColorImageFormat_Bgra)
+			{
+				hr = pColorFrame->AccessRawUnderlyingBuffer(&nBufferSize, reinterpret_cast<BYTE**>(&pBuffer));
+			}
+			else if (m_pColorRGBX)
+			{
+				pBuffer = m_pColorRGBX;
+				nBufferSize = cColorWidth * cColorHeight * sizeof(RGBQUAD);
+				hr = pColorFrame->CopyConvertedFrameDataToArray(nBufferSize, reinterpret_cast<BYTE*>(pBuffer), ColorImageFormat_Bgra);
+			}
+			else
+			{
+				hr = E_FAIL;
+			}
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			ProcessColor(nTime, pBuffer, nWidth, nHeight);
+		}
+
+		SafeRelease(pFrameDescription);
 	}
 
+	SafeRelease(pColorFrame);
 }
 
 /// <summary>

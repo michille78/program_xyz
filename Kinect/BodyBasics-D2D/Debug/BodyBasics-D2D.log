@@ -1,4 +1,4 @@
-﻿生成启动时间为 2015/5/11 17:40:06。
+﻿生成启动时间为 2015/5/14 11:15:14。
      1>项目“E:\document and program\program_xyz\Kinect\BodyBasics-D2D\BodyBasics-D2D.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
          D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W1 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt BodyBasics.cpp
@@ -13,4 +13,4 @@
 
 生成成功。
 
-已用时间 00:00:01.04
+已用时间 00:00:02.22

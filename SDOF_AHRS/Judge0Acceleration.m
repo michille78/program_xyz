@@ -14,7 +14,7 @@ frequency = AHRSData.frequency ;
 Nframes = AHRSData.Nframes ;
 
 IsDoSmoothIsAccZero = AHRSThreshod.IsDoSmoothIsAccZero;
-IsDraw = 1 ;
+IsDraw = 0 ;
 
 %%% the threshold value to judge is being static
 AccNormZeroThreshod = AHRSThreshod.AccNormZeroThreshod ;
