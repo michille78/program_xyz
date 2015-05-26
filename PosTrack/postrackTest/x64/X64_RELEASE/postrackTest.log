@@ -1,0 +1,56 @@
+﻿生成启动时间为 2015/5/22 20:10:23。
+     1>项目“E:\document and program\program_xyz\PosTrack\postrackTest\postrackTest.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"..\PosTrack\Eigen-3.2.2" /I..\PosTrack\ /I..\PerceptionNeuronSDK\ /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\X64_RELEASE\postrackTest.pch" /Fo"x64\X64_RELEASE\\" /Fd"x64\X64_RELEASE\vc120.pdb" /Gd /TP /errorReport:prompt BvhPlayerDlg.cpp ChildView.cpp ControlDlg.cpp MainFrm.cpp postrack.cpp
+         BvhPlayerDlg.cpp
+         ChildView.cpp
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(25): warning C4005: “ASSERT”: 宏重定义
+                 D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\atlmfc\include\afx.h(372) : 参见“ASSERT”的前一个定义
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(126): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(127): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(128): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(129): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(143): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(144): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(145): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(146): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+         ControlDlg.cpp
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(25): warning C4005: “ASSERT”: 宏重定义
+                 D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\atlmfc\include\afx.h(372) : 参见“ASSERT”的前一个定义
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(126): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(127): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(128): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(129): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(143): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(144): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(145): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>E:\document and program\program_xyz\PosTrack\PosTrack\Definitions.h(146): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>ControlDlg.cpp(136): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>ControlDlg.cpp(137): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>ControlDlg.cpp(564): warning C4101: “fileHeader”: 未引用的局部变量
+         MainFrm.cpp
+         postrack.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D NDEBUG /D _UNICODE /D UNICODE /D _AFXDLL /l"0x0804" /Ix64\X64_RELEASE\ /nologo /fo"x64\X64_RELEASE\postrack.res" postrack.rc 
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\postrackTest.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:..\x64\X64_RELEASE\ PNLib.lib PosTrack.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\postrackTest.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\postrackTest.lib" /MACHINE:X64 x64\X64_RELEASE\postrack.res
+         x64\X64_RELEASE\BvhPlayerDlg.obj
+         x64\X64_RELEASE\ChildView.obj
+         x64\X64_RELEASE\CommandControl.obj
+         x64\X64_RELEASE\Communication.obj
+         x64\X64_RELEASE\ConsoleInApp.obj
+         x64\X64_RELEASE\ControlDlg.obj
+         x64\X64_RELEASE\CRC8.obj
+         x64\X64_RELEASE\MainFrm.obj
+         x64\X64_RELEASE\postrack.obj
+         x64\X64_RELEASE\serialport.obj
+         x64\X64_RELEASE\stdafx.obj
+            正在创建库 E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\postrackTest.lib 和对象 E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\postrackTest.exp
+         正在生成代码
+         已完成代码的生成
+         postrackTest.vcxproj -> E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\postrackTest.exe
+     1>已完成生成项目“E:\document and program\program_xyz\PosTrack\postrackTest\postrackTest.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.88

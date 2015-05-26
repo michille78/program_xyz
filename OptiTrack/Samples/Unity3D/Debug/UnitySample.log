@@ -1,0 +1,31 @@
+﻿生成启动时间为 2015/5/19 18:37:13。
+     1>项目“E:\document and program\program_xyz\OptiTrack\Samples\Unity3D\UnitySample.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\..\include\ /Zi /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _VC80_UPGRADE=0x0710 /D _MBCS /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt UnitySample.cpp tinyxml\tinystr.cpp tinyxml\tinyxml.cpp tinyxml\tinyxmlerror.cpp tinyxml\tinyxmlparser.cpp
+         UnitySample.cpp
+     1>UnitySample.cpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+         tinystr.cpp
+         tinyxml.cpp
+         tinyxmlerror.cpp
+         tinyxmlparser.cpp
+         正在生成代码...
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\document and program\program_xyz\OptiTrack\Samples\\bin\UnitySample.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\..\lib NatNetLibStatic.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\document and program\program_xyz\OptiTrack\Samples\\bin\UnitySample.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\document and program\program_xyz\OptiTrack\Samples\\bin\UnitySample.lib" /MACHINE:X86 /SAFESEH 
+          Debug\UnitySample.obj
+         Debug\tinystr.obj
+         Debug\tinyxml.obj
+         Debug\tinyxmlerror.obj
+         Debug\tinyxmlparser.obj
+     1>LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+     1>NatNetLibStatic.lib(ClientCore.obj) : warning LNK4099: 未找到 PDB“vc100.pdb”(使用“NatNetLibStatic.lib(ClientCore.obj)”或在“E:\document and program\program_xyz\OptiTrack\Samples\bin\vc100.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+     1>NatNetLibStatic.lib(NatNetClient.obj) : warning LNK4099: 未找到 PDB“vc100.pdb”(使用“NatNetLibStatic.lib(NatNetClient.obj)”或在“E:\document and program\program_xyz\OptiTrack\Samples\bin\vc100.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+     1>NatNetLibStatic.lib(NatNetHelper.obj) : warning LNK4099: 未找到 PDB“vc100.pdb”(使用“NatNetLibStatic.lib(NatNetHelper.obj)”或在“E:\document and program\program_xyz\OptiTrack\Samples\bin\vc100.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+     1>NatNetLibStatic.lib(NatNetRepeater.obj) : warning LNK4099: 未找到 PDB“vc100.pdb”(使用“NatNetLibStatic.lib(NatNetRepeater.obj)”或在“E:\document and program\program_xyz\OptiTrack\Samples\bin\vc100.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+     1>NatNetLibStatic.lib(quattoeuler.obj) : warning LNK4099: 未找到 PDB“vc100.pdb”(使用“NatNetLibStatic.lib(quattoeuler.obj)”或在“E:\document and program\program_xyz\OptiTrack\Samples\bin\vc100.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+     1>NatNetLibStatic.lib(UnicastClientCore.obj) : warning LNK4099: 未找到 PDB“vc100.pdb”(使用“NatNetLibStatic.lib(UnicastClientCore.obj)”或在“E:\document and program\program_xyz\OptiTrack\Samples\bin\vc100.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+         UnitySample.vcxproj -> E:\document and program\program_xyz\OptiTrack\Samples\\bin\UnitySample.exe
+     1>已完成生成项目“E:\document and program\program_xyz\OptiTrack\Samples\Unity3D\UnitySample.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.57
