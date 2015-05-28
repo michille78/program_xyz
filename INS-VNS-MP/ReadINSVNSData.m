@@ -1,27 +1,28 @@
 %% noitom xyz 2015 5 22
 
 %% otherMakers
-% otherMakers.frequency
-% otherMakers.Position
-% otherMakers.otherMakersN
+% otherMakers(k).frequency
+% otherMakers(k).Position
+% otherMakers(k).otherMakersN
+%¡¡otherMakers(k).time
 
 %% InertialData
-% InertialData.frequency 
-% InertialData.time 
-% InertialData.HipQuaternion
-% InertialData.HipPosition 
-% InertialData.HeadQuaternion 
-% InertialData.HeadPosition 
-% InertialData.BodyDirection
-% InertialData.DataStyle
-% InertialData.HeadHipLength
+% InertialData.frequency (k)
+% InertialData.time (k)
+% InertialData.HipQuaternion(k)  3*N
+% InertialData.HipPosition (k)
+% InertialData.HeadQuaternion (k)
+% InertialData.HeadPosition (k)
+% InertialData.BodyDirection(k)
+% InertialData.DataStyle(k)
+% InertialData.HeadHipLength(k)
 
 function ReadINSVNSData(  ) 
 
-dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\Head\Head1';
+dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head8';
 
 if ~exist([dataFolder,'\otherMakers.mat'])
-    VisionDataCell = importdata([dataFolder,'\opt.txt']);
+    VisionDataCell = importdata([dataFolder,'\Opt.txt']);
     otherMakers = ReadOtherMakers( VisionDataCell ) ;
     
     %% the maker set segment
@@ -33,7 +34,7 @@ else
 end
 
 if ~exist([dataFolder,'\InertialData.mat'])
-    InitialDataCell = importdata( [dataFolder,'\inertial.txt'] );
+    InitialDataCell = importdata( [dataFolder,'\inertia.txt'] );
     InertialData = ReadInertialData( InitialDataCell ) ;
     save([dataFolder,'\InertialData.mat'],'InertialData')
 else
@@ -115,14 +116,20 @@ for k=1:N
    C = textscan( VisionDataCell_k,'%s %d',1 );
    timeStr_k = C{1};
    otherMakersN = C{2};
-   m = FindSecondSpace( VisionDataCell_k,2 );
-   VisionDataCell_k_Temp = VisionDataCell_k( m+1:length(VisionDataCell_k) );
-   otherMakers_Data_k = zeros(3,otherMakersN);
-   for i=1:otherMakersN
-        otherMakers_Data_k_Cell = textscan( VisionDataCell_k_Temp,'%f %f %f',1 );
-        otherMakers_Data_k(:,i) = cell2mat(otherMakers_Data_k_Cell);
+   if otherMakersN>0
+       m = FindSecondSpace( VisionDataCell_k,2 );
+       VisionDataCell_k_Temp = VisionDataCell_k( m+1:length(VisionDataCell_k) );
+       otherMakers_Data_k = zeros(3,otherMakersN);
+       otherMakers_Data_k_Cell = textscan( VisionDataCell_k_Temp,'%f %f %f',otherMakersN );
+       if otherMakersN>1
+           disp('')
+       end
+       for i=1:otherMakersN            
+            otherMakers_Data_k(:,i) = [ otherMakers_Data_k_Cell{1}(i);otherMakers_Data_k_Cell{2}(i);otherMakers_Data_k_Cell{3}(i) ]  ;
+       end
+   else
+       otherMakers_Data_k = [];
    end
-   
    otherMakers(k).otherMakersN = otherMakersN ;
    otherMakers(k).Position = otherMakers_Data_k ;
    time(k) = TransformTimeFormat( timeStr_k );

@@ -66,7 +66,7 @@ m_pColorRGBX(NULL),
 m_bSaveScreenshot(false),
 IsDrawBoneLength(true),
 IsDrawSpineBasePosition(true),
-IsDrawColorBase(true)
+IsDrawColorBase(false)
 {
     LARGE_INTEGER qpf = {0};
     if (QueryPerformanceFrequency(&qpf))

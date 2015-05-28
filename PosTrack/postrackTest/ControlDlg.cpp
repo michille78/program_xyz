@@ -44,7 +44,7 @@ void CALLBACK recieveOherMark(void * pOwner, float* otherMarkData, int count)
 			for (int i = 0; i < count; i++)
 			{
 				fprintf(dlg->fpOpt, " %0.5f %0.5f %0.5f",  
-					 otherMarkData[i + 0], otherMarkData[i + 1], otherMarkData[i + 2]);
+					 otherMarkData[3*i + 0], otherMarkData[3*i + 1], otherMarkData[3*i + 2]);
 			}
 		}
 		fprintf(dlg->fpOpt, "\n");
@@ -294,6 +294,8 @@ BOOL CControlDlg::OnInitDialog()
     // 设置中间数据回调函数
     PNRegisterCalculatedBinaryDataBoardcastHandle(this, CalculatedBinaryDataCallback);
 
+	// 设置共享目录
+	PNSetDataFolders(".\\", "D:\\");
 
     pPosTrackor = new PosTrackor();
     pPosTrackor->SetRecievePosTrackHandle(this, recievePosTrackor);
@@ -641,6 +643,9 @@ void CControlDlg::OnBnClickedBtnWriterawfile()
 
 		fprintf(fpInertia, "Time hip-qs hip-qx hip-qy hip-qz hip-x hip-y hip-z head-qs head-qx head-qy head-qz head-x head-y head-z\n");
 		
+		// 开始导出Raw
+		PNExportRawData();
+
 		if (fpOpt != NULL)
 		{
 			fclose(fpOpt);
@@ -663,6 +668,9 @@ void CControlDlg::OnBnClickedBtnWriterawfile()
 	{
 		fclose(fpInertia);
 		fpInertia = NULL;
+
+		// 停止导出
+		PNStopExportRawData();
 
 		fclose(fpOpt);
 		fpOpt = NULL;

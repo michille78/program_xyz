@@ -1,9 +1,6 @@
-﻿生成启动时间为 2015/5/22 19:30:50。
+﻿生成启动时间为 2015/5/28 10:26:34。
      1>项目“E:\document and program\program_xyz\PosTrack\PosTrack\PosTrack.vcxproj”在节点 2 上(Build 个目标)。
-     1>ClCompile:
-         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I".\Eigen-3.2.2" /I./NatNetSDK2.7/include/ /Zi /nologo /W3 /WX- /O2 /Oi /D WIN32 /D NDEBUG /D POSTRACK_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\X64_RELEASE\\" /Fd"x64\X64_RELEASE\vc120.pdb" /Gd /TP /errorReport:prompt NatNetConnector.cpp
-         NatNetConnector.cpp
-       Link:
+     1>Link:
          D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\PosTrack.dll" /NOLOGO /LIBPATH:./NatNetSDK2.7/lib/x64 NatNetLib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\PosTrack.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\document and program\program_xyz\PosTrack\x64\X64_RELEASE\PosTrack.lib" /MACHINE:X64 /DLL x64\X64_RELEASE\Definitions.obj
          x64\X64_RELEASE\Funcs.obj
          x64\X64_RELEASE\NatNetConnector.obj
@@ -16,4 +13,4 @@
 
 生成成功。
 
-已用时间 00:00:00.86
+已用时间 00:00:01.16
