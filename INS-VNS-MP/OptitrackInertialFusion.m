@@ -23,7 +23,7 @@ clc
 clear all
 close all
 global dataFolder otherMakersTime
-dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head8';
+dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head7';
 InertialData = importdata( [dataFolder,'\InertialData.mat'] );
 otherMakers = importdata( [dataFolder,'\otherMakers.mat'] );
 
@@ -127,17 +127,19 @@ saveas( gcf,sprintf('%s\\%s.fig',dataFolder,get(gcf,'name')) );
 saveas( gcf,sprintf('%s\\%s.jpg',dataFolder,get(gcf,'name')) );
 
 figure('name','Tracked Y')
-plot( inertialTime,InertialMarkerPosition(1,:),'.b' )
+plot( inertialTime,InertialMarkerPosition(2,:),'.b' )
 hold on
-plot( visionTime,trackedMakerPosition(1,:),'.r' )
+plot( visionTime,trackedMakerPosition(2,:),'.r' )
 saveas( gcf,sprintf('%s\\%s.fig',dataFolder,get(gcf,'name')) );
 saveas( gcf,sprintf('%s\\%s.jpg',dataFolder,get(gcf,'name')) );
 
 
 figure('name','Tracked Z')
-plot( inertialTime,InertialMarkerPosition(1,:),'.b' )
+ plot( inertialTime,InertialMarkerPosition(3,:),'.b' )
+% plot( InertialMarkerPosition(3,:),'.b' )
 hold on
-plot( visionTime,trackedMakerPosition(1,:),'.r' )
+ plot( visionTime,trackedMakerPosition(3,:),'.r' )
+% plot( trackedMakerPosition(3,:),'.r' )
 saveas( gcf,sprintf('%s\\%s.fig',dataFolder,get(gcf,'name')) );
 saveas( gcf,sprintf('%s\\%s.jpg',dataFolder,get(gcf,'name')) );
 

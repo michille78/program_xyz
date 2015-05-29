@@ -5,7 +5,7 @@ function  inertial_k = VisionK_to_InertialK( vision_k )
 global otherMakersTime  inertialTime 
 global visionFre  inertialFre
 
-MaxTimeErr = 1.9e-2 ;
+MaxTimeErr = 2.5e-2 ;
 
 vision_T = otherMakersTime(vision_k);
 inertial_k_Ser = fix( (vision_k-1)*inertialFre/visionFre )+1; % ËÑË÷Æðµã
