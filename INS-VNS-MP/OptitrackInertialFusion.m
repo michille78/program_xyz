@@ -23,7 +23,7 @@ clc
 clear all
 close all
 global dataFolder otherMakersTime
-dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head7';
+dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head8';
 InertialData = importdata( [dataFolder,'\InertialData.mat'] );
 otherMakers = importdata( [dataFolder,'\otherMakers.mat'] );
 
@@ -36,14 +36,14 @@ otherMakers = PreProcess( otherMakers,InertialData.BodyDirection );
 %    return;
 
 %% 但马克点跟踪
-  dbstop in GetRightOtherMaker
+   dbstop in GetRightOtherMaker
   
- trackedMakerPosition = GetRightOtherMaker( otherMakers,InertialData ) ;
+ [ trackedMakerPosition,trackedMakerVelocity,INSVNSCalib_VS_k ] = GetRightOtherMaker( otherMakers,InertialData ) ;
 trackedMaker.trackedMakerPosition = trackedMakerPosition ;
 trackedMaker.time = otherMakersTime ;
 trackedMaker.MarkerSet = otherMakers(1).MarkerSet ;
 
-DrawTracedINSVNS( trackedMaker,InertialData ) ;
+DrawTracedINSVNS( trackedMaker,InertialData,trackedMakerVelocity,INSVNSCalib_VS_k ) ;
 
 N = length(trackedMakerPosition) ;
 for k=1:N
@@ -101,8 +101,8 @@ end
 Cr_r1 = RotateZ( thita ) ;
 
 
-function DrawTracedINSVNS( trackedMaker,InertialData )
-global dataFolder
+function DrawTracedINSVNS( trackedMaker,InertialData,trackedMakerVelocity,INSVNSCalib_VS_k )
+global dataFolder INSVNSCalibSet
 
 trackedMakerPosition = trackedMaker.trackedMakerPosition  ;
 visionTime = trackedMaker.time  ;
@@ -110,38 +110,121 @@ visionTime = trackedMaker.time  ;
 InertialMarkerPosition = GetInertialMarkerPosition( InertialData,trackedMaker.MarkerSet ) ;
 inertialTime = InertialData.time ;
 
+VSN = length(visionTime) ;
+calib_M = size(INSVNSCalib_VS_k,2);
+
 figure('name','Tracked XY')
-plot( InertialMarkerPosition(1,:),InertialMarkerPosition(2,:),'.b' )
+
 hold on
+plot( InertialMarkerPosition(1,:),InertialMarkerPosition(2,:),'.b' )
 plot( trackedMakerPosition(1,:),trackedMakerPosition(2,:),'.r' )
+legend( 'inertial','vision' );
+
+for i=1:calib_M
+    calib_k_i = INSVNSCalib_VS_k(1,i):INSVNSCalib_VS_k(2,i) ;
+    plot( InertialMarkerPosition(1,calib_k_i),InertialMarkerPosition(2,calib_k_i),'.g' );
+end
+
+for i=1:calib_M
+    calib_k_i = INSVNSCalib_VS_k(1,i):INSVNSCalib_VS_k(2,i) ;
+    plot( trackedMakerPosition(1,calib_k_i),trackedMakerPosition(2,calib_k_i),'.k' );
+end
+
+plot( trackedMakerPosition(1,1),trackedMakerPosition(2,1),'or' )
+plot( InertialMarkerPosition(1,1),InertialMarkerPosition(2,1),'ob' )
+
 xlabel('time sec')
 saveas( gcf,sprintf('%s\\%s.fig',dataFolder,get(gcf,'name')) );
 saveas( gcf,sprintf('%s\\%s.jpg',dataFolder,get(gcf,'name')) );
 
 
 figure('name','Tracked X')
+subplot(2,1,1)
 plot( inertialTime,InertialMarkerPosition(1,:),'.b' )
 hold on
-plot( visionTime,trackedMakerPosition(1,:),'.r' )
+plot( visionTime,trackedMakerPosition(1,:),'.r' ) 
+for i=1:calib_M
+    calib_k_i = INSVNSCalib_VS_k(1,i):INSVNSCalib_VS_k(2,i) ;
+    plot( visionTime(calib_k_i),trackedMakerPosition(1,calib_k_i),'.k' );
+end
+ylabel('position x m/s')
+legend('inertial','vision','calibData')
+
+subplot(2,1,2)
+plot( visionTime,trackedMakerVelocity(1,:),'.r' );
+ylabel('velocity x m/s')
+hold on 
+for i=1:calib_M
+    calib_k_i = INSVNSCalib_VS_k(1,i):INSVNSCalib_VS_k(2,i) ;
+    plot( visionTime(calib_k_i),trackedMakerVelocity(1,calib_k_i),'.k' );
+end
+
 saveas( gcf,sprintf('%s\\%s.fig',dataFolder,get(gcf,'name')) );
 saveas( gcf,sprintf('%s\\%s.jpg',dataFolder,get(gcf,'name')) );
 
 figure('name','Tracked Y')
+subplot(2,1,1)
 plot( inertialTime,InertialMarkerPosition(2,:),'.b' )
 hold on
 plot( visionTime,trackedMakerPosition(2,:),'.r' )
+for i=1:calib_M
+    calib_k_i = INSVNSCalib_VS_k(1,i):INSVNSCalib_VS_k(2,i) ;
+    plot( visionTime(calib_k_i),trackedMakerPosition(2,calib_k_i),'.k' );
+end
+ylabel('position y m/s')
+legend('inertial','vision','calibData')
+subplot(2,1,2)
+plot( visionTime,trackedMakerVelocity(2,:),'.r' );
+ylabel('velocity y m/s')
+hold on 
+for i=1:calib_M
+    calib_k_i = INSVNSCalib_VS_k(1,i):INSVNSCalib_VS_k(2,i) ;
+    plot( visionTime(calib_k_i),trackedMakerVelocity(2,calib_k_i),'.k' );
+end
+
 saveas( gcf,sprintf('%s\\%s.fig',dataFolder,get(gcf,'name')) );
 saveas( gcf,sprintf('%s\\%s.jpg',dataFolder,get(gcf,'name')) );
 
 
 figure('name','Tracked Z')
+subplot(2,1,1)
  plot( inertialTime,InertialMarkerPosition(3,:),'.b' )
 % plot( InertialMarkerPosition(3,:),'.b' )
 hold on
  plot( visionTime,trackedMakerPosition(3,:),'.r' )
 % plot( trackedMakerPosition(3,:),'.r' )
+for i=1:calib_M
+    calib_k_i = INSVNSCalib_VS_k(1,i):INSVNSCalib_VS_k(2,i) ;
+    plot( visionTime(calib_k_i),trackedMakerPosition(3,calib_k_i),'.k' );
+end
+ylabel('position z m/s')
+legend('inertial','vision')
+subplot(2,1,2)
+plot( visionTime,trackedMakerVelocity(3,:),'.r' );
+ylabel('velocity z m/s')
+hold on 
+for i=1:calib_M
+    calib_k_i = INSVNSCalib_VS_k(1,i):INSVNSCalib_VS_k(2,i) ;
+    plot( visionTime(calib_k_i),trackedMakerVelocity(3,calib_k_i),'.k' );
+end
+
 saveas( gcf,sprintf('%s\\%s.fig',dataFolder,get(gcf,'name')) );
 saveas( gcf,sprintf('%s\\%s.jpg',dataFolder,get(gcf,'name')) );
+
+
+figure('name','trackedMakerVelocity xyNorm')
+subplot(2,1,1)
+plot( visionTime,trackedMakerVelocity(4,:),'.r' );
+ylabel( 'xy velocity normest' );
+
+temp = INSVNSCalibSet.MinVXY_Calib ;
+line( [visionTime(1) visionTime(VSN)],[temp temp],'color','r' )
+
+subplot(2,1,2)
+plot( visionTime,trackedMakerVelocity(5,:)*180/pi,'.b' );
+ylabel( 'xy velocity angle' );
+
+xlabel('time sec')
 
 
 function DrawAllINSVNS( otherMakers,InertialData )

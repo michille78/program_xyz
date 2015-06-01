@@ -19,7 +19,7 @@
 
 function ReadINSVNSData(  ) 
 
-dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head8';
+dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head5';
 
 if ~exist([dataFolder,'\otherMakers.mat'])
     VisionDataCell = importdata([dataFolder,'\Opt.txt']);

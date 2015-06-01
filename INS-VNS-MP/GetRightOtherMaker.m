@@ -1,35 +1,16 @@
 %% xyz 2015.5.25
 %% otherMakers ÖĞÂí¿ËµãÊ¶±ğ£ºÔÚ¶à¸öÂí¿ËµãÖĞÕÒµ½ÕıÈ·µÄÂí¿Ëµã
-% Âí¿Ëµã¶ªÊ§Ê±¸ø³ö trackedMakerPosition = NaN
-%%% µ¥Âí¿Ëµã¸ú×ÙÅĞ¶¨Ë¼Â·
+% trackedMakerPosition £º [3*N] Ã¿¸öÊ±¿Ì¸ú×Ù³É¹¦Âí¿ËµãÎ»ÖÃ£¬¸ú×ÙÊ§°Ü NaN(3,1)
+% trackedMarkerVelocity £º [5*N] ¸ú×Ù³É¹¦Âí¿ËµãµÄËÙ¶È£¬Ç°ÈıÁĞxyzËÙ¶È£¬
+    % 	trackedMarkerVelocity(4,:)ÎªxyÆ½ÃæÄÚÂí¿ËµãËÙ¶ÈÄ££¬trackedMarkerVelocity(5,:)ÎªxyÆ½ÃæÄÚÂí¿ËµãËÙ¶ÈÓë[0 1 0] µÄ¼Ğ½Ç
 
-%%%  µÚÒ»¸öµãÖ®ºó¸ú×Ù·½·¨
-% 1£©¼ìÑé¸ß¶È£¬¸ß¶ÈÂú×ãµÄ»°£¬½øÈë2£© 
-%  
-% 2£© Âí¿ËµãÁ¬ĞøĞÔÅĞ¶¨
-%   Èç¹ûÉÏÒ»Ê±¿ÌµÄµ¥Âí¿Ëµã¸ú×Ù³É¹¦£¬ÔòÔÚµ±Ç°Âí¿ËµãÖĞÑ°ÕÒÓëÉÏÒ»Ê±¿Ì×î½Ó½üµÄÂí¿Ëµã£¬Î»ÒÆ²îÄ£Ğ¡ÓÚ 1/visionFre*0.5£¨×îĞ¡2cm£©
-%   Ê±ÈÏÎªÊı¾İÁ¬Ğø¡£
-%       
-% 3) ¶ÌÊ±¼ä£¨dT=3£©ÔË¶¯µÄ¹ı³Ì£¬¹ßĞÔºÍÊÓ¾õÎ»ÒÆ²î dPError_dT ½øĞĞÅĞ¶¨£¬ dPError_dT(i) = normest(dP_Inertial-dP_Vision)
-%       3.1£© dP_InertialÄ£Ğ¡ÓÚ0.03 m£¬´¦ÓÚ×¼¾²Ö¹×´Ì¬¡£ÈôdPError_dTÄ£´óÓÚ 0.01*moveTime Ôò¸ú×ÙÊ§°Ü¡£
-%             ÈôÁ¬ĞøÔòOK ( TrackFlag=3.1 )    ·ñÔò ( TrackFlag=1.31 )  ½øÈë4£© 
-%       3.2£© dP_InertialÄ£´óÓÚ0.03 m£¬´¦ÓÚÔË¶¯×´Ì¬¡£ 
-%             dPError_dT µÄÄ£Ğ¡ÓÚ 0.01*moveTime Ê±¸ú×ÙOK ( TrackFlag=3.5 )
-%             ÈôdP_VisionµÄÄ£·Ç³£Ğ¡£¬Ö±½ÓÌŞ³ı¡£    ·ñÔò ( TrackFlag=1.35 ) ½øÈë4£©
-%       1) 2)ÅĞ¶¨¾ùÊ§°Ü£¬Âí¿Ëµã²»Á¬Ğø£¬ÇÒ¹ßĞÔºÍÊÓ¾õÎ»ÒÆÎó²îÂÔ´ó£¬½øÈëµÚÅĞ¶¨3£©¡££¨¿ÉÄÜ´òËãÔÚ¿ìËÙÔË¶¯µÄÇé¿öÖĞ£©
-% 4) Ñ°ÕÒ¹ßĞÔÔË¶¯ dS ³¤¶È(´óÓÚ moveDistance)£¬ÇÒÂí¿Ëµã¸ú×Ù³É¹¦µÄÊÇÊ±¿Ì£¬ÅĞ¶¨ dP_Inertial ºÍ dP_Vision£º
-%       4.0) ËÑË÷ÕâÀàµãÊ§°Ü£º TrackFlag=-1.4
-%       4.1£© dPError_dS µÄÄ£Ğ¡ÓÚ MaxPositionError_dS£¨moveDistance*0.35£© 
-%       4.2) dP_Inertial ºÍ dP_Vision µÄ¼Ğ½ÇĞ¡ÓÚMaxDisplaceAngle
-%       Í¬Ê±Âú×ã 4.1£© ºÍ 4.2£©ÈÏÎªÂí¿Ëµã¸ú×Ù³É¹¦ ( TrackFlag=4+TrackFlag )£¬·ñÔò ( TrackFlag=-TrackFlag )
-%%% µÚÒ»¸öµãµÄ¸ú×Ù·½·¨
-% Í¨¹ıÔË¶¯×´Ì¬ËÑË÷µÚÒ»¸öµã
+%% ¸ú×Ù²âÁ¿¼ûËµÃ÷ÎÄµµ
 
 %% ÅĞ¶ÏË¼Â·£º±È½Ï2¸öÏà¶ÔÎ»ÒÆÊ¸Á¿£º1£©dT(3 sec)ÔË¶¯Ê±¼äÊ±  2£©dS£¨1m£©ÔË¶¯Î»ÒÆ³¤¶ÈÊ±
 % 1)dT(3 sec)Ê±¼äÄÚ£¬¹ßĞÔºÍÊÓ¾õÎ»ÒÆÏòÁ¿µÄ´óĞ¡²î<0.1m£¬·½Ïò²î<60¡ã£¨µ±Î»ÒÆÊ¸Á¿³¤¶ÈĞ¡ÓÚ0.2mÊ±²»±È½Ï·½Ïò£©
 
-function trackedMakerPosition = GetRightOtherMaker( otherMakers,InertialData )
-global  makerTrackThreshold moveDistance
+function [ trackedMakerPosition,trackedMarkerVelocity,INSVNSCalib_VS_k ] = GetRightOtherMaker( otherMakers,InertialData )
+global  makerTrackThreshold moveDistance INSVNSCalibSet
 global otherMakersTime  inertialTime 
 global visionFre  inertialFre
 global   INSMarkH0  VNSMarkH0
@@ -58,6 +39,16 @@ makerTrackThreshold.MaxMarkHighChange = 0.4 ;      % m ¹ßĞÔÓëÊÓ¾õÄ¿±êÂí¿Ëµã¸ß¶È²
 
 makerTrackThreshold.MaxHighMoveErrRate = 0.3 ;  %  ¸ß¶È·½Ïò±ä»¯´óÊ±£¬Èô±ä»¯±ÈÀıĞ¡ÓÚÕâ¸öÖµ£¬Ö±½ÓÈÏ¶¨¸ú×ÙOK
 makerTrackThreshold.BigHighMove = 0.2 ;         % m ´óÓÚÕâ¸öÖµÔòÈÏÎª¸ß¶È·½Ïò±ä»¯´ó
+%% ×ø±êÏµ±ê¶¨²ÎÊı
+INSVNSCalibSet.Min_xyNorm_Calib = 0.3 ; % m  ÓÃÓÚ±ê¶¨µÄÊı¾İµÄ×îĞ¡ÔË¶¯Î»ÒÆ³¤¶È
+INSVNSCalibSet.MaxTime_Calib = 2  ;  % sec  ÓÃÓÚ±ê¶¨µÄÊı¾İµÄ×î³¤Ê±¼ä
+INSVNSCalibSet.MaxVXY_DirectionChange_Calib = 30*pi/180 ;     % ¡ã XYÆ½ÃæËÙ¶È·½Ïò±ä»¯×î´ó·¶Î§
+INSVNSCalibSet.MaxVZ_Calib = 0.1 ;     % m/s Z·½ÏòËÙ¶È×î´ó¾ø¶ÔÖµ
+INSVNSCalibSet.MinVXY_Calib = 0.2;   	% m/s XY Æ½ÃæËÙ¶ÈÄ£×îĞ¡¾ø¶ÔÖµ
+INSVNSCalibSet.angleUniformityErr = 10*pi/180 ; % ¡ã Î»ÒÆÊ¸Á¿·½Ïò¾ùÔÈĞÔÎó²î
+% ËÙ¶È¼ÆËã
+INSVNSCalibSet.dT_CalV_Calib = 0.5 ; % ¼ÆËãËÙ¶ÈÊ±¼ä²½³¤£¨±ê¶¨Î»ÒÆÊı¾İÑ¡Ôñ£©
+INSVNSCalibSet.MinXYVNorm_CalAngle = 0.1 ;  %  m/s xyËÙ¶ÈÄ£´óÓÚÕâ¸öÖµ²Å¼ÆËãËÙ¶ÈµÄ·´Ïò
 
 switch MarkerSet 
     case 'Head'
@@ -83,7 +74,6 @@ trackedMakerPosition = NaN(3,MarkerTN); % ÅĞ¶Ï³É¹¦µÄÂí¿ËµãÎ»ÖÃ
 
 % otherMakersNew = struct;
 TrackFlag = zeros(1,MarkerTN);
-ObjectMakerHigh = CalObjectMakerHigh( otherMakers );
 
 otherMakers(1).ContinuesFlag = 0 ; % ²»Á¬Ğø
 otherMakers(1).ContinuesLastPosition = NaN ;
@@ -100,6 +90,10 @@ angleErr_dS = NaN(1,MarkerTN);
 angleErr_dT_Min = NaN(1,MarkerTN); 
 ConTrackedFailed = zeros(1,MarkerTN);
 INSVNSMarkHC_Min = NaN(1,MarkerTN); 
+trackedMarkerVelocity = NaN(5,MarkerTN);  
+INSVNSCalib_VS_k = [];
+
+IsCalibDataEnough = 0;
 
  wh = waitbar(0,'SearchDistanceK');
 for k=1:MarkerTN
@@ -124,8 +118,7 @@ for k=1:MarkerTN
     
      
     [ trackedMakerPosition(:,k),otherMakersNew_k,TrackFlag(k),JudgeIndex  ] = JudgeMaker...
-        ( otherMakers_k,otherMakers_k_last,k,inertial_k,trackedMakerPosition,InertialPosition,inertial_dT_k_last,...
-            vision_dT_k_last,ObjectMakerHigh ) ;
+        ( otherMakers_k,otherMakers_k_last,k,inertial_k,trackedMakerPosition,InertialPosition,inertial_dT_k_last,vision_dT_k_last ) ;
     otherMakers(k)=otherMakersNew_k;
     dPi_ConJudge(k) = JudgeIndex.dPi_ConJudge  ;
     dPError_dT_xy(k) = JudgeIndex.dPError_dT_xy ;
@@ -155,6 +148,22 @@ for k=1:MarkerTN
 %         Attitude = C2Euler( C_NED_HipNED0,'ZYX' )*180/pi
         
     end
+    %% ÇóËÙ¶È
+    [ trackedMarkerVelocity_k,k_calV ] = VisionMarkVelocity( trackedMakerPosition,k ) ;
+    if k_calV>0 
+        trackedMarkerVelocity(:,k_calV) = trackedMarkerVelocity_k ;
+        if IsCalibDataEnough==0
+        %% ËÑË÷¿ÉÓÃÓÚ±ê¶¨µÄÊı¾İ
+    %         dbstop in SearchCalibData
+            [ INSVNSCalib_VS_k,IsCalibDataEnough,dX_Vision ] = SearchCalibData...
+                ( INSVNSCalib_VS_k,trackedMarkerVelocity,trackedMakerPosition,k_calV ) ;
+            if IsCalibDataEnough==1
+                Crw = INSVNSCalib( INSVNSCalib_VS_k,dX_Vision,InertialPosition );
+                 otherMakers = CompensateSecond( otherMakers,Crw  );
+            end
+        end        
+    end
+    
     
     if mod(k,fix(MarkerTN/10))==0
         waitbar(k/MarkerTN);
@@ -227,25 +236,22 @@ xlabel('time sec')
 figure('name','ConTrackedFailed')
 plot(ConTrackedFailed)
 
+
+
 FailTrackFlagNum = sum( TrackFlag<=0 );
 fprintf( 'FailTrackFlagNum=%d ( %0.3f ) \n',FailTrackFlagNum,FailTrackFlagNum/length(TrackFlag) );
 
-% ¼ÆËãÂí¿ËµãµÄ¸ß¶È ObjectMakerHigh £º
-% ÈÏÎª³õÊ¼Ê±¿Ì0.5ÃëÄÚÄ¿±êÂí¿ËµãÊÇÒ»¶¨¸ú×Ùµ½µÄ
 
-function ObjectMakerHigh = CalObjectMakerHigh( otherMakers )
-global  visionFre
-N = fix(visionFre*0.5);
+function otherMakers = CompensateSecond( otherMakers,Crw  )
+
+
+N = length( otherMakers );
+
 for k=1:N
-    if otherMakers(k).otherMakersN > 0 
-        otherMakersPosition_k = otherMakers(k).Position ;
-        if abs(otherMakersPosition_k(1))<0.1 && abs(otherMakersPosition_k(2))<0.1
-            ObjectMakerHigh = -otherMakersPosition_k(3) ;
-            return;
-        end
+    if ~isempty(otherMakers(k).Position)
+        otherMakers(k).Position = Crw*otherMakers(k).Position ;
     end
 end
-
 
 %% Judge which is the right maker
 % 1) ¹Ì¶¨ÔË¶¯Ê±¼äÎ»ÒÆÅĞ¶Ï£ºÖ»ÅĞ¶ÏÎ»ÒÆ²î³¤¶È
@@ -253,8 +259,8 @@ end
 
 function [ trackedMakerPosition_k_OK,otherMakers_k,TrackFlag,JudgeIndex ] = JudgeMaker...
 ( otherMakers_k,otherMakers_k_last,k_vision,inertial_k,trackedMakerPosition,InertialPosition,inertial_dT_k_last,...
-            vision_dT_k_last,ObjectMakerHigh )
-global inertialFre visionFre makerTrackThreshold moveDistance
+            vision_dT_k_last )
+global  visionFre makerTrackThreshold moveDistance
 
 JudgeIndex.dPi_ConJudge = NaN ;
 JudgeIndex.dPError_dT_xy = NaN ;
@@ -297,7 +303,7 @@ while vision_dT_k_last>1 && isnan( trackedMakerPosition(1,vision_dT_k_last) ) % 
     vision_dT_k_last = vision_dT_k_last-1 ;
     inertial_dT_k_last = VisionK_to_InertialK(vision_dT_k_last);
     if (k_vision-vision_dT_k_last)/visionFre > makerTrackThreshold.MaxMoveTime
-        fprintf( '·ÅÆúËÑË÷£¬×÷ÎªĞÂµãÖØĞÂËÑË÷  k_vision = %d , vision_dT_k_last = %d \n',k_vision,vision_dT_k_last );
+%         fprintf( '·ÅÆúËÑË÷£¬×÷ÎªĞÂµãÖØĞÂËÑË÷  k_vision = %d , vision_dT_k_last = %d \n',k_vision,vision_dT_k_last );
         break;
     end
 end
@@ -321,7 +327,7 @@ if isnan( trackedMakerPosition(1,vision_dT_k_last) )
             JudgeIndex.dP_Inertial_xyNorm = dP_Inertial_xyNorm ;
             JudgeIndex.angleErr_dT_Min = angleErr_dT_Min;
             if ~isnan(trackedMakerPosition_k_OK)
-               fprintf('µÚÒ»¸öÂí¿ËµãËÑË÷³É¹¦  k_vision = %d dPError_dT_xy = %0.3f,  dPError_dT_z = %0.3f \n ',k_vision,dPError_dT_xy,dPError_dT_z); 
+%                fprintf('µÚÒ»¸öÂí¿ËµãËÑË÷³É¹¦  k_vision = %d dPError_dT_xy = %0.3f,  dPError_dT_z = %0.3f \n ',k_vision,dPError_dT_xy,dPError_dT_z); 
                return;
             end        
         end        

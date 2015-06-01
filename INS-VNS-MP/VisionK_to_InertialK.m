@@ -30,6 +30,7 @@ search_n = 0;
 while search_n<100
     
     inertial_k_SerNext = max(inertial_k_Ser+1*inertial_k_Flag,1) ;
+    inertial_k_SerNext = min(inertial_k_SerNext,length(inertialTime)) ;
     
     inerTime_k_Next = inertialTime( inertial_k_SerNext );
     TimeError_Next = inerTime_k_Next-vision_T ;
