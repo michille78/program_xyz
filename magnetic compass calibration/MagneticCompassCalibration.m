@@ -9,9 +9,12 @@ clear all
 run('E:\document and program\program_xyz\commonFcn\add_CommonFcn_ToPath.m')
 
 dataName = { '2_StandardPlane','2_InclinedPlane', '2_InclinedPlane2LargeData','2_InclinedPlane3LargeData' };
+dataName = {'8clean2_raw_data_calibrate','8_raw_data_calibrate','8Clean_raw_data_calibrate','3_raw_data_calibrate','5Cleared_raw_data_calibrate','new_raw_data_calibrate'};
+dataName = {'1clean_raw_data_calibrate','2clean_raw_data_calibrate'};
+dataName = dataName(2);
 % dataName = {'2_InclinedPlane2LargeData'};
 %dataFolder = 'E:\data_xyz_noitom\magneticData\Calibrated_4.9B_Stand\8';
-dataFolder = 'E:\data_xyz\magneticData\magnetic data 4.13';
+dataFolder = 'E:\data_xyz\magneticData\magnetic_raw_6.4_B';
 % dataFolder = 'E:\xyz\research\program_xyz_noitom\magnetic compass calibration\magn_sphere' ;
 
 N = length( dataName );
@@ -32,16 +35,16 @@ format long
 %% cosnt data
 global H_earth_Norm H_earth_xy_Norm H_earth_z
 H_earth_Norm = 54552 / 1 ;  % nT  % 地球磁场
-H_earth_xy_Norm = sqrt(27949^2+3279^2) / 1 ;% nT
+H_earth_xy_Norm = sqrt(27949^2+3279^2) / 1 ;%  28140.7 nT
 H_earth_z = 46733 ;
 
 % H_earth_Norm = 1 ;
 % H_earth_xy_Norm = sqrt(27949^2+3279^2)/54552 ;
 % H_earth_z = 46733/54552 ;
-% 
-H_earth_Norm = 54552/sqrt(27949^2+3279^2) ;
-H_earth_xy_Norm = 1 ;
-H_earth_z = 46733 /sqrt(27949^2+3279^2) ;
+% % 
+% H_earth_Norm = 54552/sqrt(27949^2+3279^2) ;
+% H_earth_xy_Norm = 1 ;
+% H_earth_z = 46733 /sqrt(27949^2+3279^2) ;
 %% load data
 H_b=importdata([dataFolder,'\',dataName,'.mat']) ;
 
@@ -52,9 +55,14 @@ if ~isdir(resPath)
 else
     delete([resPath,'\*'])
 end
-
-H_b = H_b*H_earth_Norm/10000 ;  % nT
+%% 将单位转为 nT
+%%% （1）（桂哥富士通工装校准工具）桂哥的下位机将数据将磁罗盘数据归一化至模=10000   m_new = （m/360）*10000
+% H_b = H_b*H_earth_Norm/10000 ;  % nT
+%%% （2）（陈聪磁罗盘标定工具）直接得到原始数据，16位模式，每个LSB为 0.15 uT
+H_b = H_b * 0.15 *1000 ;
+DrawH_b( H_b );
 %% reject magnet_b to H_t ( plane fitting )
+% dbstop in RotatePlaneFitting
 [ H_n,Cnb,ZYX_Euler,Hz_n,planeFittingError1,planeFittingErrorFh ] = RotatePlaneFitting( H_b,'First',H_earth_xy_Norm,H_earth_z ) ;
 if planeFittingError1.re_mean_err > 0.03
     warndlg( sprintf(' re_mean_err=%0.2f (first) ',planeFittingError1.re_mean_err),'Rotate Plane Fitting' );
@@ -193,13 +201,13 @@ disp('OK')
 
 
 
-function DrawH_b( H_b,H_b_Rec )
+function DrawH_b( H_b )
 global resPath
 
 %% 1D x  y  z
 figure('name','H_b_x_y_z')
 subplot(3,1,1)
-plot(H_b(:,1),H_b_Rec(:,1));
+plot(H_b(:,1));
 ylabel('x')
 subplot(3,1,2)
 plot(H_b(:,2));
@@ -207,8 +215,15 @@ ylabel('y')
 subplot(3,1,3)
 plot(H_b(:,3));
 ylabel('z')
-saveas(gcf,[resPath,'\','H_b_x_y_z.fig'])
-saveas(gcf,[resPath,'\','H_b_x_y_z.emf'])
+
+%% norm
+N = size( H_b,1 );
+H_b_Norm = zeros( N,1 );
+for k=1:N
+   H_b_Norm(k)  = normest( H_b(k,:) );
+end
+figure( 'name','H_b_norm' )
+plot( H_b_Norm )
 
 %% 3D point in b frame
 figure( 'name','H_b_3D_Point_bFrame' )

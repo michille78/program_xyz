@@ -138,7 +138,7 @@ if IsCalibDataVelocityOK==1
            plot(dX_Vision(1,k),dX_Vision(2,k),'.k')
        end
    end
-   dX_Angle_Degree = dX_Angle*180/pi
+   dX_Angle_Degree = dX_Angle*180/pi;
 end
 
 

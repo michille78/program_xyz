@@ -39,11 +39,16 @@ switch pose
         Crp = eye(3);
 end
 %% Crw
-rx_w = zd ;
+rx_w = zd ;                 % zd = [0; 1; 0];
 rz_w = [0;0;1];
 ry_w = cross( rx_w,rz_w );
-Crw = [ rx_w,ry_w,rz_w ];
+Crw = [ rx_w,ry_w,rz_w ];  % 
 
+%% 默认值 ：人朝东  zd = [0; 1; 0]; 
+% Crw =
+%      0     1     0
+%      1     0     0
+%      0     0     1
 %%
 Cw_ThumbBone =  Cp_ThumbBone * Crp * Crw' ;
 

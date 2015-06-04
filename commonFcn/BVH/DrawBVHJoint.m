@@ -1,14 +1,16 @@
 %% xyz 2015.4.9
 
 function fh = DrawBVHJoint( BVHStruct,JointName )
-data = BVHStruct.data ;
+JointData = BVHStruct.JointData ;
 Frame_Time = BVHStruct.Frame_Time ;
-RotationOrder = GetJointRotationOrder( BVHStruct,JointName );
+JointRotation = BVHStruct.JointRotation ;
+
+RotationOrder =   eval(sprintf('JointRotation.%s',JointName));
 if isempty(RotationOrder)
    fh = [];
    return;
 end
-JointData = eval( sprintf( 'data.%s ;',JointName ) );
+JointData = eval( sprintf( 'JointData.%s ;',JointName ) );
 Nframes = size( JointData,1 );
 
 Time  = ( 0:(Nframes-1) )*Frame_Time ;

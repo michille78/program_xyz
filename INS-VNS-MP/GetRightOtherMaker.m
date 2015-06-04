@@ -9,7 +9,7 @@
 %% 判断思路：比较2个相对位移矢量：1）dT(3 sec)运动时间时  2）dS（1m）运动位移长度时
 % 1)dT(3 sec)时间内，惯性和视觉位移向量的大小差<0.1m，方向差<60°（当位移矢量长度小于0.2m时不比较方向）
 
-function [ trackedMakerPosition,trackedMarkerVelocity,INSVNSCalib_VS_k ] = GetRightOtherMaker( otherMakers,InertialData )
+function [ trackedMakerPosition,trackedMakerPosition_InertialTime,trackedMarkerVelocity,INSVNSCalib_VS_k,InertialPosition ] = GetRightOtherMaker( otherMakers,InertialData )
 global  makerTrackThreshold moveDistance INSVNSCalibSet
 global otherMakersTime  inertialTime 
 global visionFre  inertialFre
@@ -68,7 +68,9 @@ dT_Ninertial = fix(moveTime*inertialFre) ;
 
 %%
 MarkerTN = length(otherMakers);
+InertialN = size(InertialPosition,2);
 trackedMakerPosition = NaN(3,MarkerTN); % 判断成功的马克点位置
+trackedMakerPosition_InertialTime = NaN( 3,InertialN );
 %% 先要求第一个点已知 
 % trackedMakerPosition(:,1)  = otherMakers(1).Position(:,1) ;
 
@@ -137,6 +139,7 @@ for k=1:MarkerTN
     
     %% 求  INSMarkH0  VNSMarkH0
     if isnan(INSMarkH0) && ~isnan(trackedMakerPosition(1,k))
+        fprintf( '第一个点搜素成功 time = %0.1f sec',k/visionFre );
         % 检测Hip的俯仰和横滚小才取值！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
         INSMarkH0 = - InertialPosition(3,inertial_k);
         VNSMarkH0 = - trackedMakerPosition(3,k) ;
@@ -146,7 +149,18 @@ for k=1:MarkerTN
 %         C_HipLUF_NED0 = RotateX(pi/2) * RotateY(-pi/2);  % Hip 的左上前系 到 NED的0姿态系
 %         C_NED_HipNED0 = C_HipLUF_NED0 * CHip_k ;               
 %         Attitude = C2Euler( C_NED_HipNED0,'ZYX' )*180/pi
-        
+        %% 第一次跟踪马克点成功
+        % 标定视觉与光学的原点（不考虑方向差）
+        Xrw_r = trackedMakerPosition(1:2,k) - InertialPosition(1:2,inertial_k);
+        Xrw_r = [Xrw_r;0];
+        N_otherMakers = length( otherMakers );
+        for i=1:N_otherMakers
+            if ~isempty(otherMakers(i).Position)
+                m = size( otherMakers(i).Position,2 );
+                otherMakers(i).Position = otherMakers(i).Position - repmat(Xrw_r,1,m) ;
+                trackedMakerPosition(:,i) = trackedMakerPosition(:,i) - Xrw_r ;
+            end
+        end
     end
     %% 求速度
     [ trackedMarkerVelocity_k,k_calV ] = VisionMarkVelocity( trackedMakerPosition,k ) ;
@@ -163,7 +177,9 @@ for k=1:MarkerTN
             end
         end        
     end
+    %% 转成惯性马克点的时序
     
+    trackedMakerPosition_InertialTime(:,inertial_k) = trackedMakerPosition(:,k) ;
     
     if mod(k,fix(MarkerTN/10))==0
         waitbar(k/MarkerTN);
@@ -171,6 +187,8 @@ for k=1:MarkerTN
 end
  close(wh);
 
+%  return
+ 
 figure('name','trackFlag')
 plot(TrackFlag,'.')
 % plot(otherMakersTime,TrackFlag,'.')
@@ -327,14 +345,14 @@ if isnan( trackedMakerPosition(1,vision_dT_k_last) )
             JudgeIndex.dP_Inertial_xyNorm = dP_Inertial_xyNorm ;
             JudgeIndex.angleErr_dT_Min = angleErr_dT_Min;
             if ~isnan(trackedMakerPosition_k_OK)
-%                fprintf('第一个马克点搜索成功  k_vision = %d dPError_dT_xy = %0.3f,  dPError_dT_z = %0.3f \n ',k_vision,dPError_dT_xy,dPError_dT_z); 
+%                 fprintf('第一个马克点搜索成功  k_vision = %d dPError_dT_xy = %0.3f,  dPError_dT_z = %0.3f \n ',k_vision,dPError_dT_xy,dPError_dT_z); 
                return;
             end        
         end        
     end
     if IsSearchingFirst==0
         % 既找不到之前跟踪成功的点，又找不到连续的点，继续找
-        fprintf('搜索第一个点：等待足够多连续性的点 k_vision = %d \n ',k_vision)
+%         fprintf('搜索第一个点：等待足够多连续性的点 k_vision = %d \n ',k_vision)
         return; 
     end
 else

@@ -15,7 +15,9 @@ if rank(H_b)<3
     Cnb = eye(3) ;
     return ;
 end
-
+%% 计算导航系n到本体系b的选装矩阵 Cnb
+% 导航系n: 航向与b相同的水平坐标系（每个时刻的n系不同）
+% dbstop in linearEquation
 B = linearEquation( H_b,ones(N,1) ) ;   % must be format long
 d = 1/normest(B) ;
 A = B*d ;

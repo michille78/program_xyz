@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--硬件表中RightHandThumb1对应算法表中的RightHandThumb2，硬件表中RightHandThumb2对应算法表中的RightHandThumb3-->
+<!--硬件表中LeftHandThumb1对应算法表中的LeftHandThumb2，硬件表中LeftHandThumb2对应算法表中的LeftHandThumb3-->
+<AxisBoneSensorMap version="1.0">
+    <JoinSensorMap count="37">
+        <Join name="Hips" tag="0">193</Join>
+        <Join name="RightUpLeg" tag="1">130</Join>
+        <Join name="RightLeg" tag="2">131</Join>
+        <Join name="RightFoot" tag="3">140</Join>
+        <Join name="LeftUpLeg" tag="4">164</Join>
+        <Join name="LeftLeg" tag="5">165</Join>
+        <Join name="LeftFoot" tag="6">166</Join>
+        <Join name="RightShoulder" tag="7">219</Join>
+        <Join name="RightArm" tag="8">220</Join>
+        <Join name="RightForeArm" tag="9">221</Join>
+        <Join name="RightHand" tag="10">222</Join>
+        <Join name="LeftShoulder" tag="11">190</Join>
+        <Join name="LeftArm" tag="12">223</Join>
+        <Join name="LeftForeArm" tag="13">128</Join>
+        <Join name="LeftHand" tag="14">129</Join>
+        <Join name="Head" tag="15">218</Join>
+        <Join name="Spine2" tag="18">168</Join>
+        <Join name="RightHandThumb2" tag="26">225</Join>
+        <Join name="RightHandThumb3" tag="27">226</Join>
+        <Join name="RightHandIndex1" tag="30">230</Join>
+        <Join name="RightHandIndex2" tag="31">231</Join>
+        <Join name="RightHandMiddle1" tag="35">235</Join>
+        <Join name="RightHandMiddle2" tag="36">236</Join>
+        <Join name="RightHandRing1" tag="40">240</Join>
+        <Join name="RightHandRing2" tag="41">241</Join>
+        <Join name="RightHandPinky1" tag="45">245</Join>
+        <Join name="RightHandPinky2" tag="46">246</Join>
+        <Join name="LeftHandThumb2" tag="57">132</Join>
+        <Join name="LeftHandThumb3" tag="58">133</Join>
+        <Join name="LeftHandIndex1" tag="61">137</Join>
+        <Join name="LeftHandIndex2" tag="62">138</Join>
+        <Join name="LeftHandMiddle1" tag="66">142</Join>
+        <Join name="LeftHandMiddle2" tag="67">143</Join>
+        <Join name="LeftHandRing1" tag="71">147</Join>
+        <Join name="LeftHandRing2" tag="72">148</Join>
+        <Join name="LeftHandPinky1" tag="76">152</Join>
+        <Join name="LeftHandPinky2" tag="77">153</Join>
+    </JoinSensorMap>
+</AxisBoneSensorMap>

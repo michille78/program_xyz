@@ -1,102 +1,123 @@
-%% 
+%% 读取ＢＶＨ数据到结构体　BVHStruct
+% MatrixData ： [ N*354 ]  每一行为一帧
+% MatrixDataNoDisp ：[N*180]  只有Hip有位置
+% BVHHeadStr： [1*N] char BVH头字符串
+% isContainDisp： 0/1 BVH中 Hip 之外的节点是否包含位置信息
+% JointName ： cell [N*1]   JointName{i,1}存关节名  
+% JointRotation： JointRotation.JointName{i} 存欧拉角旋转顺序
+% BVHStruct.JointData  按关节存储数据 [N*3]  或  [N*6]
+% Frames： 帧数
+% Frame_Time： 周期 秒
+% BVHHeadStr_NoDisp： [1*N] char 除Hip外无Displacement的 BVH 头字符串
+% BVHStruct.JointData  按关节存储数据 [N*3]  或  [N*6](前三欧拉角，后三位移)
+
+% 位移单位： cm
+% 角度单位： degree
+
+%% BVH 数据 坐标系
+% reference hip 用 北天东 坐标系
+% 其他节点用 左上前 坐标系
+
 % 输出时保留 度 为单位
 function  BVHStruct = readBVHData ( dataFolder,dataName )
 
-% dataName = 'BVHData';
-% dataFolder = 'E:\data_xyz_noitom\BVHTransformTestData\test1';
+%  dataName = 'BVHData';
+%  dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head1';
 BVHFilePath = [dataFolder,'\',dataName,'.bvh'] ;
-% dbstop in GetNumberStartLine
-numberStartLine = GetNumberStartLine( BVHFilePath );
+
 if ~exist([dataFolder,'\',dataName,'.mat'],'file')
+% if 1
+    if ~exist(BVHFilePath,'file')
+       errordlg(sprintf('不存在BVH文件 %s',BVHFilePath));
+       return;
+    end
     disp('read BVH')
+    % dbstop in GetNumberStartLine
+    [ BVHHeadStr,numberStartLine ] = GetNumberStartLine( BVHFilePath );
 %  dbstop in readBVH_Format
-    [ BVHFormat,Frames,Frame_Time ]  = readBVH_Format( BVHFilePath,numberStartLine ) ; 
-    [ BVHHeadStr,isContainPosition ]  = readBVH_HeadStr( BVHFilePath,numberStartLine ) ;
-    if strcmp(BVHFormat{1,1},'ROOT Hips')
-        BVHFormat{1,1} = 'ROOT_Hips';
+    [ JointName,JointRotation,Frames,Frame_Time,isContainDisp ]  = readBVH_Format( BVHFilePath,numberStartLine ) ; 
+    BVHHeadStr_NoDisp = GetBVHHeadStr_NoDisp( BVHHeadStr );
+    
+%     [ BVHHeadStr_NoDisp,isContainDisp ]  = readBVH_HeadStr( BVHFilePath,numberStartLine ) ;
+    if strcmp(JointName{1,1},'ROOT Hips')
+        JointName{1,1} = 'ROOT_Hips';
     else
-        errordlg('BVHFormat{1,1} not ROOT Hips');
+        errordlg('JointName{1,1} not ROOT Hips');
     end
     disp('In reading BVH data...');
-    BVHData = readBVH_Data( BVHFilePath,numberStartLine ) ;  
-    if size(BVHData,1)~=Frames
-       errordlg( sprintf(' Frames = %d, but read %d ',Frames,size(BVHData,1)) ); 
+    MatrixData = readBVH_Data( BVHFilePath,numberStartLine ) ;  
+    if size(MatrixData,1)~=Frames
+       errordlg( sprintf(' Frames = %d, but read %d ',Frames,size(MatrixData,1)) ); 
     else
         display( sprintf( 'Frames = %d',Frames ));
     end
-    if isContainPosition
-%         dbstop in GetRotationData
-        BVHDataRotation = GetRotationData(BVHData);
-    else
-        BVHDataRotation = BVHData ;
-    end
+    MatrixDataNoDisp = GetNoDispMatrixData( MatrixData,isContainDisp ) ;
+
     
-    BVHStruct.BVHData = BVHData ;
-    BVHStruct.BVHDataRotation = BVHDataRotation ;
-    BVHStruct.BVHFormat = BVHFormat ;
+    BVHStruct.MatrixData = MatrixData ;
+    BVHStruct.MatrixDataNoDisp = MatrixDataNoDisp ;
+    BVHStruct.JointName = JointName ;
+    BVHStruct.JointRotation = JointRotation ;
     BVHStruct.BVHHeadStr = BVHHeadStr ;
     BVHStruct.Frame_Time = Frame_Time ;
+    BVHStruct.isContainDisp = isContainDisp ;
+    BVHStruct.BVHHeadStr_NoDisp = BVHHeadStr_NoDisp ;
+    BVHStruct.Frames = Frames ;
     
-    BVHFormat_N = size(BVHFormat,1);
+    BVHFormat_N = size(JointName,1);
     skeleten_n_sart = 1 ;
-    isContainPosition = 0;
+    %% BVHStruct.JointData  按关节存储数据 [N*3]  或  [N*6]
     for k = 1:BVHFormat_N
-        JointName = BVHFormat{k,1};
-        % 只有Hip保留位置
-        if k==1            
-            skeleten_n_end = skeleten_n_sart+5 ;            
-        else            
-            skeleten_n_end = skeleten_n_sart+2 ;           
-        end
-        eval( sprintf('BVHStruct.data.%s = BVHDataRotation( :,%d:%d ) ;',JointName,skeleten_n_sart,skeleten_n_end) );
-        if k==1
-            skeleten_n_sart = skeleten_n_sart+6 ;
+        JointName_k = JointName{k,1};        
+        
+        if isContainDisp==1
+            % 每个关节都有位置
+            skeleten_n_end = skeleten_n_sart+5 ;
         else
-            skeleten_n_sart = skeleten_n_sart+3 ;
+            % 除 Hip外无位置信息
+            if k==1            
+                skeleten_n_end = skeleten_n_sart+5 ;       % 只有Hip保留位置       
+            else            
+                skeleten_n_end = skeleten_n_sart+2 ;           
+            end
         end
-        if k>1 && eval( sprintf( 'length( BVHStruct.data.%s )',JointName ) )>3
-            isContainPosition = 1 ;
-        end
+        eval( sprintf('BVHStruct.JointData.%s = MatrixData( :,%d:%d ) ;',JointName_k,skeleten_n_sart,skeleten_n_end) );
+        skeleten_n_sart = skeleten_n_end + 1 ;
     end
-     BVHStruct.isContainPosition = isContainPosition ;
+     
     save( [dataFolder,'\',dataName,'.mat'],'BVHStruct'  )    
 else
     BVHStruct = importdata( [dataFolder,'\',dataName,'.mat'] );
-    disp('import BVHStruct')
+    disp('没读BVH，直接导入mat结果。 import BVHStruct')
 end
 
-%% 只保留根节点的位置
 
-function BVHDataRotation = GetRotationData(BVHData)
-N = size(BVHData,1);
-M = size(BVHData,2)/6 ;
-BVHDataRotation = zeros(N,M*3+3);
-BVHDataRotation(:,1:6) = BVHData(:,1:6) ;  % 只根节点保留位置
-for i=2:M
-    BVHDataRotation(:,i*3+1:i*3+3) = BVHData( :,(i-1)*6+4:i*6 );
-end
-% for k=2:N
-%     BVHData_k = BVHData(k,:);
-%     for i=1:M
-%         BVHData_k_i = BVHData_k( 1+(i-1)*6:i*6 );
-%         BVHDataRotation(k,1+i*3:(i+1)*3) = BVHData_k_i(4:6) ; % 注意Hip是6个数
-%     end
-% end
 
-function [ SkeletenBVH,SkeletenBVH_Order ] = SearchSkeletenBVH( skeleten,BVHFormat,BVH )
-N = size(BVHFormat,1);
+function BVHHeadStr_NoDisp = GetBVHHeadStr_NoDisp( BVHHeadStr )
+
+BVHHeadStr_NoDisp = strrep( BVHHeadStr,'CHANNELS 6 Xposition Yposition Zposition','CHANNELS 3' );
+k = strfind( BVHHeadStr_NoDisp,'CHANNELS 3');
+k1 = k(1);
+BVHHeadStr_NoDisp(k1:length('CHANNELS 3')+k1-1) = '';
+BVHHeadStr_NoDisp = sprintf( '%s%s%s',BVHHeadStr_NoDisp(1:k1-1),...
+    'CHANNELS 6 Xposition Yposition Zposition',BVHHeadStr_NoDisp(k1:length(BVHHeadStr_NoDisp)) );
+
+function [ SkeletenBVH,SkeletenBVH_Order ] = SearchSkeletenBVH( skeleten,JointName,BVH )
+N = size(JointName,1);
 for k=1:N
-    if strcmp( skeleten,BVHFormat{k,1} )
-        SkeletenBVH_Order = [ BVHFormat{k,2},BVHFormat{k,3} ];
+    if strcmp( skeleten,JointName{k,1} )
+        SkeletenBVH_Order = [ JointName{k,2},JointName{k,3} ];
         SkeletenBVH = BVH( :,SkeletenBVH_Order(1):SkeletenBVH_Order(2) );
     end
 end
 
-function BVH = readBVH_Data( filePath,numberStartLine )
+%% 直接读取的 BVH 数字
+% MatrixData ： [ N*354 ]  每一行为一帧
+function MatrixData = readBVH_Data( filePath,numberStartLine )
 
 
 fid = fopen(filePath,'r' ) ;
-BVH = [] ;  % N*3
+MatrixData = [] ;  % N*3
 n = 1 ;
 k = 0 ;
 while ~feof(fid)
@@ -104,48 +125,13 @@ while ~feof(fid)
    if n>=numberStartLine
        lineData = textscan( tline,'%f' ) ;
        k = k+1 ;
-       BVH = [ BVH ; lineData{1}' ];
+       MatrixData = [ MatrixData ; lineData{1}' ];
    end
    n = n+1 ;
    
 end
 fclose(fid);
 
-function [BVHHeadStr,isContainPosition] = readBVH_HeadStr( filePath,numberStartLine )
-isContainPosition = 0;
-fid = fopen(filePath,'r' ) ;
-BVHHeadStr = '';
-line_n = 1 ;
-CHANNELS_n=0;
-isReplaceFlag = 0 ;
-while ~feof(fid) && line_n < numberStartLine
-   lineStr = fgets(fid) ; 
-   
-   if ~isempty(lineStr)
-       [ lineStrNew,spaceStr ] = FrontSpace( lineStr ) ;
-       linet = textscan(lineStr,'%s');
-       if length(linet{1})>1 && strcmp( linet{1}{1},'CHANNELS' )
-           CHANNELS_n = CHANNELS_n+1 ;
-           if CHANNELS_n>1
-                lineStrNew = 'CHANNELS 3 Yrotation Xrotation Zrotation ';
-                lineStr = sprintf( '%s%s',spaceStr,lineStrNew );  % 在最后多放了一个空格
-                isReplaceFlag = 1 ;
-                isContainPosition=1;
-           end
-       end
-        if isReplaceFlag==1 && ~strcmp( linet{1}{1},'CHANNELS' )
-            BVHHeadStr = sprintf('%s\n%s',BVHHeadStr,lineStr);
-            isReplaceFlag = 0; 
-        else
-            BVHHeadStr = sprintf('%s%s',BVHHeadStr,lineStr);
-            
-        end       
-        BVHHeadStr(length(BVHHeadStr)) = '';
-   end
-   line_n = line_n+1 ;   
-   
-end
-fclose(fid);
 
 function [ lineStrNew,spaceStr ] = FrontSpace( lineStr )
 N = length(lineStr);
@@ -160,20 +146,41 @@ end
 spaceStr = lineStr(1:spaceN);
 lineStrNew = lineStr( spaceN+1:N );
 
-function [ BVHFormat,Frames,Frame_Time ] = readBVH_Format( filePath,numberStartLine )
+%% BVH数据格式
+% JointName ： cell [N*1]   JointName{i}存关节名
+% Frames： 帧数
+% Frame_Time： 周期 秒
+function [ JointName,JointRotation,Frames,Frame_Time,isContainDisp ] = readBVH_Format( filePath,numberStartLine )
 fid = fopen(filePath,'r' ) ;
 
-BVHFormat = cell(10,1);
+JointName = cell(10,1);
+JointRotation = struct;
+
 k = 1 ;
-BVHFormat{k,1} = 'ROOT Hips';
+JointName{k,1} = 'ROOT Hips';
 line_n = 1 ;
+isContainDisp=  0 ;
 while ~feof(fid) && line_n < numberStartLine
    tline = fgetl(fid) ; 
    if ~isempty(tline)
        lineData = textscan( tline,'%s' ) ;
        if ~isempty(lineData{1}) && strcmp( lineData{1}{1},'JOINT' )
            k = k+1 ;
-           BVHFormat{k,1} =  lineData{1}{2} ;
+           JointName{k,1} =  lineData{1}{2} ;
+       end
+       if ~isempty(lineData{1}) && strcmp( lineData{1}{1},'CHANNELS' )
+           % 读取 JointName{k,1} 的旋转顺序
+           if strcmp(JointName{k,1} ,'ROOT Hips')
+               JointName_k = 'ROOT_Hips';
+           else
+               JointName_k = JointName{k,1} ;
+           end
+           order = [ lineData{1}{6}(1),lineData{1}{7}(1),lineData{1}{8}(1) ] ;
+           eval( sprintf('JointRotation.%s = order; ',...
+               JointName_k) )  ;
+           if k>1 && length(lineData{1})==8
+               isContainDisp = 1 ;
+           end
        end
        if ~isempty(lineData{1}) && strcmp( lineData{1}{1},'Frames:' )
            Frames = str2double( lineData{1}{2} );
@@ -186,21 +193,31 @@ while ~feof(fid) && line_n < numberStartLine
 end
 fclose(fid);
 N_BVH = k ;
-BVHFormat = BVHFormat( 1:N_BVH,: ) ;
+JointName = JointName( 1:N_BVH,: ) ;
 
-function numberStartLine = GetNumberStartLine( BVHFilePath )
+%% 第一行数据的行序号
+% BVHHeadStr： BVH 头字符串
+% numberStartLine： 第一行数字的行序号
+function [ BVHHeadStr,numberStartLine ] = GetNumberStartLine( BVHFilePath )
 fid = fopen(BVHFilePath,'r' ) ;
 line_n = 0 ;
 numberStartLine = 0;
+BVHHeadStr = '';
 while ~feof(fid)  &&  line_n<360
     tline = fgetl(fid) ; 
     line_n = line_n+1 ;  
     if ~isempty(tline)
         lineData = textscan( tline,'%s' ) ;     
         if ~isempty(lineData{1}) && ~isnan( str2double( lineData{1}{1} ))
+            % 是数字
             numberStartLine = line_n ;
             break;
+        else
+            % 不是数字
+            BVHHeadStr = sprintf('%s\n%s',BVHHeadStr,tline);
         end
+    else
+        BVHHeadStr = sprintf('%s\n ',BVHHeadStr);
     end
     
 end
