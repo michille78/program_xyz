@@ -3,6 +3,7 @@
 #include "NatNetConnector.h"
 #include "PosTrackCalibration.h"
 
+
 PosTrackor::PosTrackor(void):
     R(2,2)
 {
@@ -26,9 +27,18 @@ PosTrackor::~PosTrackor(void)
 	IsCalibrating = FALSE;
 	IsCalibrated = FALSE;
 }
+
+// 得到光学数据之后，调用此函数
 //void PosTrackor::DataHandle(MocapData* data)
 void PosTrackor::DataHandle(sFrameOfMocapData* data)
 {
+	if (recieveOtherMarkHandle)
+	{
+		recieveOtherMarkHandle(pOwner, (float*)data->OtherMarkers, data->nOtherMarkers, data->fLatency, data->Timecode, data->TimecodeSubframe, data->fTimestamp);
+	}
+
+	/*
+	/// 高鹏
 // 	OpticsPosition.X = data->data[0];
 // 	OpticsPosition.Y = data->data[1];
 // 	OpticsPosition.Z = data->data[2];
@@ -52,7 +62,7 @@ void PosTrackor::DataHandle(sFrameOfMocapData* data)
 			recieveOtherMarkHandle(pOwner, (float*)data->OtherMarkers, data->nOtherMarkers);
 		}
 	//}
-
+	*/
 }
 
 BOOL PosTrackor::Init()

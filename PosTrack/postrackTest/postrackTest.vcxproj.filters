@@ -57,6 +57,33 @@
     <ClInclude Include="serialport.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="HybidTrack.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GetINSCompensateFromVNS\GetINSCompensateFromVNS.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MATLABSupport.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GetINSCompensateFromVNS\GetINSCompensateFromVNS_types.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GetINSCompensateFromVNS\rt_defines.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GetINSCompensateFromVNS\rt_nonfinite.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GetINSCompensateFromVNS\rtGetInf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GetINSCompensateFromVNS\rtGetNaN.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GetINSCompensateFromVNS\rtwtypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="postrack.cpp">
@@ -90,6 +117,24 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="serialport.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HybidTrack.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GetINSCompensateFromVNS\GetINSCompensateFromVNS.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GetINSCompensateFromVNS\rt_nonfinite.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GetINSCompensateFromVNS\rtGetInf.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GetINSCompensateFromVNS\rtGetNaN.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MATLABSupport.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

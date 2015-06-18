@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>750E0F87-743C-4594-A868-6002C76F2582</string>
+	<key>IDESourceControlProjectName</key>
+	<string>build_xcode</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>b467118c-50b8-f54b-9101-f4df680f259b</key>
+		<string>http://192.168.1.101:4000/svn/BvhDataReceivePlugin</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>build_xcode.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>b467118c-50b8-f54b-9101-f4df680f259b</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>b467118c-50b8-f54b-9101-f4df680f259b</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>b467118c-50b8-f54b-9101-f4df680f259b</string>
+			<key>IDESourceControlWCCName</key>
+			<string>BVHDataReader%20Plugin</string>
+		</dict>
+	</array>
+</dict>
+</plist>

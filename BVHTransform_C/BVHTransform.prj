@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.matlabcoder" plugin-version="R2014a_nu">
-  <configuration build-checksum="2331775071" file="E:\document and program\program_xyz_noitom\BVHTransform_C\BVHTransform.prj" location="E:\document and program\program_xyz_noitom\BVHTransform_C" name="BVHTransform" target="target.matlab.coder" target-name="MEX, C, and C++ Code Generation">
+  <configuration build-checksum="2331775071" file="E:\document and program\program_xyz\BVHTransform_C\BVHTransform.prj" location="E:\document and program\program_xyz\BVHTransform_C" name="BVHTransform" target="target.matlab.coder" target-name="MEX, C, and C++ Code Generation">
     <profile key="profile.mex">
       <param.MergeInstrumentationResults>false</param.MergeInstrumentationResults>
       <param.BuiltInstrumentedMex>false</param.BuiltInstrumentedMex>
@@ -427,7 +427,7 @@
     <fileset.testbench />
     <fileset.package />
     <build-deliverables>
-      <file location="E:\document and program\program_xyz_noitom\BVHTransform_C" name="BVHTransform_c_mex.mexw64" optional="false">E:\document and program\program_xyz_noitom\BVHTransform_C\BVHTransform_c_mex.mexw64</file>
+      <file location="E:\document and program\program_xyz\BVHTransform_C" name="BVHTransform_c_mex.mexw64" optional="false">E:\document and program\program_xyz\BVHTransform_C\BVHTransform_c_mex.mexw64</file>
     </build-deliverables>
     <workflow />
     <matlab>

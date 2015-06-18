@@ -1,15 +1,36 @@
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\BvhPlayerDlg.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\ChildView.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\CommandControl.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\Communication.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\ConsoleInApp.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\ControlDlg.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\CRC8.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\MainFrm.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\postrack.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\serialport.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\stdafx.obj
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\postrack.res
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\postrackTest.pch
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\vc120.idb
-E:\Project\PosTrack\postrackTest\x64\X64_DEBUG\vc120.pdb
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.pch
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\vc120.pdb
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\vc120.idb
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\stdafx.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\getinscompensatefromvns.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\rtgetinf.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\rtgetnan.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\rt_nonfinite.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\bvhplayerdlg.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\childview.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\commandcontrol.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\communication.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\consoleinapp.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\controldlg.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\crc8.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\hybidtrack.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\mainfrm.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\matlabsupport.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postrack.obj
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\serialport.obj
+e:\document and program\program_xyz\postrack\x64\x64_debug\postracktest.ilk
+e:\document and program\program_xyz\postrack\x64\x64_debug\postracktest.exe
+e:\document and program\program_xyz\postrack\x64\x64_debug\postracktest.pdb
+e:\document and program\program_xyz\postrack\x64\x64_debug\postracktest.lib
+e:\document and program\program_xyz\postrack\x64\x64_debug\postracktest.exp
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postrack.res
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\cl.command.1.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\cl.read.1.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\cl.write.1.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\link.command.1.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\link.read.1.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\link.write.1.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\postracktest.write.1u.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\rc.command.1.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\rc.read.1.tlog
+e:\document and program\program_xyz\postrack\postracktest\x64\x64_debug\postracktest.tlog\rc.write.1.tlog

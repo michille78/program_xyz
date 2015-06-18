@@ -1,0 +1,51 @@
+﻿生成启动时间为 2015/6/17 9:39:06。
+     1>项目“E:\document and program\program_xyz\Noitom\NeuronDataReader\src\build_vs2012.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _USRDLL /D NEURONDATAREADER_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Release\NeuronDataReader.pch" /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _USRDLL /D NEURONDATAREADER_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\NeuronDataReader.pch" /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt CompressInfoCode.cpp CRCCode.cpp NeuronDataReader.cpp Error.cpp DataParser.cpp Sock.cpp SockClient.cpp SocketClientsManager.cpp UDPDataReceiver.cpp
+         CompressInfoCode.cpp
+     1>CompressInfoCode.cpp(14): warning C4305: “=”: 从“double”到“float”截断
+         CRCCode.cpp
+         NeuronDataReader.cpp
+     1>e:\document and program\program_xyz\noitom\neurondatareader\src\ParsingStringData.h(66): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>e:\document and program\program_xyz\noitom\neurondatareader\src\DataParser.h(156): warning C4018: “>”: 有符号/无符号不匹配
+         Error.cpp
+         DataParser.cpp
+     1>e:\document and program\program_xyz\noitom\neurondatareader\src\DataParser.h(156): warning C4018: “>”: 有符号/无符号不匹配
+         Sock.cpp
+     1>Sock.cpp(15): warning C4150: 删除指向不完整“IDataParseDelegate”类型的指针；没有调用析构函数
+                 e:\document and program\program_xyz\noitom\neurondatareader\src\Sock.h(2) : 参见“IDataParseDelegate”的声明
+         SockClient.cpp
+     1>e:\document and program\program_xyz\noitom\neurondatareader\src\DataParser.h(156): warning C4018: “>”: 有符号/无符号不匹配
+     1>SockClient.cpp(66): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(356) : 参见“sprintf”的声明
+         SocketClientsManager.cpp
+     1>e:\document and program\program_xyz\noitom\neurondatareader\src\DataParser.h(156): warning C4018: “>”: 有符号/无符号不匹配
+         UDPDataReceiver.cpp
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _USRDLL /D NEURONDATAREADER_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt dllmain.cpp
+         dllmain.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Release\build_vs2012.res" build_vs2012.rc 
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\document and program\program_xyz\Noitom\NeuronDataReader\x86\Release\NeuronDataReader.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\document and program\program_xyz\Noitom\NeuronDataReader\x86\Release\NeuronDataReader.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\document and program\program_xyz\Noitom\NeuronDataReader\x86\Release\NeuronDataReader.lib" /MACHINE:X86 /SAFESEH /DLL Release\build_vs2012.res
+         Release\CompressInfoCode.obj
+         Release\CRCCode.obj
+         Release\NeuronDataReader.obj
+         Release\dllmain.obj
+         Release\Error.obj
+         Release\DataParser.obj
+         Release\Sock.obj
+         Release\SockClient.obj
+         Release\SocketClientsManager.obj
+         Release\stdafx.obj
+         Release\UDPDataReceiver.obj
+            正在创建库 E:\document and program\program_xyz\Noitom\NeuronDataReader\x86\Release\NeuronDataReader.lib 和对象 E:\document and program\program_xyz\Noitom\NeuronDataReader\x86\Release\NeuronDataReader.exp
+         正在生成代码
+         已完成代码的生成
+         build_vs2012.vcxproj -> E:\document and program\program_xyz\Noitom\NeuronDataReader\x86\Release\NeuronDataReader.dll
+     1>已完成生成项目“E:\document and program\program_xyz\Noitom\NeuronDataReader\src\build_vs2012.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.76

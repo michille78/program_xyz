@@ -3,7 +3,7 @@
 #include "afxwin.h"
 
 #include "Definitions.h"
-
+#include "HybidTrack.h"
 
 class PosTrackor;
 class CSerialPort;
@@ -57,6 +57,10 @@ public:
     // 光学实时头部位置数据
 	Point3D_t OptiTracData;
 
+	// OtherMark
+	INT8 m_curOtherMarkN;
+	float m_curOtherMark[3];
+
     // 
     CSerialPort* pSerial;
     SerialControl* pCommandControl;
@@ -83,4 +87,12 @@ public:
 	afx_msg void OnCbnSelchangeCombo1();
 	CComboBox wnd_qType;
 	afx_msg void OnBnClickedButtonZero();
+
+	// 采集频率
+	float DataFreq;
+
+	// 构造一个混捕结构体，用于存储混合动捕的数据
+
+	CHybidTrack HybidTrack;
+	afx_msg void OnBnClickedBtnReadrawfile();
 };

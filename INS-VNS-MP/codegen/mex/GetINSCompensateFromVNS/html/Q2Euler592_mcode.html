@@ -1,0 +1,30 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="138,1" id="srcline1"> 1</a></span><span class="line"><span class="comment">%% xyz  2015.4.9</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,2" id="srcline2"> 2</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="138,3" id="srcline3"> 3</a></span><span class="line"><span class="comment">% quaternion to Euler angle</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,4" id="srcline4"> 4</a></span><span class="line"><span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,5" id="srcline5"> 5</a></span><span class="line"><span class="comment">% Input</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,6" id="srcline6"> 6</a></span><span class="line"><span class="comment">% Q: [ NFrames*4 ]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,7" id="srcline7"> 7</a></span><span class="line"><span class="comment">% rotateOrder:  XYZ  XZY  <span class="keyword">...</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,8" id="srcline8"> 8</a></span><span class="line"><span class="comment">% rotateDirection: anticlockwise(1) or clockwise(-1)  [1,1,1]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,9" id="srcline9"> 9</a></span><span class="line"><span class="comment">% CosBeitaSign: 1 / -1 . </span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,10" id="srcline10">10</a></span><span class="line"><span class="comment">%       CosBeitaSign = 1 : cos(beita)&gt;0, beita [ -pi/2,pi/2 ]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,11" id="srcline11">11</a></span><span class="line"><span class="comment">%       CosBeitaSign = -1 : cos(beita)&lt;0, beita [ -pi,-pi/2 ] or [ pi/2,pi ]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,12" id="srcline12">12</a></span><span class="line"><span class="comment">%%%  NOTE: There are two kinds of Euler Angles applied to the C. </span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,13" id="srcline13">13</a></span><span class="line"><span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,14" id="srcline14">14</a></span><span class="line"><span class="comment">% Output</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,15" id="srcline15">15</a></span><span class="line"><span class="comment">% euler:  [3*N];   euler(:,k) = [eu_1,eu_2,eu_3];   rad   </span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,16" id="srcline16">16</a></span><span class="line"><span class="comment">%       store order of euler angle: the rotate order</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,17" id="srcline17">17</a></span><span class="line"><span class="comment">%       eu_1,eu_3: [-pi,pi]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,18" id="srcline18">18</a></span><span class="line"><span class="comment">%       eu_2:   CosBeitaSign=1: [-pi/2,pi/2]      </span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,19" id="srcline19">19</a></span><span class="line"><span class="comment">%               CosBeitaSign=-1:[ -pi,-pi/2 ] or [ pi/2,pi ]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="138,20" id="srcline20">20</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="138,21" id="srcline21">21</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S2T6U3">euler</span> = Q2Euler(<span class="var type1" id="S3T72U6">Q</span>,<span class="mxinfo" id="T36:U3"><span class="var type2" id="S4T36V2U7">rotateOrder</span></span>,<span class="var type1" id="S5T13U8">rotateDirection</span>,<span class="var type1" id="S6T2U9">CosBeitaSign</span>)</span></span>
+<span class="srcline"><span class="lineno"><a href="138,22" id="srcline22">22</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="138,23" id="srcline23">23</a></span><span class="line">coder.inline(<span class="string">'never'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="138,24" id="srcline24">24</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="138,25" id="srcline25">25</a></span><span class="line"><span class="mxinfo" id="T29:U7"><span class="var type1" id="S8T29U18">C</span> = <span class="mxinfo" id="T29:U9"><span class="fcn" id="F593N31:B20">Q2C</span>(<span class="var type1" id="S3T72U21">Q</span>)</span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="138,26" id="srcline26">26</a></span><span class="line"><span class="mxinfo" id="T6:U11"><span class="var type1" id="S2T6U24">euler</span> = <span class="mxinfo" id="T6:U13"><span class="fcn" id="F602N3:B26">C2Euler</span>( <span class="var type1" id="S8T29U27">C</span>,<span class="var type1" id="S4T36U28">rotateOrder</span>,<span class="var type1" id="S5T13U29">rotateDirection</span>,<span class="var type1" id="S6T2U30">CosBeitaSign</span> )</span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="138,27" id="srcline27">27</a></span><span class="line"><span class="mxinfo" id="T6:U18"><span class="var type1" id="S2T6U33">euler</span> = <span class="mxinfo" id="T6:U20"><span class="fcn" id="F615N27:B35">MakeEuler_In2Pi</span>( <span class="var type1" id="S2T6U36">euler</span> )</span></span> ;</span></span>
+</pre>

@@ -154,6 +154,10 @@ DWORD WINAPI CommandListenThread(void* dummy)
     return 0;
 }
 
+// xyz 
+// 数据接收方式
+// 开一个线程，实时调用 recvfrom 接收数据
+
 // Data listener thread
 DWORD WINAPI DataListenThread(void* dummy)
 {

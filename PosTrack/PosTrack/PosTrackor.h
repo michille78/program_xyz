@@ -16,8 +16,7 @@ class NatNetConnector;
 class PosTrackCalibration;
 
 typedef void (CALLBACK* RecievePosTrackorHandle)(void * pOwner, float* data);
-typedef void (CALLBACK* RecieveOtherMarkHandle)(void * pOwner, float* data, int count);
-
+typedef void (CALLBACK* RecieveOtherMarkHandle)(void * pOwner, float* otherMarkData, int nOtherMarkers, float fLatency, unsigned int Timecode, unsigned int TimecodeSubframe, double fTimestamp);
 class POSTRACK_API PosTrackor : public NatNetDataHandler
 {
 	RecievePosTrackorHandle recievePostrackHandle;
@@ -52,7 +51,8 @@ public:
 	BOOL IsCalibrated;
 	void SetToStartCalibration();    
 	void SetRecievePosTrackHandle(void* pOwner, RecievePosTrackorHandle handle);
-	void SetRecieveOtherMarkHandle(void* pOwner, RecieveOtherMarkHandle handle);
+	void SetRecieveOtherMarkHandle(void* pOwner, RecieveOtherMarkHandle handle); 
+	// 将这个函数的地址赋值，在另一个地方给这个函数定义。当前类中只提供定义
 	//////////////////////////////////////////////////////////////////////////
 
 

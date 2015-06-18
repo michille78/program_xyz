@@ -9,6 +9,7 @@
 %       [ Nframes,4 ]
 
 function Q = C2Q( C )
+coder.inline('never');
 
 CheckError( C ) ;
 Nframes = size(C,3);
@@ -20,7 +21,7 @@ end
 
 %% 利用非对角线的6个数的方法
 function Q = C2Q_One_1(Cnb)
-
+coder.extrinsic('format');
 format long
 % 根据初始姿态矩阵Cnb计算初始姿态四元数
 % 参考《高钟毓P17》

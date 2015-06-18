@@ -1,26 +1,27 @@
 %% xyz 2015 儿童节特供
 
 %% 根据 trackedMarkerVelocity 自动选择用于标定惯性和视觉坐标系的数据
-% INSVNSCalib_VS_k ： [2*N]
-    % INSVNSCalib_VS_k(1,k)为某个位移的起始，INSVNSCalib_VS_k(2,k)为某个位移的结束
-function [ INSVNSCalib_VS_k,IsCalibDataEnough,dX_Vision ] = SearchCalibData...
-            ( INSVNSCalib_VS_k,trackedMarkerVelocity,trackedMakerPosition,vision_k )
+% INSVNSCalib_VS_k ： [2*N] 
+    % INSVNSCalib_VS_k(1,k)为某个位移的起始，INSVNSCalib_VS_k(2,k)为某个位移的结束 视觉数据序号
+function [ INSVNSCalib_VS_k,Calib_N_New,IsCalibDataEnough,dX_Vision ] = SearchCalibData...
+            ( INSVNSCalib_VS_k,Calib_N_Last,trackedMarkerVelocity,trackedMakerPosition,vision_k,INSVNSCalibSet )
 
 global  visionFre
+coder.extrinsic('fprintf');
+
 IsCalibDataEnough = 0;
 dX_Vision = [];
+Calib_N_New = Calib_N_Last;
 if isnan( trackedMarkerVelocity(1,vision_k) ) || isnan( trackedMakerPosition(1,vision_k) )
     return;
 end
 %% 阈值参数设置
-global INSVNSCalibSet
 MaxTime_Calib = INSVNSCalibSet.MaxTime_Calib ;  % sec  用于标定的数据的最长时间
 MaxVXY_DirectionChange_Calib = INSVNSCalibSet.MaxVXY_DirectionChange_Calib ;     % ° XY平面速度方向变化最大范围
 
 MaxN_Calib = fix(MaxTime_Calib*visionFre) ;
 
 %% 从上一段位移差数据之后开始搜索
-Calib_N_Last = size(INSVNSCalib_VS_k,2);   % 搜索成功的标定位移数据个数
 if Calib_N_Last>0 
     LastEnd_k = INSVNSCalib_VS_k(2,Calib_N_Last) ;
 else
@@ -32,9 +33,9 @@ search_k = vision_k ;
 
 search_k_end = NaN;
 while search_k > LastEnd_k   
-    IsCalibDataVelocityOK = CalibDataVelocityJudge( trackedMarkerVelocity(:,vision_k) ) ;
+    IsCalibDataVelocityOK = CalibDataVelocityJudge( trackedMarkerVelocity(:,vision_k),INSVNSCalibSet ) ;
     if IsCalibDataVelocityOK == 1
-        search_k_end = search_k ; % 从最新的数据开始搜索，得到第一个OK的点作为末尾点
+        search_k_end = double(search_k) ; % 从最新的数据开始搜索，得到第一个OK的点作为末尾点
 %         fprintf('search_k_end = %d \n ',search_k_end)
         break; 
     end
@@ -46,13 +47,13 @@ end
 %% 搜索起点
 search_k_start = NaN ;
 while search_k > LastEnd_k  &&  (search_k_end-search_k+1)<MaxN_Calib
-    IsCalibDataVelocityOK = CalibDataVelocityJudge( trackedMarkerVelocity(:,vision_k) ) ;
+    IsCalibDataVelocityOK = CalibDataVelocityJudge( trackedMarkerVelocity(:,vision_k),INSVNSCalibSet ) ;
     if IsCalibDataVelocityOK == 1
         search_k_start_temp = search_k+1 ; % 得到速度大小满足条件的 起始点，再判断位移长度
-        [ IsCalibDataDistanceOK,dX_xyNorm_VS ] = CalibDataDistanceJudge( trackedMakerPosition,search_k_start_temp,search_k_end ) ;
+        [ IsCalibDataDistanceOK,dX_xyNorm_VS ] = CalibDataDistanceJudge( trackedMakerPosition,search_k_start_temp,search_k_end,INSVNSCalibSet ) ;
         
         if IsCalibDataDistanceOK==1
-            search_k_start = search_k_start_temp;
+            search_k_start = double(search_k_start_temp);
             break; 
         end         
     end
@@ -69,21 +70,22 @@ if VelocityDirectionRange > MaxVXY_DirectionChange_Calib
     return; % 搜索失败  速度方向变化范围太大
 end
 
-%% 搜索一个位移成功
-INSVNSCalib_VS_k = [ INSVNSCalib_VS_k [search_k_start;search_k_end] ];
+%% 搜索一段位移成功
+Calib_N_New = Calib_N_Last+1;
+INSVNSCalib_VS_k(:,Calib_N_New) = [search_k_start;search_k_end];
 %% 判断当前所有搜索的位移是否满足均匀特性
-[ IsCalibDataEnough,dX_Vision ] = JudgeIsCalibDataEnough( INSVNSCalib_VS_k,trackedMakerPosition );
+[ IsCalibDataEnough,dX_Vision ] = JudgeIsCalibDataEnough( INSVNSCalib_VS_k,Calib_N_New,trackedMakerPosition,INSVNSCalibSet );
 
 searchT = (search_k_end-search_k_start)/visionFre ;
-fprintf( '\n 第%d段位移：[%d  %d]sec，  \n 角度范围 = %0.2f °，位移长度 = %0.2f m，\n   时间=%0.2f sec ，平均速度： %0.2f m/s \n',...
-    Calib_N_Last+1,search_k_start/visionFre,search_k_end/visionFre,VelocityDirectionRange*180/pi,dX_xyNorm_VS,searchT,dX_xyNorm_VS/searchT );
+% fprintf( '\n 第%d段位移：[%d  %d]sec，  \n 角度范围 = %0.2f °，位移长度 = %0.2f m，\n   时间=%0.2f sec ，平均速度： %0.2f m/s \n',...
+%     Calib_N_New,search_k_start/visionFre,search_k_end/visionFre,VelocityDirectionRange*180/pi,dX_xyNorm_VS,searchT,dX_xyNorm_VS/searchT );
 
 %% 判断搜索得到的位移数据够不够多，是否已经均匀分布
-function [ IsCalibDataVelocityOK,dX_Vision ] = JudgeIsCalibDataEnough( INSVNSCalib_VS_k,trackedMakerPosition )
-global INSVNSCalibSet
+function [ IsCalibDataVelocityOK,dX_Vision ] = JudgeIsCalibDataEnough( INSVNSCalib_VS_k,Calib_N_New,trackedMakerPosition,INSVNSCalibSet )
+
 angleUniformityErr = INSVNSCalibSet.angleUniformityErr ;
 
-M = size( INSVNSCalib_VS_k,2 );
+M = Calib_N_New;
 dX_Vision = zeros(3,M);
 dX_Angle = zeros(1,M);
 HaveBiggerData = 0;
@@ -96,7 +98,8 @@ for k=1:M
     %% 根据所有位移矢量与第一个矢量的夹角判断是否分布均匀
     angle = acos( dX_Vision(:,1)'*dX_Vision(:,k)/normest(dX_Vision(:,1))/normest(dX_Vision(:,k)) );
     % 通过叉乘可判断角度方向
-    if cross(dX_Vision(:,1),dX_Vision(:,k))<0
+    temp = cross(dX_Vision(:,1),dX_Vision(:,k)) ;
+    if temp(3)<0
         % 从 dX_Vision(:,1) 到 dX_Vision(:,k) 逆时针转动超过180°
         angle = -angle ;
     end
@@ -143,9 +146,8 @@ end
 
 
 %% 判断从 search_k_start 到 search_k_end 的这一段位移长度是否够长
-function [ IsCalibDataDistanceOK,dX_xyNorm_VS ] = CalibDataDistanceJudge( trackedMakerPosition,search_k_start,search_k_end )
+function [ IsCalibDataDistanceOK,dX_xyNorm_VS ] = CalibDataDistanceJudge( trackedMakerPosition,search_k_start,search_k_end,INSVNSCalibSet )
 %% 阈值参数设置
-global INSVNSCalibSet
 Min_xyNorm_Calib = INSVNSCalibSet.Min_xyNorm_Calib ; % m  用于标定的数据的最小运动位移长度
 
 trackedMakerPosition_start = trackedMakerPosition( :,search_k_start );
@@ -164,9 +166,9 @@ end
 %% 判断从 search_k_start 到 search_k_end 的这一段速度是否满足条件
 % 1） 速度z模小于 MaxVZ_Calib
 % 2） 速度xy模大于 MinVXY_Calib
-function IsCalibDataVelocityOK = CalibDataVelocityJudge( trackedMarkerVelocity_k )
+function IsCalibDataVelocityOK = CalibDataVelocityJudge( trackedMarkerVelocity_k,INSVNSCalibSet )
 %% 阈值参数设置
-global INSVNSCalibSet
+
 MaxVZ_Calib = INSVNSCalibSet.MaxVZ_Calib;     % m/s Z方向速度最大绝对值
 MinVXY_Calib = INSVNSCalibSet.MinVXY_Calib ;   	% m/s XY 平面速度模最小绝对值
 

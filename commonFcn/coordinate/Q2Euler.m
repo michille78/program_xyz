@@ -20,15 +20,7 @@
 
 function euler = Q2Euler(Q,rotateOrder,rotateDirection,CosBeitaSign)
 
-if ~exist('rotateOrder','var')
-    rotateOrder = [];
-end
-if ~exist('rotateDirection','var')
-    rotateDirection = [];
-end
-if ~exist( 'CosBeitaSign','var' )
-    CosBeitaSign = [] ;    
-end
+coder.inline('never');
 
 C = Q2C(Q) ;
 euler = C2Euler( C,rotateOrder,rotateDirection,CosBeitaSign ) ;

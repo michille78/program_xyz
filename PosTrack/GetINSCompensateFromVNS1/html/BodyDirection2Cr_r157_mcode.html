@@ -1,0 +1,26 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="1,226" id="srcline226">226</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,227" id="srcline227">227</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,228" id="srcline228">228</a></span><span class="line"><span class="comment">%% 根据 BodyDirection 求姿态</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,229" id="srcline229">229</a></span><span class="line"><span class="comment">% 符号有待验证！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,230" id="srcline230">230</a></span><span class="line"><span class="comment">%   BodyDirection  人朝北为 [1 0 0]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,231" id="srcline231">231</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S78T28U780">Cr_r1</span> = BodyDirection2Cr_r1( <span class="var type1" id="S79T6U783">BodyDirection</span> )</span></span>
+<span class="srcline"><span class="lineno"><a href="1,232" id="srcline232">232</a></span><span class="line">coder.inline(<span class="string">'never'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,233" id="srcline233">233</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,234" id="srcline234">234</a></span><span class="line"><span class="mxinfo" id="T20:U3"><span class="var type1" id="S81T20U792">V</span> = <span class="mxinfo" id="T20:U5">[1 0 0]</span></span>;   <span class="comment">% 正北</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,235" id="srcline235">235</a></span><span class="line"><span class="mxinfo" id="T2:U6"><span class="var type1" id="S82T2U800">thita</span> = <span class="mxinfo" id="T2:U8">acos( <span class="mxinfo" id="T2:U9"><span class="mxinfo" id="T2:U10"><span class="mxinfo" id="T20:U11"><span class="var type1" id="S81T20U805">V</span></span>*<span class="var type1" id="S79T6U806">BodyDirection</span></span> / <span class="mxinfo" id="T2:U14">normest(<span class="var type1" id="S79T6U809">BodyDirection</span>)</span></span>   )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,236" id="srcline236">236</a></span><span class="line"><span class="comment">% 通过叉乘可判断角度方向</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,237" id="srcline237">237</a></span><span class="line"><span class="mxinfo" id="T20:U16"><span class="var type1" id="S85T20U812">temp</span> = <span class="mxinfo" id="T20:U18">cross(<span class="mxinfo" id="T20:U19"><span class="var type1" id="S81T20U815">V</span></span>,<span class="var type1" id="S79T6U816">BodyDirection</span>)</span></span> ;  <span class="comment">% 从 V 到 BodyDirection 逆时针180°以内时，temp朝上，temp(3)&lt;0</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,238" id="srcline238">238</a></span><span class="line"><span class="keyword">if</span> <span class="mxinfo" id="T14:U22"><span class="mxinfo" id="T2:U23"><span class="var type1" id="S85T20U821">temp</span>(<span class="mxinfo" id="T2:U25">3</span>)</span>&gt;<span class="mxinfo" id="T2:U26">0</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,239" id="srcline239">239</a></span><span class="line">        <span class="comment">% 从 V 到 BodyDirection 逆时针转动超过180°</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,240" id="srcline240">240</a></span><span class="line">      <span class="mxinfo" id="T2:U27"><span class="var type1" id="S82T2U826">thita</span> = <span class="mxinfo" id="T2:U29">-<span class="var type1" id="S82T2U828">thita</span></span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,241" id="srcline241">241</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,242" id="srcline242">242</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,243" id="srcline243">243</a></span><span class="line"><span class="mxinfo" id="T28:U31"><span class="var type1" id="S78T28U831">Cr_r1</span> = <span class="mxinfo" id="T28:U33"><span class="fcn" id="F56N20:B833">RotateZ</span>( <span class="var type1" id="S82T2U834">thita</span> )</span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,244" id="srcline244">244</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,245" id="srcline245">245</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,246" id="srcline246">246</a></span><span class="line"><span class="comment">%% InertialData  和 otherMakers 置 NaN</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,247" id="srcline247">247</a></span><span class="line"><span class="comment">%% 用于给 C++ 自动生成 初始化 函数</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,248" id="srcline248">248</a></span><span class="line"></span></span>
+</pre>

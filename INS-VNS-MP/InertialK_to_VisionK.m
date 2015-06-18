@@ -1,9 +1,8 @@
 %% xyz 2015.5.26
 
-function [ vision_k,TimeError ] = InertialK_to_VisionK( inertial_k )
+function [ vision_k,TimeError ] = InertialK_to_VisionK( inertial_k,otherMakersTime,inertialTime  )
 
 
-global otherMakersTime  inertialTime 
 global visionFre  inertialFre
 
 MaxTimeErr = 2.5e-2 ;

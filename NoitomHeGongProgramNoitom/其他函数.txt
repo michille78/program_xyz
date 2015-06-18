@@ -1,0 +1,33 @@
+inline void q_v_qc(const QUATERNION_t* q, const Point3D_t* v, Point3D_t* out)
+{
+	QUATERNION_t q_inv(1,0,0,0);
+	QUATERNION_t qv(0,0,0,0);
+	QUATERNION_t tmp(1,0,0,0);
+
+	QUATERNION_t qout(1,0,0,0);
+	
+	qv.qx = v->X;
+	qv.qy = v->Y;
+	qv.qz = v->Z;
+
+	Quat_INV(q,&q_inv,0);
+
+	Quat_Mult(q,&qv,&tmp);
+	
+	Quat_Mult(&tmp,&q_inv,&qout);  //  q¡£qv¡£q_inv
+
+	out->X = qout.qx;
+	out->Y = qout.qy;
+	out->Z = qout.qz;
+	
+}
+
+// xyz  A¡£B = out
+
+inline void Quat_Mult(const QUATERNION_t * A,const QUATERNION_t * B,QUATERNION_t * out)
+{
+	out->qs = (A->qs * B->qs) - (A->qx * B->qx) - (A->qy * B->qy) - (A->qz * B->qz);
+	out->qx = (A->qs * B->qx) + (A->qx * B->qs) + (A->qy * B->qz) - (A->qz * B->qy);
+	out->qy = (A->qs * B->qy) - (A->qx * B->qz) + (A->qy * B->qs) + (A->qz * B->qx);
+	out->qz = (A->qs * B->qz) + (A->qx * B->qy) - (A->qy * B->qx) + (A->qz * B->qs);
+}

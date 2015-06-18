@@ -9,7 +9,7 @@
 % C: [3*3*N]
 
 function C = Q2C(Q) %#codegen
-format long
+
 coder.inline('never');
 
 Q = Make_Const_N( Q,4 ) ; 
@@ -22,8 +22,10 @@ end
 
 function C = Q2C_One(Q)
 
-format long
+coder.extrinsic('format');
 coder.inline('never');
+
+format long
 
 Q=Q/norm(Q);
 q0 = Q(1) ;

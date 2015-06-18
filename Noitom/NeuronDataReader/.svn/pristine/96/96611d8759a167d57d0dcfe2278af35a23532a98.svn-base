@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BVHDataReader", "BVHDataReader\BVHDataReader.csproj", "{1C243532-F33C-4A12-9C76-C738180F7C57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "demo", "demo for vs2012\demo.csproj", "{02FAE9B7-716A-4777-89D7-B29E7C9D851E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C243532-F33C-4A12-9C76-C738180F7C57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C243532-F33C-4A12-9C76-C738180F7C57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C243532-F33C-4A12-9C76-C738180F7C57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C243532-F33C-4A12-9C76-C738180F7C57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02FAE9B7-716A-4777-89D7-B29E7C9D851E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02FAE9B7-716A-4777-89D7-B29E7C9D851E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02FAE9B7-716A-4777-89D7-B29E7C9D851E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02FAE9B7-716A-4777-89D7-B29E7C9D851E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

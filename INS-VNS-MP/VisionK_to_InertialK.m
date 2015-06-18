@@ -1,9 +1,9 @@
 %% xyz 2015.5.26
 
-function  inertial_k = VisionK_to_InertialK( vision_k )
+function  inertial_k = VisionK_to_InertialK( vision_k,visionFre,inertialFre,otherMakersTime,inertialTime )
 
-global otherMakersTime  inertialTime 
-global visionFre  inertialFre
+
+coder.extrinsic('fprintf');
 
 MaxTimeErr = 2.5e-2 ;
 

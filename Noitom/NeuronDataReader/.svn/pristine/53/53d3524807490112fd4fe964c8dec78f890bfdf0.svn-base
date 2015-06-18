@@ -1,0 +1,42 @@
+﻿NeuronDataReader library Release Notes
+--------------------------------------
+Release date: 5.5.2015
+Version: beta 12
+
+NeuronDataReader is a plugin/library used to sync skeleton state or parameters with server by TCP/IP.
+
+There are sections for the following areas:
+    SDK features
+    Changes in functionality
+    Obsolete functionality
+    Fixed bugs
+    Known bugs
+
+
+SDK Features
+------------
+* Receiving and parsing real-time motion data from server.
+
+* Receiving and sync data with multi-PC.
+
+* Parameters sync with server.
+
+
+Changes in Functionality
+------------------------
+* Some UDP APIs are merged with TCP/IP functions.
+
+
+Obsolete Functionality
+----------------------
+* BRDisconnect
+
+
+Fixed bugs
+----------
+
+
+
+Known bugs
+----------
+If any bug or problem please contact me at: yuanhui.he@noitom.com

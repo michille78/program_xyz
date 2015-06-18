@@ -1,0 +1,58 @@
+﻿<Window x:Class="demo_cs.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="demo for NeuronDataReader library" Height="454" Width="525" Closed="Window_Closed" Loaded="Window_Loaded">
+    <Grid>
+        <TextBlock Name="txtLog" Text="0" Margin="10,97,265,0" TextAlignment="Center" Height="28" VerticalAlignment="Top" FontSize="18" FontWeight="Bold"/>
+        <TextBlock Name="txtLog1" Text="0" Margin="10,127,265,0" TextAlignment="Center" Height="28" VerticalAlignment="Top" FontSize="18" FontWeight="Bold"/>
+        <ScrollViewer Margin="10,10,265,185" VerticalScrollBarVisibility="Auto">
+            <TextBlock Name="txtCommandLog"/>
+        </ScrollViewer>
+        <GroupBox Margin="0,10,10,0" Header="TCP/IP Testing" HorizontalAlignment="Right" Width="250" Height="124" VerticalAlignment="Top">
+            <Grid>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Server IP:" VerticalAlignment="Top" Margin="33,17,0,0"/>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Server Port:" VerticalAlignment="Top" Margin="20,47,0,0"/>
+                <TextBox Name="txtIP" HorizontalAlignment="Left" Height="23" Margin="91,15,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="120"/>
+                <TextBox Name="txtPort" HorizontalAlignment="Left" Height="23" Margin="91,45,0,0" TextWrapping="Wrap" Text="7001" VerticalAlignment="Top" Width="120"/>
+                <Button Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="91,76,0,0" VerticalAlignment="Top" Width="75" Click="ButtonConnect_Click"/>
+
+                <TextBlock Name="txtSockLog" Margin="45,225,0,10" TextWrapping="Wrap"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Margin="0,289,10,0" Header="UDP Testing"  HorizontalAlignment="Right" Width="250" Height="124" VerticalAlignment="Top">
+            <Grid>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Listenning at:" VerticalAlignment="Top" Margin="10,16,0,0"/>
+                <TextBox Name="txtUDPPort" HorizontalAlignment="Left" Height="23" Margin="91,14,0,0" TextWrapping="Wrap" Text="7001" VerticalAlignment="Top" Width="120"/>
+                <Button Name="btnStartUDPService" Content="Start" HorizontalAlignment="Left" Margin="91,42,0,0" VerticalAlignment="Top" Width="75" Click="btnStartUDPService_Click"/>
+
+                <TextBlock Name="txtUDPServiceStatus" Margin="45,225,0,10" TextWrapping="Wrap"/>
+            </Grid>
+        </GroupBox>
+
+        <TextBlock HorizontalAlignment="Left" Margin="8,0,0,163" Height="17" VerticalAlignment="Bottom" >Commands test:</TextBlock>
+        <Button x:Name="btnCmdFetches" Content="Fetch" HorizontalAlignment="Left" Margin="161,0,0,129" Width="68" Click="btnCmdFetches_Click" Height="19" VerticalAlignment="Bottom"/>
+        <ComboBox x:Name="cbFetchCommand" HorizontalAlignment="Left" Margin="24,0,0,129" Width="132" SelectionChanged="cbFetchCommand_SelectionChanged" Height="21" VerticalAlignment="Bottom" SelectedIndex="0">
+            <ComboBoxItem>Bone dimention</ComboBoxItem>
+            <ComboBoxItem>Face direction</ComboBoxItem>
+            <ComboBoxItem>Avatar name</ComboBoxItem>
+            <ComboBoxItem>Data Frequency</ComboBoxItem>
+            <ComboBoxItem>Bvh Inheritance</ComboBoxItem>
+            <ComboBoxItem>Avatar count</ComboBoxItem>
+            <ComboBoxItem>Comb mode</ComboBoxItem>
+        </ComboBox>
+
+        <TextBlock HorizontalAlignment="Left" Margin="8,0,0,84" Height="17" VerticalAlignment="Bottom" >Received data information:</TextBlock>
+        <CheckBox Name="cbWithDisp" Content="With displement" HorizontalAlignment="Left" Margin="29,0,0,54" IsEnabled="False" IsChecked="True" Height="15" VerticalAlignment="Bottom"/>
+        <CheckBox Name="cbWithPrefix" Content="With prefix" HorizontalAlignment="Left" Margin="29,0,0,25" IsEnabled="False" Height="15" VerticalAlignment="Bottom"/>
+        <GroupBox Margin="0,145,10,0" HorizontalAlignment="Right" Width="250" Height="124" VerticalAlignment="Top" Header="TCP/IP Testing 2">
+            <Grid>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Server IP:" VerticalAlignment="Top" Margin="33,17,0,0"/>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Server Port:" VerticalAlignment="Top" Margin="20,47,0,0"/>
+                <TextBox x:Name="txtIP1" HorizontalAlignment="Left" Height="23" Margin="91,15,0,0" TextWrapping="Wrap" Text="192.168.2.41" VerticalAlignment="Top" Width="120"/>
+                <TextBox x:Name="txtPort1" HorizontalAlignment="Left" Height="23" Margin="91,45,0,0" TextWrapping="Wrap" Text="7001" VerticalAlignment="Top" Width="120"/>
+                <Button x:Name="btnConnect1" Content="Connect" HorizontalAlignment="Left" Margin="91,76,0,0" VerticalAlignment="Top" Width="75" Click="btnConnect1_Click"/>
+                <TextBlock x:Name="txtSockLog1" Margin="45,225,0,10" TextWrapping="Wrap"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

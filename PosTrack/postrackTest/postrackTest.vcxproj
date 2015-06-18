@@ -231,13 +231,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\PosTrack\Eigen-3.2.2;;..\PosTrack\;..\PerceptionNeuronSDK\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PosTrack\Eigen-3.2.2;..\PosTrack\;..\PerceptionNeuronSDK\;..\GetINSCompensateFromVNS\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>PNLib.lib;PosTrack.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\x64\X64_DEBUG\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\x64\X64_DEBUG\;..\GetINSCompensateFromVNS\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
@@ -369,6 +369,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\GetINSCompensateFromVNS\GetINSCompensateFromVNS.h" />
+    <ClInclude Include="..\GetINSCompensateFromVNS\GetINSCompensateFromVNS_types.h" />
+    <ClInclude Include="..\GetINSCompensateFromVNS\rtGetInf.h" />
+    <ClInclude Include="..\GetINSCompensateFromVNS\rtGetNaN.h" />
+    <ClInclude Include="..\GetINSCompensateFromVNS\rtwtypes.h" />
+    <ClInclude Include="..\GetINSCompensateFromVNS\rt_defines.h" />
+    <ClInclude Include="..\GetINSCompensateFromVNS\rt_nonfinite.h" />
     <ClInclude Include="BvhPlayerDlg.h" />
     <ClInclude Include="ChildView.h" />
     <ClInclude Include="CommandControl.h" />
@@ -376,7 +383,9 @@
     <ClInclude Include="ConsoleInApp.h" />
     <ClInclude Include="ControlDlg.h" />
     <ClInclude Include="CRC8.h" />
+    <ClInclude Include="HybidTrack.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MATLABSupport.h" />
     <ClInclude Include="postrack.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="serialport.h" />
@@ -384,6 +393,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\GetINSCompensateFromVNS\GetINSCompensateFromVNS.cpp" />
+    <ClCompile Include="..\GetINSCompensateFromVNS\rtGetInf.cpp" />
+    <ClCompile Include="..\GetINSCompensateFromVNS\rtGetNaN.cpp" />
+    <ClCompile Include="..\GetINSCompensateFromVNS\rt_nonfinite.cpp" />
     <ClCompile Include="BvhPlayerDlg.cpp" />
     <ClCompile Include="ChildView.cpp" />
     <ClCompile Include="CommandControl.cpp" />
@@ -391,7 +404,9 @@
     <ClCompile Include="ConsoleInApp.cpp" />
     <ClCompile Include="ControlDlg.cpp" />
     <ClCompile Include="CRC8.cpp" />
+    <ClCompile Include="HybidTrack.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MATLABSupport.cpp" />
     <ClCompile Include="postrack.cpp" />
     <ClCompile Include="serialport.cpp" />
     <ClCompile Include="stdafx.cpp">

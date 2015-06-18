@@ -10,7 +10,12 @@
 #include "CommandControl.h"
 #include "serialport.h"
 
+#include "HybidTrack.h"
+#include "GetINSCompensateFromVNS.h"
+
 CRITICAL_SECTION g_cs;
+
+
 
 // 光学数据
 void CALLBACK recievePosTrackor(void * pOwner, float* optiTracData)
@@ -25,14 +30,24 @@ void CALLBACK recievePosTrackor(void * pOwner, float* optiTracData)
 }
 
 // 光学数据
-void CALLBACK recieveOherMark(void * pOwner, float* otherMarkData, int count)
+void CALLBACK recieveOtherMark(void * pOwner, float* otherMarkData, int nOtherMarkers, float fLatency, unsigned int Timecode, unsigned int TimecodeSubframe, double fTimestamp)
 {
+	if (pOwner == NULL) return;
+	CControlDlg* dlg = (CControlDlg*)pOwner;
+	if (dlg == NULL)return;
+
+	/// 将 OtherMarker 数据保存到 HybidTrack 中
+	dlg->HybidTrack.UpdateVisionData(nOtherMarkers, otherMarkData, fLatency, Timecode, TimecodeSubframe, fTimestamp);
+
+
+	/*
 	if (pOwner == NULL) return;
 	CControlDlg* dlg = (CControlDlg*)pOwner;
 	if (dlg == NULL)return;
 
 	if (!dlg->isWriteRawFile) return;
 
+	// 记录 OtherMark 和 Win 时间
 	SYSTEMTIME  time;
 	GetLocalTime(&time);
 
@@ -49,16 +64,70 @@ void CALLBACK recieveOherMark(void * pOwner, float* otherMarkData, int count)
 		}
 		fprintf(dlg->fpOpt, "\n");
 	}
-
+	*/
+	
 }
 
+// 中间数据回调函数
 void __stdcall CalculatedBinaryDataCallback(void* customObject, int avatarIndex, CalculationDataHeader* cbp, int packLen)
 {
-   //中间默认输出的QAW为 QT_GlobalRawQuat AT_ModelRawData GY_ModelRawData
-    
-    CControlDlg* dlg = (CControlDlg*)customObject;
-    SYSTEMTIME  time;
-    GetLocalTime(&time);
+	//中间默认输出的QAW为 QT_GlobalRawQuat AT_ModelRawData GY_ModelRawData
+
+	CControlDlg* dlg = (CControlDlg*)customObject;
+	SYSTEMTIME  time;
+	GetLocalTime(&time);
+
+	float* begin = (float*)((char*)cbp + sizeof(CalculationDataHeader));
+	// Hip 和 Head 数据
+	QUATERNION_t HipQ = QUATERNION_t(begin[6], begin[7], begin[8], begin[9]);
+	Point3D_t HipP(begin[0], begin[1], begin[2]);
+	Point3D_t HipVelocity(begin[3], begin[4], begin[5]);
+	QUATERNION_t HeadQ = QUATERNION_t(begin[246], begin[247], begin[248], begin[249]);
+	Point3D_t HeadVelocity(begin[243], begin[244], begin[245]);
+	Point3D_t HeadP(begin[240], begin[241], begin[242]);
+
+	// 标定数据
+	CalibrationData data;
+	PNGetCalibrationData(0, &data);
+	//fprintf(fpInertia, "Body Direction:%0.4f %0.4f %0.4f\n", data.FaceDirection.x, data.FaceDirection.y, data.FaceDirection.z);
+
+
+	// 将接收到的 Hip 和 Head 数据 更新到 HybidTrack
+	dlg->HybidTrack.UpdateInertialData(HipQ, HipP, HeadQ, HeadP, data.FaceDirection);
+
+
+	// Get bonePosX data
+	float bonePosX[126] = { 0.0 };
+	for (int i = 0; i < 21; i++)
+	{
+		for (int j = 0; j < 6; j++)
+		{
+			bonePosX[i * 6 + j] = begin[i * 16 + j];
+		}
+	}
+
+	int Xi = dlg->HybidTrack.CalculateOrder[0].CalEndIN;
+	
+	if (Xi>0)
+	{
+
+		int offset_X = dlg->HybidTrack.M_InertialPositionCompensate[(Xi-1) * 3];
+		int offset_Y = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3 + 1];
+	//	int offset_Z = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3 + 2];
+		int offset_Z =  0;
+		// 纠偏
+		for (int i = 0; i < 126; i += 6)
+		{
+			bonePosX[i + 0] -= offset_X;
+			bonePosX[i + 1] -= offset_Y;
+			//bonePosX[i + 2] -= offset_Z;
+		}
+		// 应用到迭代中
+		PNUpdateXt(0, bonePosX);
+		
+	}
+	/*
+	/// 高鹏
 
 	// Get X data
     float X[126] = { 0.0 };
@@ -104,7 +173,7 @@ void __stdcall CalculatedBinaryDataCallback(void* customObject, int avatarIndex,
     // 头部的节点是10 是第15根骨骼， 跳过前15*6 = 90(0~90)   90:x  91:y 92:z
     // 数据融合
     dlg->DataFusion(X, dlg->OptiTracData);
-
+	*/
 }
 
 void CControlDlg::DataFusion(float* bonePosX, Point3D_t optiTracData)
@@ -214,6 +283,8 @@ CControlDlg::CControlDlg(CWnd* pParent /*=NULL*/)
 	isWriteRawFile = false;
 
 	qType = QT_GlobalBoneQuat;
+	
+	DataFreq = 96;
 }
 
 CControlDlg::~CControlDlg()
@@ -256,6 +327,7 @@ BEGIN_MESSAGE_MAP(CControlDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_WRITERAWFILE, &CControlDlg::OnBnClickedBtnWriterawfile)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CControlDlg::OnCbnSelchangeCombo1)
 	ON_BN_CLICKED(IDC_BUTTON_ZERO, &CControlDlg::OnBnClickedButtonZero)
+	ON_BN_CLICKED(IDC_BTN_READRAWFILE, &CControlDlg::OnBnClickedBtnReadrawfile)
 END_MESSAGE_MAP()
 
 
@@ -267,6 +339,8 @@ BOOL CControlDlg::OnInitDialog()
     CDialogEx::OnInitDialog();
 
     // TODO:  在此添加额外的初始化
+	
+
     // 设置得包率显示
     m_wndRatioList.InsertColumn(0, _T("BoneID"), LVCFMT_CENTER, 100);
     m_wndRatioList.InsertColumn(1, _T("Ratio"), LVCFMT_LEFT, 100);
@@ -299,9 +373,9 @@ BOOL CControlDlg::OnInitDialog()
 
     pPosTrackor = new PosTrackor();
     pPosTrackor->SetRecievePosTrackHandle(this, recievePosTrackor);
-	pPosTrackor->SetRecieveOtherMarkHandle(this, recieveOherMark);
+	pPosTrackor->SetRecieveOtherMarkHandle(this, recieveOtherMark);
     // 设置连接默认值
-    m_wndIP.SetWindowText(L"127.0.0.1");
+    m_wndIP.SetWindowText(L"192.168.2.226");
     m_wndPort.SetWindowText(L"1511");
 
     // 定时器获取传感器状态
@@ -445,8 +519,13 @@ void CControlDlg::OnBnClickedBtnOpenport()
         // 进入数据模式
         pCommandControl->SensorToDataMode();
 
+		//获取采集频率用于时间同步
+		DataFreq = PNGetDataAcquisitionFrequency();
+		HybidTrack.m_I_Frequency = DataFreq;
         // 线程开始读取
         m_ThreadFlag = 2;
+
+		
         
         SetDlgItemText(IDC_BTN_OPENPORT, L"暂停采集");
     }
@@ -703,4 +782,34 @@ void CControlDlg::OnBnClickedButtonZero()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	PNZeroOutPosition(0);
+}
+
+
+void CControlDlg::OnBnClickedBtnReadrawfile()
+{
+	// TODO:  在此添加控件通知处理程序代码
+
+	
+	isWriteRawFile = false;
+	//  打开原始文件
+	int personNum;
+
+	PNSetRunningMode(RM_RawPlaying);  // 设置为播放模式（默认实时模式）
+	personNum = PNOpenRawDataFile(HybidTrack.m_inertial_Path);
+
+	DataFreq = PNGetDataAcquisitionFrequency();
+	HybidTrack.m_I_Frequency = DataFreq;
+
+	HybidTrack.m_IneritalFrames = PNRawDataPlayGetTotalFrames();  // 帧数
+
+	int erro = PNGetLastErrorCode();
+	const char* tmp = PNGetLastErrorMessage();
+	
+	// 读离线视觉文件
+	
+	HybidTrack.Read_M_otherMakers_OffLine();
+	HybidTrack.m_OffLineRead = true;
+
+	// 播放原始文件
+	PNRawDataPlayStart();
 }

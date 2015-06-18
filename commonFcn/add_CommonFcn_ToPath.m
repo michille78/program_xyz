@@ -20,6 +20,7 @@ addpath([pwd,'\BVH'])
 addpath([pwd,'\coordinate_c'])
 addpath([pwd,'\SINSTraceGenerator'])
 addpath([pwd,'\SINSNav'])
+addpath([pwd,'\InertialMCHandle'])
 
 
 

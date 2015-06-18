@@ -1,0 +1,354 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		468782CC1A373B240026EB42 /* dllmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468782C01A373B240026EB42 /* dllmain.cpp */; };
+		468782CD1A373B240026EB42 /* IDataParseDelegate.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 468782C11A373B240026EB42 /* IDataParseDelegate.hpp */; };
+		468782D41A373B240026EB42 /* stdafx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468782C91A373B240026EB42 /* stdafx.cpp */; };
+		468782D51A373B240026EB42 /* stdafx.h in Headers */ = {isa = PBXBuildFile; fileRef = 468782CA1A373B240026EB42 /* stdafx.h */; };
+		468782D81A38387B0026EB42 /* Error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 468782D61A38387B0026EB42 /* Error.cpp */; };
+		468782D91A38387B0026EB42 /* Error.h in Headers */ = {isa = PBXBuildFile; fileRef = 468782D71A38387B0026EB42 /* Error.h */; };
+		469DD6861AD4E24C00150734 /* DataParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 469DD6841AD4E24C00150734 /* DataParser.cpp */; };
+		469DD6871AD4E24C00150734 /* DataParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 469DD6851AD4E24C00150734 /* DataParser.h */; };
+		620334191ACBF80D00F07262 /* SockClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 620334131ACBF80D00F07262 /* SockClient.cpp */; };
+		6203341A1ACBF80D00F07262 /* SockClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 620334141ACBF80D00F07262 /* SockClient.h */; };
+		6203341B1ACBF80D00F07262 /* SocketClientsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 620334151ACBF80D00F07262 /* SocketClientsManager.cpp */; };
+		6203341C1ACBF80D00F07262 /* SocketClientsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 620334161ACBF80D00F07262 /* SocketClientsManager.h */; };
+		6203341D1ACBF80D00F07262 /* UDPDataReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 620334171ACBF80D00F07262 /* UDPDataReceiver.cpp */; };
+		6203341E1ACBF80D00F07262 /* UDPDataReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 620334181ACBF80D00F07262 /* UDPDataReceiver.h */; };
+		62807DDA1AF90B6200CA8294 /* CompressInfoCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62807DD61AF90B6200CA8294 /* CompressInfoCode.cpp */; };
+		62807DDB1AF90B6200CA8294 /* CompressInfoCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 62807DD71AF90B6200CA8294 /* CompressInfoCode.h */; };
+		62807DDC1AF90B6200CA8294 /* CRCCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62807DD81AF90B6200CA8294 /* CRCCode.cpp */; };
+		62807DDD1AF90B6200CA8294 /* CRCCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 62807DD91AF90B6200CA8294 /* CRCCode.h */; };
+		62A097DD1AEE2C6D00990A69 /* NeuronDataReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 62A097DC1AEE2C6D00990A69 /* NeuronDataReader.h */; };
+		62A097DF1AEE2C7D00990A69 /* NeuronDataReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62A097DE1AEE2C7D00990A69 /* NeuronDataReader.cpp */; };
+		62A097E71AEE367D00990A69 /* SocketCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = 62A097E61AEE367D00990A69 /* SocketCommand.h */; };
+		62D99D051ADF45A500281F9C /* Sock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62D99D031ADF45A500281F9C /* Sock.cpp */; };
+		62D99D061ADF45A500281F9C /* Sock.h in Headers */ = {isa = PBXBuildFile; fileRef = 62D99D041ADF45A500281F9C /* Sock.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		4687826E1A3739390026EB42 /* libBVHDataReader.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libBVHDataReader.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		468782C01A373B240026EB42 /* dllmain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dllmain.cpp; sourceTree = "<group>"; };
+		468782C11A373B240026EB42 /* IDataParseDelegate.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IDataParseDelegate.hpp; sourceTree = "<group>"; };
+		468782C61A373B240026EB42 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
+		468782C91A373B240026EB42 /* stdafx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stdafx.cpp; sourceTree = "<group>"; };
+		468782CA1A373B240026EB42 /* stdafx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdafx.h; sourceTree = "<group>"; };
+		468782D61A38387B0026EB42 /* Error.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Error.cpp; sourceTree = "<group>"; };
+		468782D71A38387B0026EB42 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
+		469DD6841AD4E24C00150734 /* DataParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataParser.cpp; sourceTree = "<group>"; };
+		469DD6851AD4E24C00150734 /* DataParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataParser.h; sourceTree = "<group>"; };
+		620334131ACBF80D00F07262 /* SockClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SockClient.cpp; sourceTree = "<group>"; };
+		620334141ACBF80D00F07262 /* SockClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SockClient.h; sourceTree = "<group>"; };
+		620334151ACBF80D00F07262 /* SocketClientsManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SocketClientsManager.cpp; sourceTree = "<group>"; };
+		620334161ACBF80D00F07262 /* SocketClientsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocketClientsManager.h; sourceTree = "<group>"; };
+		620334171ACBF80D00F07262 /* UDPDataReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = UDPDataReceiver.cpp; sourceTree = "<group>"; };
+		620334181ACBF80D00F07262 /* UDPDataReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UDPDataReceiver.h; sourceTree = "<group>"; };
+		62807DD61AF90B6200CA8294 /* CompressInfoCode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompressInfoCode.cpp; sourceTree = "<group>"; };
+		62807DD71AF90B6200CA8294 /* CompressInfoCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompressInfoCode.h; sourceTree = "<group>"; };
+		62807DD81AF90B6200CA8294 /* CRCCode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRCCode.cpp; sourceTree = "<group>"; };
+		62807DD91AF90B6200CA8294 /* CRCCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRCCode.h; sourceTree = "<group>"; };
+		62A097DC1AEE2C6D00990A69 /* NeuronDataReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NeuronDataReader.h; sourceTree = "<group>"; };
+		62A097DE1AEE2C7D00990A69 /* NeuronDataReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NeuronDataReader.cpp; sourceTree = "<group>"; };
+		62A097E61AEE367D00990A69 /* SocketCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocketCommand.h; sourceTree = "<group>"; };
+		62D99D031ADF45A500281F9C /* Sock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sock.cpp; sourceTree = "<group>"; };
+		62D99D041ADF45A500281F9C /* Sock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sock.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4687826B1A3739390026EB42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		468782651A3739390026EB42 = {
+			isa = PBXGroup;
+			children = (
+				62A097E61AEE367D00990A69 /* SocketCommand.h */,
+				62A097DC1AEE2C6D00990A69 /* NeuronDataReader.h */,
+				468782BD1A373B240026EB42 /* src */,
+				4687826F1A3739390026EB42 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4687826F1A3739390026EB42 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4687826E1A3739390026EB42 /* libBVHDataReader.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		468782BD1A373B240026EB42 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				62807DD61AF90B6200CA8294 /* CompressInfoCode.cpp */,
+				62807DD71AF90B6200CA8294 /* CompressInfoCode.h */,
+				62807DD81AF90B6200CA8294 /* CRCCode.cpp */,
+				62807DD91AF90B6200CA8294 /* CRCCode.h */,
+				62A097DE1AEE2C7D00990A69 /* NeuronDataReader.cpp */,
+				62D99D031ADF45A500281F9C /* Sock.cpp */,
+				62D99D041ADF45A500281F9C /* Sock.h */,
+				469DD6841AD4E24C00150734 /* DataParser.cpp */,
+				469DD6851AD4E24C00150734 /* DataParser.h */,
+				620334131ACBF80D00F07262 /* SockClient.cpp */,
+				620334141ACBF80D00F07262 /* SockClient.h */,
+				620334151ACBF80D00F07262 /* SocketClientsManager.cpp */,
+				620334161ACBF80D00F07262 /* SocketClientsManager.h */,
+				620334171ACBF80D00F07262 /* UDPDataReceiver.cpp */,
+				620334181ACBF80D00F07262 /* UDPDataReceiver.h */,
+				468782D61A38387B0026EB42 /* Error.cpp */,
+				468782D71A38387B0026EB42 /* Error.h */,
+				468782C01A373B240026EB42 /* dllmain.cpp */,
+				468782C11A373B240026EB42 /* IDataParseDelegate.hpp */,
+				468782C61A373B240026EB42 /* ReadMe.txt */,
+				468782C91A373B240026EB42 /* stdafx.cpp */,
+				468782CA1A373B240026EB42 /* stdafx.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4687826C1A3739390026EB42 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				62D99D061ADF45A500281F9C /* Sock.h in Headers */,
+				62A097E71AEE367D00990A69 /* SocketCommand.h in Headers */,
+				62807DDD1AF90B6200CA8294 /* CRCCode.h in Headers */,
+				468782D51A373B240026EB42 /* stdafx.h in Headers */,
+				6203341C1ACBF80D00F07262 /* SocketClientsManager.h in Headers */,
+				62A097DD1AEE2C6D00990A69 /* NeuronDataReader.h in Headers */,
+				469DD6871AD4E24C00150734 /* DataParser.h in Headers */,
+				6203341A1ACBF80D00F07262 /* SockClient.h in Headers */,
+				6203341E1ACBF80D00F07262 /* UDPDataReceiver.h in Headers */,
+				62807DDB1AF90B6200CA8294 /* CompressInfoCode.h in Headers */,
+				468782CD1A373B240026EB42 /* IDataParseDelegate.hpp in Headers */,
+				468782D91A38387B0026EB42 /* Error.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		4687826D1A3739390026EB42 /* build_xcode */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 468782721A3739390026EB42 /* Build configuration list for PBXNativeTarget "build_xcode" */;
+			buildPhases = (
+				4687826A1A3739390026EB42 /* Sources */,
+				4687826B1A3739390026EB42 /* Frameworks */,
+				4687826C1A3739390026EB42 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = build_xcode;
+			productName = build_xcode;
+			productReference = 4687826E1A3739390026EB42 /* libBVHDataReader.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		468782661A3739390026EB42 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = Noitom;
+				TargetAttributes = {
+					4687826D1A3739390026EB42 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
+			};
+			buildConfigurationList = 468782691A3739390026EB42 /* Build configuration list for PBXProject "build_xcode" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 468782651A3739390026EB42;
+			productRefGroup = 4687826F1A3739390026EB42 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4687826D1A3739390026EB42 /* build_xcode */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4687826A1A3739390026EB42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				468782D81A38387B0026EB42 /* Error.cpp in Sources */,
+				62A097DF1AEE2C7D00990A69 /* NeuronDataReader.cpp in Sources */,
+				469DD6861AD4E24C00150734 /* DataParser.cpp in Sources */,
+				468782CC1A373B240026EB42 /* dllmain.cpp in Sources */,
+				620334191ACBF80D00F07262 /* SockClient.cpp in Sources */,
+				468782D41A373B240026EB42 /* stdafx.cpp in Sources */,
+				62807DDA1AF90B6200CA8294 /* CompressInfoCode.cpp in Sources */,
+				62807DDC1AF90B6200CA8294 /* CRCCode.cpp in Sources */,
+				6203341D1ACBF80D00F07262 /* UDPDataReceiver.cpp in Sources */,
+				6203341B1ACBF80D00F07262 /* SocketClientsManager.cpp in Sources */,
+				62D99D051ADF45A500281F9C /* Sock.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		468782701A3739390026EB42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1.0.12;
+				DYLIB_CURRENT_VERSION = 1.0.12;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"__OS_XUN__=1",
+					"NEURONDATAREADER_EXPORTS=1",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		468782711A3739390026EB42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1.0.12;
+				DYLIB_CURRENT_VERSION = 1.0.12;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"__OS_XUN__=1",
+					"NEURONDATAREADER_EXPORTS=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		468782731A3739390026EB42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					"__OS_XUN__=1",
+					"NEURONDATAREADER_EXPORTS=1",
+				);
+				PRODUCT_NAME = BVHDataReader;
+			};
+			name = Debug;
+		};
+		468782741A3739390026EB42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__OS_XUN__=1",
+					"NEURONDATAREADER_EXPORTS=1",
+				);
+				PRODUCT_NAME = BVHDataReader;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		468782691A3739390026EB42 /* Build configuration list for PBXProject "build_xcode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				468782701A3739390026EB42 /* Debug */,
+				468782711A3739390026EB42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		468782721A3739390026EB42 /* Build configuration list for PBXNativeTarget "build_xcode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				468782731A3739390026EB42 /* Debug */,
+				468782741A3739390026EB42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 468782661A3739390026EB42 /* Project object */;
+}

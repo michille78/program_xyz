@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>B5896448-8E37-4EC8-B620-005C92D4FDB9</string>
+	<key>IDESourceControlProjectName</key>
+	<string>demo_xcode</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>b467118c-50b8-f54b-9101-f4df680f259b</key>
+		<string>http://192.168.2.44:4000/svn/NeuronDataReader</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>demo_xcode/demo_xcode.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>b467118c-50b8-f54b-9101-f4df680f259b</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>b467118c-50b8-f54b-9101-f4df680f259b</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>b467118c-50b8-f54b-9101-f4df680f259b</string>
+			<key>IDESourceControlWCCName</key>
+			<string>NeuronDataReader</string>
+		</dict>
+	</array>
+</dict>
+</plist>

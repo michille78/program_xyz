@@ -19,23 +19,13 @@
 %               CosBeitaSign=-1:[ -pi,-pi/2 ] or [ pi/2,pi ]
 
 function euler = C2Euler( C,rotateOrder,rotateDirection,CosBeitaSign )%#codegen
-format long
 
-if ~exist('rotateOrder','var')
-    rotateOrder = [];
-end
-if ~exist('rotateDirection','var')
-    rotateDirection = [];
-end
+
 
 CheckError( C ) ; 
 Nframes = size(C,3);
-
-if ~exist( 'CosBeitaSign','var' )
-    CosBeitaSign = 1 ;
-else
     
-end
+
 if numel(CosBeitaSign)==1
    CosBeitaSign = repmat( CosBeitaSign,Nframes,1 ); 
 end
@@ -48,16 +38,22 @@ end
 euler = MakeEuler_In2Pi( euler ) ;
 
 % C:[3*3]
+% 第二个欧拉角定义范围 CosBeitaSign = 1： [ -pi/2,pi/2 ]
+%                    CosBeitaSign = -1： [ -pi,-pi/2 ] [ pi/2,pi ]
 function eulerOut = C2Euler_One( C,rotateOrder,rotateDirection,CosBeitaSign )
+coder.extrinsic('format');
 format long
 
-if ~exist('rotateOrder','var') || isempty(rotateOrder)
+if isempty(rotateOrder)
     rotateOrder = 'ZYX';
 end
-if ~exist('rotateDirection','var') || isempty(rotateDirection)
+if  isempty(rotateDirection)
     rotateDirection = [1,1,1];
 end
-if ~exist( 'CosBeitaSign','var' ) || isempty(CosBeitaSign)
+if numel(rotateDirection)==1
+   rotateDirection = repmat(rotateDirection,1,3); 
+end
+if  isempty(CosBeitaSign)
     CosBeitaSign = 1 ;
 end
 
@@ -97,21 +93,16 @@ euler = [ euler1; euler2; euler3 ];
 for i=1:3
     euler(i) = euler(i)*rotateDirection(i) ;
 end
+eulerOut = euler ;
 
-eulerOut = zeros(1,3);
-if CosBeitaSign == 1
-    eulerOut = euler ;
-    return;
-end
-
+% 第二个欧拉角定义范围 CosBeitaSign = 1： [ -pi/2,pi/2 ]
+%                    CosBeitaSign = -1： [ -pi,-pi/2 ] [ pi/2,pi ]
 if CosBeitaSign == -1
     eulerOut(1) = pi+euler(1) ;
     eulerOut(2) = pi-euler(2) ;
     eulerOut(3) = pi+euler(3) ;
     return;
 end
-
-eulerOut = [];
 
 function CheckError( C )
 if size(C,1)~=3 || size(C,2)~=3

@@ -38,8 +38,9 @@
 #define IDC_BTN_WRITEFILE               1014
 #define IDC_BTN_WRITERAWFILE            1015
 #define IDC_COMBO1                      1016
-#define IDC_BUTTO_ZERO                  1017
 #define IDC_BUTTON_ZERO                 1017
+#define IDC_BTN_WRITERAWFILE2           1018
+#define IDC_BTN_READRAWFILE             1018
 
 // Next default values for new objects
 // 
