@@ -2,7 +2,7 @@
  * File: _coder_GetINSCompensateFromVNS_api.h 
  *  
  * MATLAB Coder version            : 2.6 
- * C/C++ source code generated on  : 18-Jun-2015 20:22:25 
+ * C/C++ source code generated on  : 23-Jun-2015 17:08:58 
  */
 
 #ifndef ___CODER_GETINSCOMPENSATEFROMVNS_API_H__
@@ -64,9 +64,9 @@ typedef struct
 extern void GetINSCompensateFromVNS_initialize(emlrtContext *aContext);
 extern void GetINSCompensateFromVNS_terminate(void);
 extern void GetINSCompensateFromVNS_atexit(void);
-extern void GetINSCompensateFromVNS_api(const mxArray * const prhs[4], const mxArray *plhs[3]);
+extern void GetINSCompensateFromVNS_api(const mxArray * const prhs[4], const mxArray *plhs[2]);
 extern void GetINSCompensateFromVNS_xil_terminate(void);
-extern void GetINSCompensateFromVNS(struct0_T InertialData, struct1_T otherMakers[3600], double compensateRate, struct2_T CalculateOrder, double InertialPositionCompensate[34560], double HipDisplacementNew[34560]);
+extern void GetINSCompensateFromVNS(struct0_T InertialData, struct1_T otherMakers[3600], double compensateRate, struct2_T CalculateOrder, double AccumulateCompensate_k_Out[3]);
 
 #endif
 /* 

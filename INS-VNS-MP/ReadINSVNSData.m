@@ -19,19 +19,22 @@
 
 function ReadINSVNSData(  ) 
 
-dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head5';
+dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\6.25\点头2';
 
-if ~exist([dataFolder,'\otherMakers.mat'])
-    VisionDataCell = importdata([dataFolder,'\Opt.txt']);
-    otherMakers = ReadOtherMakers( VisionDataCell ) ;
-    
+
+% if ~exist([dataFolder,'\otherMakers.mat'])
+CalStruct = ReadCalData ( dataFolder,'Opt' );
+    VisionDataCell = importdata([dataFolder,'\Opt.txt'],' ');
+    otherMakers = ReadOtherMakersNew2( VisionDataCell ) ;
+    otherMakers = CalFre( otherMakers );
     %% the maker set segment
-    otherMakers(1).MarkerSet = 'Head';
-    
+        
     save([dataFolder,'\otherMakers.mat'],'otherMakers')
-else
-    otherMakers = importdata([dataFolder,'\otherMakers.mat']);
-end
+    disp(' save otherMakers.mat OK')
+    return;
+% else
+%     otherMakers = importdata([dataFolder,'\otherMakers.mat']);
+% end
 
 if ~exist([dataFolder,'\InertialData.mat'])
     InitialDataCell = importdata( [dataFolder,'\inertia.txt'] );
@@ -103,6 +106,76 @@ InertialData.HipPosition = HipPosition ;
 InertialData.HeadQuaternion = HeadQuaternion ;
 InertialData.HeadPosition = HeadPosition ;
 InertialData.HeadHipLength = HipPosition(3,1)-HeadPosition(3,1) ;   % Hip与Head的高度差
+
+%% 计算频率
+
+function otherMakers = CalFre( otherMakers )
+N = size(otherMakers,2);
+frequency = N/( otherMakers(N).time - otherMakers(1).time ) ;
+for k=1:N
+    otherMakers(k).frequency = frequency;
+    otherMakers(k).MarkerSet = 16;
+end
+
+%% read OtherMakers Data
+function otherMakers = ReadOtherMakersNew( VisionDataCell )
+data = VisionDataCell.data;
+N = size(data,1);
+M = size(data,2);
+
+otherMakers = struct;
+for k=1:N
+   otherMakers(k).otherMakersN = data( k,2 );
+   data_k = data( k,3:M ); 
+   n = length(data_k);
+   nn = n/3;
+   Position_k = zeros(3,nn);
+   for i=1:nn
+       Position_k(:,i) = data_k( i*3-2:i*3 );
+   end
+   
+   otherMakers(k).Position = Position_k;
+   otherMakers(k).time = data( k,1 );
+end
+
+%% read OtherMakers Data
+function otherMakers = ReadOtherMakersNew2( VisionDataCell )
+VisionDataCell(1)=[];
+N = length(VisionDataCell);
+time = zeros( 1,N );
+otherMakers = struct;
+
+for k=1:N
+   VisionDataCell_k =  VisionDataCell{k};
+   C = textscan( VisionDataCell_k,'%f',1 );
+   timeStr_k = C{1};
+   otherMakersN = C{2};
+   if otherMakersN>0
+       m = FindSecondSpace( VisionDataCell_k,2 );
+       VisionDataCell_k_Temp = VisionDataCell_k( m+1:length(VisionDataCell_k) );
+       otherMakers_Data_k = zeros(3,otherMakersN);
+       otherMakers_Data_k_Cell = textscan( VisionDataCell_k_Temp,'%f %f %f',otherMakersN );
+       if otherMakersN>1
+           disp('')
+       end
+       for i=1:otherMakersN            
+            otherMakers_Data_k(:,i) = [ otherMakers_Data_k_Cell{1}(i);otherMakers_Data_k_Cell{2}(i);otherMakers_Data_k_Cell{3}(i) ]  ;
+       end
+   else
+       otherMakers_Data_k = [];
+   end
+   otherMakers(k).otherMakersN = otherMakersN ;
+   otherMakers(k).Position = otherMakers_Data_k ;
+   time(k) = TransformTimeFormat( timeStr_k );
+end
+timeNew = HandleTimeScope( time );
+for k=1:N
+    otherMakers(k).time = timeNew(k);
+end
+
+frequency = N/timeNew(N) ;
+
+otherMakers(1).frequency = frequency ;
 
 %% read OtherMakers Data
 function otherMakers = ReadOtherMakers( VisionDataCell )

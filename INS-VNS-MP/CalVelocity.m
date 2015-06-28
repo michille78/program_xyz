@@ -14,7 +14,10 @@
 % Velocity_k(5,1) : xy平面速度与正前方之间的夹角（模大于0.2m/s时才计算）
 
 
-function [ Velocity_k,k_calV ] = CalVelocity( Position,data_k,fre,dT_CalV,MinXYVNorm_CalAngle )
+function [ Velocity_k,k_calV ] = CalVelocity( Position,data_k,fre,dT_CalV,MinXYVNorm_CalAngle,CalVFlag )
+if ~exist('CalVFlag','var')
+   CalVFlag = 1; 
+end
 % 速度计算的步长个数
 dN_CalV = fix(dT_CalV*fre) ;
 dN_CalV = max(dN_CalV,2);
@@ -31,14 +34,26 @@ if k_calV-dN_CalV<1 || k_calV+dN_CalV>length(Position)
     return; 
 end
 
-Position1 = Position( :,k_calV+dN_CalV ) ;
-Position2 = Position( :,k_calV-dN_CalV ) ;
+
+%% xyz三维的速度
+switch CalVFlag
+    case 1
+        Position1 = Position( :,k_calV+dN_CalV ) ;
+        Position2 = Position( :,k_calV-dN_CalV ) ;
+        
+    case 2
+        Position1_A = Position( :,k_calV+1:k_calV+dN_CalV ) ;
+        Position2_A = Position( :,k_calV-dN_CalV:k_calV-1 ) ;
+        Position1 = mean(Position1_A,2);
+        Position2 = mean(Position2_A,2);
+end
+
 if isnan( Position1(1) ) || isnan( Position2(1) )
     Velocity_k = NaN(5,1) ;
     return;  % 计算速度的数据中有跟踪失败的点 
 end
-% xyz三维的速度
 Velocity_k = ( Position1 - Position2 ) / (dT_CalV*2) ;
+        
 
 % 第四行存储xy平面速度的模
 trackedMarkerVelocity_xyNorm = normest(Velocity_k(1:2)) ; 

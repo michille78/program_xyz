@@ -32,6 +32,8 @@ void CALLBACK recievePosTrackor(void * pOwner, float* optiTracData)
 // 光学数据
 void CALLBACK recieveOtherMark(void * pOwner, float* otherMarkData, int nOtherMarkers, float fLatency, unsigned int Timecode, unsigned int TimecodeSubframe, double fTimestamp)
 {
+
+	
 	if (pOwner == NULL) return;
 	CControlDlg* dlg = (CControlDlg*)pOwner;
 	if (dlg == NULL)return;
@@ -40,23 +42,17 @@ void CALLBACK recieveOtherMark(void * pOwner, float* otherMarkData, int nOtherMa
 	dlg->HybidTrack.UpdateVisionData(nOtherMarkers, otherMarkData, fLatency, Timecode, TimecodeSubframe, fTimestamp);
 
 
-	/*
-	if (pOwner == NULL) return;
-	CControlDlg* dlg = (CControlDlg*)pOwner;
-	if (dlg == NULL)return;
-
 	if (!dlg->isWriteRawFile) return;
 
-	// 记录 OtherMark 和 Win 时间
-	SYSTEMTIME  time;
-	GetLocalTime(&time);
+	// 记录 OtherMarks
 
-	if (dlg->fpOpt)
+	if (dlg->fpOpt && dlg->HybidTrack.IsBothStart >= 1)
 	{
-		fprintf(dlg->fpOpt, "%02d:%02d:%02d    %d", time.wMinute, time.wSecond, time.wMilliseconds, count);
-		if (count)
+		
+		fprintf(dlg->fpOpt, "%0.7f    %d", fLatency, nOtherMarkers);
+		if (nOtherMarkers)
 		{
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < nOtherMarkers; i++)
 			{
 				fprintf(dlg->fpOpt, " %0.5f %0.5f %0.5f",  
 					 otherMarkData[3*i + 0], otherMarkData[3*i + 1], otherMarkData[3*i + 2]);
@@ -64,7 +60,7 @@ void CALLBACK recieveOtherMark(void * pOwner, float* otherMarkData, int nOtherMa
 		}
 		fprintf(dlg->fpOpt, "\n");
 	}
-	*/
+	
 	
 }
 
@@ -93,9 +89,32 @@ void __stdcall CalculatedBinaryDataCallback(void* customObject, int avatarIndex,
 
 
 	// 将接收到的 Hip 和 Head 数据 更新到 HybidTrack
-	dlg->HybidTrack.UpdateInertialData(HipQ, HipP, HeadQ, HeadP, data.FaceDirection);
+	dlg->HybidTrack.UpdateInertialData(HipQ, HipP, HeadQ, HeadP, data.BodyDirection);
+	
 
+	///// 位移补偿
+	//float offset_X, offset_Y, offset_Z;
+	//offset_X = dlg->HybidTrack.M_InertialPositionCompensate_k[0];
+	//offset_Y = dlg->HybidTrack.M_InertialPositionCompensate_k[1];
+	//offset_Z = dlg->HybidTrack.M_InertialPositionCompensate_k[2];
+	//PNAdjustPosition(0, -offset_X, 0, -offset_Y);
+	
 
+	/*
+	int Xi = dlg->HybidTrack.CalculateOrder[0].CalEndIN;
+	if (Xi > 0)
+	{
+		offset_X = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3];
+		offset_Y = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3 + 1];
+		//	float offset_Z = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3 + 2];
+		offset_Z = 0;
+		PNAdjustPosition(0, -offset_X, 0, -offset_Y);
+	}
+	*/
+
+  //	PNAdjustPosition(0, -HipP.X, 0,-HipP.Y);		// 左上前
+
+	/*
 	// Get bonePosX data
 	float bonePosX[126] = { 0.0 };
 	for (int i = 0; i < 21; i++)
@@ -105,27 +124,32 @@ void __stdcall CalculatedBinaryDataCallback(void* customObject, int avatarIndex,
 			bonePosX[i * 6 + j] = begin[i * 16 + j];
 		}
 	}
+	
 
 	int Xi = dlg->HybidTrack.CalculateOrder[0].CalEndIN;
 	
 	if (Xi>0)
 	{
 
-		int offset_X = dlg->HybidTrack.M_InertialPositionCompensate[(Xi-1) * 3];
-		int offset_Y = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3 + 1];
-	//	int offset_Z = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3 + 2];
-		int offset_Z =  0;
+		float offset_X = dlg->HybidTrack.M_InertialPositionCompensate[(Xi-1) * 3];
+		float offset_Y = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3 + 1];
+	//	float offset_Z = dlg->HybidTrack.M_InertialPositionCompensate[(Xi - 1) * 3 + 2];
+		float offset_Z = 0;
 		// 纠偏
+		
 		for (int i = 0; i < 126; i += 6)
 		{
-			bonePosX[i + 0] -= offset_X;
-			bonePosX[i + 1] -= offset_Y;
+			bonePosX[i + 0] += offset_X;
+			bonePosX[i + 1] += offset_Y;
 			//bonePosX[i + 2] -= offset_Z;
 		}
 		// 应用到迭代中
-		PNUpdateXt(0, bonePosX);
-		
-	}
+		PNUpdateXt(0, bonePosX);		
+		if (abs(offset_X)> 0.001)
+		{
+			printf("l");
+		}
+	}*/
 	/*
 	/// 高鹏
 
@@ -328,6 +352,9 @@ BEGIN_MESSAGE_MAP(CControlDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CControlDlg::OnCbnSelchangeCombo1)
 	ON_BN_CLICKED(IDC_BUTTON_ZERO, &CControlDlg::OnBnClickedButtonZero)
 	ON_BN_CLICKED(IDC_BTN_READRAWFILE, &CControlDlg::OnBnClickedBtnReadrawfile)
+	ON_BN_CLICKED(IDC_PLAY, &CControlDlg::OnBnClickedPlay)
+	ON_BN_CLICKED(IDC_CHECK1, &CControlDlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_CHECK2, &CControlDlg::OnBnClickedCheck2)
 END_MESSAGE_MAP()
 
 
@@ -355,6 +382,9 @@ BOOL CControlDlg::OnInitDialog()
         swprintf_s(strTmp, 5, L"%d", i+1);
         m_wndRatioList.InsertItem(i, strTmp);
     }
+
+	PNSetRunningMode(RM_Realtime);
+
 
     // 设置BoneQ的中间数据格式
 	PNSetCalculatedQuaternionDataType(qType);
@@ -409,7 +439,7 @@ void CControlDlg::OnTimer(UINT_PTR nIDEvent)
     {
     case 1:
         {
-            double SensorRatios[167] = {0.0};
+            float SensorRatios[167] = {0.0};
             UINT SensorState[167];
 
             // 得到传感器的Ratios
@@ -490,7 +520,7 @@ void CControlDlg::OnBnClickedBtnOpenport()
         pCommandControl->SensorSleep();
         m_ThreadFlag = 1;
         Sleep(100);
-        pSerial->Close();
+        pSerial->Close();   // 停止采集
 
         SetDlgItemText(IDC_BTN_OPENPORT, L"开始采集");
     }
@@ -513,6 +543,20 @@ void CControlDlg::OnBnClickedBtnOpenport()
             return;
         }
 
+		PNSetSensorSuitType(SS_LegacySensors);
+
+
+		// 设置运行模式
+		PNSetRunningMode(RM_Realtime);
+
+		for (int  i = 0; i < 16; i++)
+		{
+			PNBindSensor(0, i, i+1);
+		}
+		PNBindSensor(0, 18, 17);
+
+
+		PNSetSensorCombinationMode(0, SC_FullBody);
         // 开启采集
         pCommandControl->StartCapture();
 
@@ -525,7 +569,22 @@ void CControlDlg::OnBnClickedBtnOpenport()
         // 线程开始读取
         m_ThreadFlag = 2;
 
-		
+		BoneDimension BD;
+		PNGetBoneDimensions(0, &BD);
+		BD.Head = 0.1595;
+		BD.Neck = 0.0947;
+		BD.Body = 0.5584;
+		BD.ShoulderWidth = 0.32;
+		BD.UpperArm = 0.265;
+		BD.Forearm = 0.26;
+		BD.Palm = 0.175;
+		BD.HipWidth = 0.185;
+		BD.UpperLeg = 0.4187;
+		BD.LowerLeg = 0.4187;
+		BD.HeelHeight = 0.0769;
+		BD.FootLength = 0.25;
+
+		PNSetBoneDimensions(0, &BD);
         
         SetDlgItemText(IDC_BTN_OPENPORT, L"暂停采集");
     }
@@ -686,13 +745,23 @@ void CControlDlg::OnDestroy()
 }
 
 
-void CControlDlg::OnBnClickedBtnWriterawfile()
+void CControlDlg::OnBnClickedBtnWriterawfile(  )
 {
+	
+
+	if (!HybidTrack.IsBothStart)
+	{
+		m_Msg = _T("惯性和视觉没有都开启！");
+		m_wndMessage.SetWindowText(m_Msg);
+		return;
+	}
+
 	isWriteRawFile = (isWriteRawFile == false) ? true : false;
 	if (isWriteRawFile)
 	{
 		wnd_qType.EnableWindow(FALSE);
 
+		/*
 		if (fpInertia != NULL)
 		{
 			fclose(fpInertia);
@@ -709,7 +778,7 @@ void CControlDlg::OnBnClickedBtnWriterawfile()
 
 		CalibrationData data;
 		PNGetCalibrationData(0, &data);
-		fprintf(fpInertia, "Body Direction:%0.4f %0.4f %0.4f\n", data.FaceDirection.x, data.FaceDirection.y, data.FaceDirection.z);
+		fprintf(fpInertia, "Body Direction:%0.4f %0.4f %0.4f\n", data.BodyDirection.x, data.BodyDirection.y, data.BodyDirection.z);
 
 		if (qType == QT_GlobalBoneQuat)
 		{
@@ -721,7 +790,8 @@ void CControlDlg::OnBnClickedBtnWriterawfile()
 		}
 
 		fprintf(fpInertia, "Time hip-qs hip-qx hip-qy hip-qz hip-x hip-y hip-z head-qs head-qx head-qy head-qz head-x head-y head-z\n");
-		
+		*/
+
 		// 开始导出Raw
 		PNExportRawData();
 
@@ -745,8 +815,8 @@ void CControlDlg::OnBnClickedBtnWriterawfile()
 	}
 	else
 	{
-		fclose(fpInertia);
-		fpInertia = NULL;
+	/*	fclose(fpInertia);
+		fpInertia = NULL;  */
 
 		// 停止导出
 		PNStopExportRawData();
@@ -754,7 +824,7 @@ void CControlDlg::OnBnClickedBtnWriterawfile()
 		fclose(fpOpt);
 		fpOpt = NULL;
 
-		m_Msg = "记录文件已经保存\r\n 位置：D盘 文件名：inertia.txt Opt.txt";
+		m_Msg = "记录文件已经保存\r\n 位置：D盘 文件名： Opt.txt";
 		m_wndMessage.SetWindowText(m_Msg);
 		wnd_qType.EnableWindow(TRUE);
 		SetDlgItemText(IDC_BTN_WRITERAWFILE, L"开始采集原始数据");
@@ -802,6 +872,23 @@ void CControlDlg::OnBnClickedBtnReadrawfile()
 
 	HybidTrack.m_IneritalFrames = PNRawDataPlayGetTotalFrames();  // 帧数
 
+	BoneDimension BD;
+	PNGetBoneDimensions(0, &BD);
+	BD.Head = 0.1595;
+	BD.Neck = 0.0947;
+	BD.Body = 0.5584;
+	BD.ShoulderWidth = 0.32;
+	BD.UpperArm = 0.265;
+	BD.Forearm = 0.26;
+	BD.Palm = 0.175;
+	BD.HipWidth = 0.185;
+	BD.UpperLeg = 0.4187;
+	BD.LowerLeg = 0.4187;
+	BD.HeelHeight = 0.0769;
+	BD.FootLength = 0.25;
+
+	PNSetBoneDimensions(0, &BD);
+
 	int erro = PNGetLastErrorCode();
 	const char* tmp = PNGetLastErrorMessage();
 	
@@ -812,4 +899,61 @@ void CControlDlg::OnBnClickedBtnReadrawfile()
 
 	// 播放原始文件
 	PNRawDataPlayStart();
+}
+
+
+void CControlDlg::OnBnClickedButton1()
+{
+	static int aaa = 0;
+	if (aaa == 0)
+	{
+		PNExportBvhData(0);
+		aaa = 1;
+	}
+	else
+	{
+		PNStopExportBvhData(0);
+		aaa = 0;
+	}
+}
+
+
+void CControlDlg::OnBnClickedPlay()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	PNRawDataPlaySetPlayingPosition(0);
+	PNRawDataPlayStart();
+}
+
+// 上半身模式
+void CControlDlg::OnBnClickedCheck1()
+{
+	PNResetBoneMapping(0);
+
+	for (int i = 0; i < 16; i++)
+	{
+		if (i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6) continue;
+
+		PNBindSensor(0, i, i + 1);
+	}
+	PNBindSensor(0, 18, 17);
+
+
+	PNSetSensorCombinationMode(0, SC_FullBody);
+}
+
+// 全身模式
+void CControlDlg::OnBnClickedCheck2()
+{
+	PNResetBoneMapping(0);
+
+	for (int i = 0; i < 16; i++)
+	{
+
+		PNBindSensor(0, i, i + 1);
+	}
+	PNBindSensor(0, 18, 17);
+
+
+	PNSetSensorCombinationMode(0, SC_FullBody);
 }

@@ -95,4 +95,8 @@ public:
 
 	CHybidTrack HybidTrack;
 	afx_msg void OnBnClickedBtnReadrawfile();
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedPlay();
+	afx_msg void OnBnClickedCheck1();
+	afx_msg void OnBnClickedCheck2();
 };

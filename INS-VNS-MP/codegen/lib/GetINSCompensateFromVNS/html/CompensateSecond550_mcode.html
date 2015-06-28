@@ -1,0 +1,18 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="49,325" id="srcline325">325</a></span><span class="line"><span class="comment">%　otherMakers(k).time</span></span></span>
+<span class="srcline"><span class="lineno"><a href="49,326" id="srcline326">326</a></span><span class="line"><span class="comment">%　otherMakers(k).MarkerSet</span></span></span>
+<span class="srcline"><span class="lineno"><a href="49,327" id="srcline327">327</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="49,328" id="srcline328">328</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S97T41U1384">otherMakersNew_k</span> = CompensateSecond( <span class="mxinfo" id="T41:U2"><span class="mxinfo" id="T41:U3"><span class="var type1" id="S97T41U1387">otherMakersNew_k</span></span></span>,<span class="var type1" id="S98T28U1388">Crw</span>  )</span></span>
+<span class="srcline"><span class="lineno"><a href="49,329" id="srcline329">329</a></span><span class="line"><span class="mxinfo" id="T4:U6"><span class="var type1" id="S99T4U1391">M</span> = <span class="mxinfo" id="T4:U8"><span class="var type1" id="S97T41U1393">otherMakersNew_k</span>.otherMakersN</span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="49,330" id="srcline330">330</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="49,331" id="srcline331">331</a></span><span class="line"><span class="keyword">if</span> ~isempty(<span class="var type1" id="S97T41U1401">otherMakersNew_k</span>.Position)</span></span>
+<span class="srcline"><span class="lineno"><a href="49,332" id="srcline332">332</a></span><span class="line">    <span class="mxinfo" id="T69:U11"><span class="mxinfo" id="T69:U12"><span class="mxinfo" id="T3:U13"><span class="var type1" id="S97T41U1407">otherMakersNew_k</span>.Position</span>(:,<span class="mxinfo" id="T19:U15"><span class="mxinfo" id="T4:U16">1</span>:<span class="var type1" id="S99T4U1412">M</span></span>)</span> = <span class="mxinfo" id="T69:U18"><span class="var type1" id="S98T28U1414">Crw</span>*<span class="mxinfo" id="T69:U20"><span class="mxinfo" id="T3:U21"><span class="var type1" id="S97T41U1417">otherMakersNew_k</span>.Position</span>(:,<span class="mxinfo" id="T19:U23"><span class="mxinfo" id="T4:U24">1</span>:<span class="var type1" id="S99T4U1422">M</span></span>)</span></span></span> ;</span></span>
+<span class="srcline"><span class="lineno"><a href="49,333" id="srcline333">333</a></span><span class="line"><span class="keyword"><span class="keyword">end</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="49,334" id="srcline334">334</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="49,335" id="srcline335">335</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="49,336" id="srcline336">336</a></span><span class="line"><span class="comment">%% Judge which is the right maker</span></span></span>
+<span class="srcline"><span class="lineno"><a href="49,337" id="srcline337">337</a></span><span class="line"><span class="comment">% 1) 固定运动时间位移判断：只判断位移差长度</span></span></span>
+<span class="srcline"><span class="lineno"><a href="49,338" id="srcline338">338</a></span><span class="line"><span class="comment">% 2）固定运动距离位移判断：同时判断位移差长度和方向</span></span></span>
+<span class="srcline"><span class="lineno"><a href="49,339" id="srcline339">339</a></span><span class="line"></span></span>
+</pre>

@@ -2,7 +2,7 @@
  * File: _coder_GetINSCompensateFromVNS_info.h 
  *  
  * MATLAB Coder version            : 2.6 
- * C/C++ source code generated on  : 18-Jun-2015 20:22:25 
+ * C/C++ source code generated on  : 23-Jun-2015 17:08:58 
  */
 
 #ifndef ___CODER_GETINSCOMPENSATEFROMVNS_INFO_H__

@@ -1,0 +1,25 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="126,1" id="srcline1"> 1</a></span><span class="line"><span class="comment">%% buaa xyz 2014.1.17 -&gt; 2015.4.9</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,2" id="srcline2"> 2</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="126,3" id="srcline3"> 3</a></span><span class="line"><span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,4" id="srcline4"> 4</a></span><span class="line"><span class="comment">% Intput</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,5" id="srcline5"> 5</a></span><span class="line"><span class="comment">% C: [3*3*N]  from n to b</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,6" id="srcline6"> 6</a></span><span class="line"><span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,7" id="srcline7"> 7</a></span><span class="line"><span class="comment">% Output</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,8" id="srcline8"> 8</a></span><span class="line"><span class="comment">% Q: quaternion from n to b</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,9" id="srcline9"> 9</a></span><span class="line"><span class="comment">%       [ Nframes,4 ]</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,10" id="srcline10">10</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="126,11" id="srcline11">11</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S2T63U3">Q</span> = C2Q( <span class="var type1" id="S3T28U6">C</span> )</span></span>
+<span class="srcline"><span class="lineno"><a href="126,12" id="srcline12">12</a></span><span class="line">coder.inline(<span class="string">'never'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="126,13" id="srcline13">13</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="126,14" id="srcline14">14</a></span><span class="line"><span class="fcn" id="F485N8:B15">CheckError</span>( <span class="var type1" id="S3T28U16">C</span> ) ;</span></span>
+<span class="srcline"><span class="lineno"><a href="126,15" id="srcline15">15</a></span><span class="line"><span class="mxinfo" id="T2:U4"><span class="var type1" id="S6T2U19">Nframes</span> = <span class="mxinfo" id="T2:U6">size(<span class="var type1" id="S3T28U22">C</span>,3)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="126,16" id="srcline16">16</a></span><span class="line"><span class="mxinfo" id="T63:U8"><span class="var type1" id="S2T63U26">Q</span> = <span class="mxinfo" id="T63:U10">zeros( <span class="mxinfo" id="T2:U11"><span class="var type1" id="S6T2U29">Nframes</span></span>,<span class="mxinfo" id="T2:U13">4</span> )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="126,17" id="srcline17">17</a></span><span class="line"><span class="keyword">for</span> <span class="var type1" id="S9T2U33">k</span>=<span class="mxinfo" id="T2:U15">1:<span class="var type1" id="S6T2U36">Nframes</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,18" id="srcline18">18</a></span><span class="line">   <span class="mxinfo" id="T63:U17"><span class="mxinfo" id="T63:U18"><span class="var type1" id="S2T63U40">Q</span>(<span class="mxinfo" id="T2:U20"><span class="var type1" id="S9T2U41">k</span></span>,:)</span>  = <span class="mxinfo" id="T62:U22"><span class="fcn" id="F500N7:B44">C2Q_One_1</span>( <span class="mxinfo" id="T28:U23"><span class="var type1" id="S3T28U46">C</span>(:,:,<span class="var type1" id="S9T2U49">k</span>)</span> )</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="126,19" id="srcline19">19</a></span><span class="line">   <span class="comment">% 一半 C2Q_One_1 与 C2Q_One_2 输出结果相同</span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,20" id="srcline20">20</a></span><span class="line"><span class="keyword"><span class="keyword">end</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="126,21" id="srcline21">21</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="126,22" id="srcline22">22</a></span><span class="line"><span class="comment">%% 利用非对角线的6个数的方法</span></span></span>
+</pre>

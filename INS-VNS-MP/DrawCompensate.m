@@ -7,12 +7,13 @@ plot( InertialErr(1,:),'.b' )
 hold on
 plot( StepCompensate(1,:),'.r' )
 ylabel('x')
+legend('InertialErr','StepCompensate')
 subplot( 2,1,2 )
 plot( InertialErr(2,:),'.b' )
 hold on
 plot( StepCompensate(2,:),'.r' )
 ylabel('y')
-
+legend('InertialErr','StepCompensate')
 
 figure( 'name',[num2str(compensateRate),'-INS VNS Hip x'] )
 plot( trackedMakerPosition_InertialTime(1,:),'.b' )

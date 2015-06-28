@@ -7,6 +7,7 @@ xyz 2015.6.9
 # include"Definitions.h"
 # include "GetINSCompensateFromVNS_types.h"
 #include <deque>
+#include <mutex>
 
 // 一个时刻的视觉数据
 class CVisionData_t
@@ -58,6 +59,7 @@ public:
 
 class CHybidTrack
 {
+	std::mutex mtx;
 	// 惯性和视觉 数据内存开辟时间 sec
 	static const int  BufferTime = 60 * 2; 
 
@@ -76,7 +78,8 @@ public:
 	// 视觉数据的频率
 	float m_V_Frequency;
 
-	int IsBothStart;  // 是否惯性和视觉都开始采集
+	int IsBothStart;  // 是否惯性和视觉都开始采集; 
+		// 0：没有都开始，1：视觉发现都开始；2：惯性已经知道都开始
 
 	// 从惯性系统开始采集 到 视觉系统开始采集 的时间 sec
 	// 用于同步惯性和视觉数据，使两套时间均以惯性开始采集时刻为0.
@@ -92,7 +95,8 @@ public:
 //	SYSTEMTIME VStartT;		// 视觉开始采集时的 win 系统时间  
 //	SYSTEMTIME IStartT;	// 惯性开始采集时的 win 系统时间
 	
-	deque<CInertialData_t> InertialData;	// 最新的 在 最末尾
+	deque<CInertialData_t> InertialData;	// 直接从回调中得到（在光学补偿基础上惯性递推得到，只有最新一帧没有补偿），   最新的 在 最末尾
+	deque<CInertialData_t> InertialData_PurINS;	// 没有任何补偿时，原始的惯性视觉（通过InertialData间接得到）
 	deque<CVisionData_t> VisionData;		// 最新的 在 最末尾
 	int InertialData_visual_k[I_BufferN];   // 视觉数据读取时，计算的惯性数据对应的视觉序号
 		
@@ -114,6 +118,8 @@ public:
 	// FaceDirection 对应的方向余弦矩阵
 	void FaceDirection2C( );
 
+	// 
+	BOOL IsDoCompensate;   // 是否进行补偿（默认只采集数据，=0）
 
 	// MATLAB 自动生成函数的格式  M_...
 	struct0_T *M_InertialData;
@@ -123,8 +129,9 @@ public:
 	%   CalEndIN 大于或等于 CalStartVN ，  CalEndVN 大于或等于CalStartVN	*/
 	struct2_T CalculateOrder[1];
 	double M_compensateRate;
+	double M_InertialPositionCompensate_k[3];
 	double M_InertialPositionCompensate[I_BufferN * 3];
-	double M_HipDisplacementNew[I_BufferN * 3];
+//	double M_HipDisplacementNew[I_BufferN * 3];
 
 
 	/// MATLAB 生成Cpp函数的输入参数获取
@@ -141,7 +148,6 @@ public:
 	// 执行 视觉补偿 惯性 解算，调用 MATLAB 自动生成的程序
 	void GetDisplacementCompensate();
 
-	void DoHipDispCompensate();
 
 
 	///  直接从文件中读参数  **********************************

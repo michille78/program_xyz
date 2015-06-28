@@ -106,6 +106,7 @@ int CpostrackApp::ExitInstance()
 
     // ÊÍ·ÅPNLib×ÊÔ´
     PNLibRelease();
+
 	return CWinApp::ExitInstance();
 }
 

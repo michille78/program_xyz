@@ -1,4 +1,4 @@
-﻿生成启动时间为 2015/6/16 14:11:11。
+﻿生成启动时间为 2015/6/19 15:30:06。
      1>项目“E:\document and program\program_xyz\PosTrack\PosTrack\PosTrack.vcxproj”在节点 2 上(Rebuild 个目标)。
      1>ClCompile:
          D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I".\Eigen-3.2.2" /I./NatNetSDK2.7/include/ /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D POSTRACK_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\X64_DEBUG\\" /Fd"x64\X64_DEBUG\vc120.pdb" /Gd /TP /errorReport:prompt Definitions.cpp Funcs.cpp NatNetConnector.cpp NatNetDataHandler.cpp PosTrackCalibration.cpp PosTrackor.cpp
@@ -62,4 +62,4 @@
 
 生成成功。
 
-已用时间 00:00:06.38
+已用时间 00:00:07.02

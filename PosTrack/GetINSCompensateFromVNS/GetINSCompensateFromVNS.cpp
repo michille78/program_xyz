@@ -2,7 +2,7 @@
 // File: GetINSCompensateFromVNS.cpp
 //
 // MATLAB Coder version            : 2.6
-// C/C++ source code generated on  : 18-Jun-2015 20:22:25
+// C/C++ source code generated on  : 23-Jun-2015 17:08:58
 //
 
 // Include files
@@ -121,6 +121,9 @@ typedef struct {
 #define b_IsGetFirstMarker             (0.0)
 
 // Variable Definitions
+static double InertialPosition[34560];
+static double InertialPositionNew_k[3];
+static double AccumulateCompensate_k[3];
 static int CalStartVN;
 static int CalEndVN;
 static int CalStartIN;
@@ -129,11 +132,6 @@ static double VisionData_inertial_k[3600];
 static double inertialFre;
 static double InertialData_visual_k[11520];
 static double visionFre;
-static double InertialPositionCompensate[34560];
-static boolean_T c_InertialPositionCompensate_no;
-static double InertialPositionNew[34560];
-static double HipDisplacementNew[34560];
-static double InertialErr[23040];
 static struct_T makerTrackThreshold;
 static boolean_T makerTrackThreshold_not_empty;
 static b_struct_T INSVNSCalibSet;
@@ -147,6 +145,7 @@ static double Crw[9];
 static double IsGetFirstMarker;
 
 // Function Declarations
+static void C2Q(const double C[9], double Q[4]);
 static void CalVelocity(const double b_Position[10800], int data_k, double fre,
   double Velocity_k_data[], int Velocity_k_size[1], int *k_calV);
 static void CalibDataDistanceJudge(const double b_trackedMakerPosition[10800],
@@ -169,12 +168,13 @@ static void GetEmpty_otherMakers(double otherMakers_k_time, int
   otherMakers_k_ContinuesLastTime[10], const double
   otherMakers_k_ContinuesLastK[10], unsigned char otherMakers_k_CalculatedTime,
   c_struct_T *otherMakersEmpty);
+static void GetINSCompensateFromVNS_init();
 static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
-  InertialPosition[34560], double d_trackedMakerPosition_Inertial[34560]);
+  b_InertialPosition[34560], double d_trackedMakerPosition_Inertial[34560]);
 static void GetRightOtherMaker_init();
 static void INSVNSCalib(const double b_INSVNSCalib_VS_k[100], double
   b_Calib_N_New, const double dX_Vision_data[], const int dX_Vision_size[2],
-  const double InertialPosition[34560], double b_Crw[9]);
+  const double b_InertialPosition[34560], double b_Crw[9]);
 static void JudgeIsCalibDataEnough(const double b_INSVNSCalib_VS_k[100], double
   b_Calib_N_New, const double b_trackedMakerPosition[10800], double
   *IsCalibDataVelocityOK, double dX_Vision_data[], int dX_Vision_size[2]);
@@ -185,11 +185,15 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
   c_otherMakers_k_last_ContinuesL[30], const double
   d_otherMakers_k_last_ContinuesL[10], const double
   e_otherMakers_k_last_ContinuesL[10], int k_vision, int b_inertial_k, const
-  double b_trackedMakerPosition[10800], const double InertialPosition[34560],
+  double b_trackedMakerPosition[10800], const double b_InertialPosition[34560],
   int inertial_dT_k_last, const struct_T *b_makerTrackThreshold, double
   trackedMakerPosition_k_OK_data[], int trackedMakerPosition_k_OK_size[1],
   double *TrackFlag, d_struct_T *JudgeIndex);
+static void MakeEuler_In2Pi(double euler[3]);
 static void PreProcess(struct1_T otherMakers[3600]);
+static void Q2C(const double Q[4], double C[9]);
+static void Q2C_One(double Q[4], double C[9]);
+static void Q2Euler(const double Q[4], double euler[3]);
 static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
   const double b_trackedMarkerVelocity[18000], const double
   b_trackedMakerPosition[10800], int vision_k, double *b_Calib_N_New, double
@@ -205,18 +209,17 @@ static void SetParameters(double *makerTrackThreshold_moveTime, double
   double *makerTrackThreshold_INSMarkH0, double *makerTrackThreshold_VNSMarkH0,
   b_struct_T *b_INSVNSCalibSet);
 static void Track_dT_Judge(const double otherMakers_k_Position[30], const double
-  otherMakers_k_ContinuesFlag[10], const double InertialPosition[34560], int
+  otherMakers_k_ContinuesFlag[10], const double b_InertialPosition[34560], int
   b_inertial_k, int inertial_dT_k_last, const double
   trackedMakerPosition_last_k_dT[3], const double
   c_makerTrackThreshold_MaxHighMo[2], double trackedMakerPosition_k_OK_data[],
   int trackedMakerPosition_k_OK_size[1], double *TrackFlag, double *min_dT_k,
   double *dPErrorNorm_dT_Min, double *dPError_dT_z_Min, double
   *dP_Inertial_xyNorm_Min, double *b_angleErr_dT_Min);
-static void VNSCompensateINS(double compensateRate, const double
-  d_trackedMakerPosition_Inertial[34560], const double HipDisplacement[34560],
-  const double InertialPosition[34560], double InertialPositionCompensate_out
-  [34560], double HipDisplacementNew_out[34560]);
-static void VNSCompensateINS_init();
+static void VNSCompensateINS_k(double compensateRate, const double
+  d_trackedMakerPosition_Inertial[3], const double InertialPosition_k[6], const
+  double InertialPositionNew_k_last[3], double SingleFrameCompensate_k[3],
+  double b_AccumulateCompensate_k[3], double b_InertialPositionNew_k[3]);
 static void b_fix(double *x);
 static double b_normest(const double S[2]);
 static void eml_lusolve(const double A_data[], double B_data[], int B_size[2]);
@@ -228,12 +231,49 @@ static void emxEnsureCapacity(emxArray__common *emxArray, int oldNumel, int
   elementSize);
 static void emxFree_real_T(emxArray_real_T **pEmxArray);
 static void emxInit_real_T(emxArray_real_T **pEmxArray, int b_numDimensions);
+static double norm(const double x[4]);
 static double normest(const double S[3]);
 static void repmat(const double a[3], int varargin_2, emxArray_real_T *b);
+static double rt_atan2d_snf(double u0, double u1);
 static double rt_hypotd_snf(double u0, double u1);
 static double rt_roundd_snf(double u);
 
 // Function Definitions
+
+//
+// Arguments    : const double C[9]
+//                double Q[4]
+// Return Type  : void
+//
+static void C2Q(const double C[9], double Q[4])
+{
+  double q0;
+  double b_Q[4];
+  int i8;
+
+  // % buaa xyz 2014.1.17 -> 2015.4.9
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Intput
+  //  C: [3*3*N]  from n to b
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Output
+  //  Q: quaternion from n to b
+  //        [ Nframes,4 ]
+  // % 利用非对角线的6个数的方法
+  //  根据初始姿态矩阵Cnb计算初始姿态四元数
+  //  参考《高钟毓P17》
+  q0 = 0.5 * sqrt(((1.0 + C[0]) + C[4]) + C[8]);
+  b_Q[0] = q0;
+  b_Q[1] = 1.0 / (4.0 * q0) * (C[7] - C[5]);
+  b_Q[2] = 1.0 / (4.0 * q0) * (C[2] - C[6]);
+  b_Q[3] = 1.0 / (4.0 * q0) * (C[3] - C[1]);
+  q0 = norm(b_Q);
+  for (i8 = 0; i8 < 4; i8++) {
+    Q[i8] = b_Q[i8] / q0;
+  }
+
+  //  一半 C2Q_One_1 与 C2Q_One_2 输出结果相同
+}
 
 //
 // 速度计算的步长个数
@@ -461,7 +501,7 @@ static double CalibDataVelocityJudge(const double trackedMarkerVelocity_k[5])
 //
 static void CompensateSecond(struct1_T *otherMakersNew_k, const double b_Crw[9])
 {
-  int i22;
+  int i26;
   int loop_ub;
   int cr;
   double C_data[30];
@@ -474,19 +514,19 @@ static void CompensateSecond(struct1_T *otherMakersNew_k, const double b_Crw[9])
   // 　otherMakers(k).time
   // 　otherMakers(k).MarkerSet
   if (1 > otherMakersNew_k->otherMakersN) {
-    i22 = 0;
+    i26 = 0;
   } else {
-    i22 = otherMakersNew_k->otherMakersN;
+    i26 = otherMakersNew_k->otherMakersN;
   }
 
-  loop_ub = 3 * (signed char)i22;
+  loop_ub = 3 * (signed char)i26;
   for (cr = 0; cr < loop_ub; cr++) {
     C_data[cr] = 0.0;
   }
 
-  if (i22 == 0) {
+  if (i26 == 0) {
   } else {
-    loop_ub = 3 * (i22 - 1);
+    loop_ub = 3 * (i26 - 1);
     for (cr = 0; cr <= loop_ub; cr += 3) {
       for (ic = cr + 1; ic <= cr + 3; ic++) {
         C_data[ic - 1] = 0.0;
@@ -513,10 +553,10 @@ static void CompensateSecond(struct1_T *otherMakersNew_k, const double b_Crw[9])
     }
   }
 
-  loop_ub = (signed char)i22;
-  for (i22 = 0; i22 < loop_ub; i22++) {
+  loop_ub = (signed char)i26;
+  for (i26 = 0; i26 < loop_ub; i26++) {
     for (cr = 0; cr < 3; cr++) {
-      otherMakersNew_k->Position[cr + 3 * i22] = C_data[cr + 3 * i22];
+      otherMakersNew_k->Position[cr + 3 * i26] = C_data[cr + 3 * i26];
     }
   }
 }
@@ -549,12 +589,12 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
   int k_vision, double c_makerTrackThreshold_MaxContin)
 {
   double b_dPi_ConJudge;
-  int i17;
+  int i21;
   emxArray_real_T *dPiNorm;
   emxArray_real_T *r0;
   double trackedMakerPosition_kLast[3];
-  int loop_ub;
   int ixstart;
+  int ix;
   double dPi_data[30];
   int itmp;
   boolean_T exitg2;
@@ -568,17 +608,17 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
   //                =2   连续，和跟踪失败的点连续
   //  global inertialFre visionFre  moveDistance
   //  记录每个马克点的连续特性
-  for (i17 = 0; i17 < 10; i17++) {
-    otherMakers_k->ContinuesFlag[i17] = 0.0;
+  for (i21 = 0; i21 < 10; i21++) {
+    otherMakers_k->ContinuesFlag[i21] = 0.0;
   }
 
   //  不连续
-  for (i17 = 0; i17 < 30; i17++) {
-    otherMakers_k->ContinuesLastPosition[i17] = rtNaN;
+  for (i21 = 0; i21 < 30; i21++) {
+    otherMakers_k->ContinuesLastPosition[i21] = rtNaN;
   }
 
-  for (i17 = 0; i17 < 10; i17++) {
-    otherMakers_k->ContinuesLastTime[i17] = rtNaN;
+  for (i21 = 0; i21 < 10; i21++) {
+    otherMakers_k->ContinuesLastTime[i21] = rtNaN;
   }
 
   b_dPi_ConJudge = rtNaN;
@@ -587,32 +627,32 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
   if (k_vision > 1) {
     if (!rtIsNaN(b_trackedMakerPosition[3 * (k_vision - 2)])) {
       //         %% 只判断当前马克点是否与前时刻跟踪成功的马克点连续
-      for (i17 = 0; i17 < 3; i17++) {
-        trackedMakerPosition_kLast[i17] = b_trackedMakerPosition[i17 + 3 *
+      for (i21 = 0; i21 < 3; i21++) {
+        trackedMakerPosition_kLast[i21] = b_trackedMakerPosition[i21 + 3 *
           (k_vision - 2)];
       }
 
       if (1 > otherMakers_k->otherMakersN) {
-        loop_ub = 0;
+        ixstart = 0;
       } else {
-        loop_ub = otherMakers_k->otherMakersN;
+        ixstart = otherMakers_k->otherMakersN;
       }
 
       repmat(trackedMakerPosition_kLast, otherMakers_k->otherMakersN, r0);
-      for (i17 = 0; i17 < loop_ub; i17++) {
-        for (ixstart = 0; ixstart < 3; ixstart++) {
-          dPi_data[ixstart + 3 * i17] = otherMakers_k->Position[ixstart + 3 *
-            i17] - r0->data[ixstart + r0->size[0] * i17];
+      for (i21 = 0; i21 < ixstart; i21++) {
+        for (ix = 0; ix < 3; ix++) {
+          dPi_data[ix + 3 * i21] = otherMakers_k->Position[ix + 3 * i21] -
+            r0->data[ix + r0->size[0] * i21];
         }
       }
 
-      i17 = dPiNorm->size[0] * dPiNorm->size[1];
+      i21 = dPiNorm->size[0] * dPiNorm->size[1];
       dPiNorm->size[0] = 1;
       dPiNorm->size[1] = otherMakers_k->otherMakersN;
-      emxEnsureCapacity((emxArray__common *)dPiNorm, i17, (int)sizeof(double));
-      loop_ub = otherMakers_k->otherMakersN;
-      for (i17 = 0; i17 < loop_ub; i17++) {
-        dPiNorm->data[i17] = 0.0;
+      emxEnsureCapacity((emxArray__common *)dPiNorm, i21, (int)sizeof(double));
+      ixstart = otherMakers_k->otherMakersN;
+      for (i21 = 0; i21 < ixstart; i21++) {
+        dPiNorm->data[i21] = 0.0;
       }
 
       for (ixstart = 0; ixstart + 1 <= otherMakers_k->otherMakersN; ixstart++) {
@@ -624,16 +664,16 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
       itmp = 0;
       if (dPiNorm->size[1] > 1) {
         if (rtIsNaN(dPiNorm->data[0])) {
-          loop_ub = 1;
+          ix = 1;
           exitg2 = false;
-          while ((!exitg2) && (loop_ub + 1 <= dPiNorm->size[1])) {
-            ixstart = loop_ub + 1;
-            if (!rtIsNaN(dPiNorm->data[loop_ub])) {
-              b_dPi_ConJudge = dPiNorm->data[loop_ub];
-              itmp = loop_ub;
+          while ((!exitg2) && (ix + 1 <= dPiNorm->size[1])) {
+            ixstart = ix + 1;
+            if (!rtIsNaN(dPiNorm->data[ix])) {
+              b_dPi_ConJudge = dPiNorm->data[ix];
+              itmp = ix;
               exitg2 = true;
             } else {
-              loop_ub++;
+              ix++;
             }
           }
         }
@@ -657,9 +697,9 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
         otherMakers_k->ContinuesFlag[itmp] = 1.0;
 
         //  连续，且是与跟踪成功马克点连续
-        for (i17 = 0; i17 < 3; i17++) {
-          otherMakers_k->ContinuesLastPosition[i17 + 3 * itmp] =
-            trackedMakerPosition_kLast[i17];
+        for (i21 = 0; i21 < 3; i21++) {
+          otherMakers_k->ContinuesLastPosition[i21 + 3 * itmp] =
+            trackedMakerPosition_kLast[i21];
         }
 
         otherMakers_k->ContinuesLastTime[itmp] = otherMakers_k_last_time;
@@ -673,8 +713,8 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
           otherMakers_k->ContinuesFlag[i] = 0.0;
 
           //  不连续
-          for (i17 = 0; i17 < 3; i17++) {
-            otherMakers_k->ContinuesLastPosition[i17 + 3 * i] = rtNaN;
+          for (i21 = 0; i21 < 3; i21++) {
+            otherMakers_k->ContinuesLastPosition[i21 + 3 * i] = rtNaN;
           }
 
           otherMakers_k->ContinuesLastTime[i] = rtNaN;
@@ -685,17 +725,21 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
         for (i = 0; i + 1 <= otherMakers_k->otherMakersN; i++) {
           repmat(*(double (*)[3])&otherMakers_k->Position[3 * i],
                  otherMakers_k_last_otherMakersN, r0);
-          loop_ub = r0->size[0] * r0->size[1];
-          for (i17 = 0; i17 < loop_ub; i17++) {
-            dPi_data[i17] = r0->data[i17] - c_otherMakers_k_last_Position_d[i17];
+          ixstart = r0->size[1];
+          for (i21 = 0; i21 < ixstart; i21++) {
+            for (ix = 0; ix < 3; ix++) {
+              dPi_data[ix + 3 * i21] = r0->data[ix + r0->size[0] * i21] -
+                c_otherMakers_k_last_Position_d[ix +
+                c_otherMakers_k_last_Position_s[0] * i21];
+            }
           }
 
-          i17 = dPiNorm->size[0] * dPiNorm->size[1];
+          i21 = dPiNorm->size[0] * dPiNorm->size[1];
           dPiNorm->size[0] = 1;
           dPiNorm->size[1] = otherMakers_k_last_otherMakersN;
-          emxEnsureCapacity((emxArray__common *)dPiNorm, i17, (int)sizeof(double));
-          for (i17 = 0; i17 < otherMakers_k_last_otherMakersN; i17++) {
-            dPiNorm->data[i17] = 0.0;
+          emxEnsureCapacity((emxArray__common *)dPiNorm, i21, (int)sizeof(double));
+          for (i21 = 0; i21 < otherMakers_k_last_otherMakersN; i21++) {
+            dPiNorm->data[i21] = 0.0;
           }
 
           for (ixstart = 0; ixstart + 1 <= otherMakers_k_last_otherMakersN;
@@ -709,16 +753,16 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
           itmp = 0;
           if (dPiNorm->size[1] > 1) {
             if (rtIsNaN(dPiNorm->data[0])) {
-              loop_ub = 1;
+              ix = 1;
               exitg1 = false;
-              while ((!exitg1) && (loop_ub + 1 <= dPiNorm->size[1])) {
-                ixstart = loop_ub + 1;
-                if (!rtIsNaN(dPiNorm->data[loop_ub])) {
-                  b_dPi_ConJudge = dPiNorm->data[loop_ub];
-                  itmp = loop_ub;
+              while ((!exitg1) && (ix + 1 <= dPiNorm->size[1])) {
+                ixstart = ix + 1;
+                if (!rtIsNaN(dPiNorm->data[ix])) {
+                  b_dPi_ConJudge = dPiNorm->data[ix];
+                  itmp = ix;
                   exitg1 = true;
                 } else {
-                  loop_ub++;
+                  ix++;
                 }
               }
             }
@@ -747,9 +791,9 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
                 e_otherMakers_k_last_ContinuesL[itmp];
 
               //  传递记录上一个时刻存储的连续信息
-              for (i17 = 0; i17 < 3; i17++) {
-                otherMakers_k->ContinuesLastPosition[i17 + 3 * i] =
-                  c_otherMakers_k_last_ContinuesL[i17 + 3 * itmp];
+              for (i21 = 0; i21 < 3; i21++) {
+                otherMakers_k->ContinuesLastPosition[i21 + 3 * i] =
+                  c_otherMakers_k_last_ContinuesL[i21 + 3 * itmp];
               }
 
               otherMakers_k->ContinuesLastTime[i] =
@@ -758,9 +802,9 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
               otherMakers_k->ContinuesLastK[i] = (double)k_vision - 1.0;
 
               //  直接记录上一个时刻
-              for (i17 = 0; i17 < 3; i17++) {
-                otherMakers_k->ContinuesLastPosition[i17 + 3 * i] =
-                  c_otherMakers_k_last_Position_d[i17 +
+              for (i21 = 0; i21 < 3; i21++) {
+                otherMakers_k->ContinuesLastPosition[i21 + 3 * i] =
+                  c_otherMakers_k_last_Position_d[i21 +
                   c_otherMakers_k_last_Position_s[0] * itmp];
               }
 
@@ -779,9 +823,9 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
                   e_otherMakers_k_last_ContinuesL[itmp];
 
                 //  传递记录上一个时刻存储的连续信息
-                for (i17 = 0; i17 < 3; i17++) {
-                  otherMakers_k->ContinuesLastPosition[i17 + 3 * i] =
-                    c_otherMakers_k_last_ContinuesL[i17 + 3 * itmp];
+                for (i21 = 0; i21 < 3; i21++) {
+                  otherMakers_k->ContinuesLastPosition[i21 + 3 * i] =
+                    c_otherMakers_k_last_ContinuesL[i21 + 3 * itmp];
                 }
 
                 otherMakers_k->ContinuesLastTime[i] =
@@ -792,8 +836,8 @@ static double ContinuesJudge(struct1_T *otherMakers_k, const double
             otherMakers_k->ContinuesFlag[i] = 0.0;
 
             //  不连续
-            for (i17 = 0; i17 < 3; i17++) {
-              otherMakers_k->ContinuesLastPosition[i17 + 3 * i] = rtNaN;
+            for (i21 = 0; i21 < 3; i21++) {
+              otherMakers_k->ContinuesLastPosition[i21 + 3 * i] = rtNaN;
             }
 
             otherMakers_k->ContinuesLastTime[i] = rtNaN;
@@ -868,13 +912,30 @@ static void GetEmpty_otherMakers(double otherMakers_k_time, int
 }
 
 //
+// Arguments    : void
+// Return Type  : void
+//
+static void GetINSCompensateFromVNS_init()
+{
+  int i;
+  for (i = 0; i < 34560; i++) {
+    InertialPosition[i] = rtNaN;
+  }
+
+  for (i = 0; i < 3; i++) {
+    AccumulateCompensate_k[i] = 0.0;
+    InertialPositionNew_k[i] = rtNaN;
+  }
+}
+
+//
 // Arguments    : struct1_T otherMakers[3600]
-//                const double InertialPosition[34560]
+//                const double b_InertialPosition[34560]
 //                double d_trackedMakerPosition_Inertial[34560]
 // Return Type  : void
 //
 static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
-  InertialPosition[34560], double d_trackedMakerPosition_Inertial[34560])
+  b_InertialPosition[34560], double d_trackedMakerPosition_Inertial[34560])
 {
   double dT_Ninertial;
   int c_CalEndVN;
@@ -885,7 +946,7 @@ static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
   struct1_T otherMakersNew_k;
   int c_otherMakers_k_last_Position_s[2];
   double c_otherMakers_k_last_Position_d[30];
-  int i14;
+  int i18;
   int otherMakers_k_last_otherMakersN;
   double otherMakers_k_last_time;
   double c_otherMakers_k_last_ContinuesF[10];
@@ -965,27 +1026,27 @@ static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
       otherMakersNew_k = otherMakers[k - 1];
       c_otherMakers_k_last_Position_s[0] = 3;
       c_otherMakers_k_last_Position_s[1] = 10;
-      for (i14 = 0; i14 < 30; i14++) {
-        c_otherMakers_k_last_Position_d[i14] = otherMakersNew_k.Position[i14];
+      for (i18 = 0; i18 < 30; i18++) {
+        c_otherMakers_k_last_Position_d[i18] = otherMakersNew_k.Position[i18];
       }
 
       otherMakers_k_last_otherMakersN = otherMakersNew_k.otherMakersN;
       otherMakers_k_last_time = otherMakersNew_k.time;
-      for (i14 = 0; i14 < 10; i14++) {
-        c_otherMakers_k_last_ContinuesF[i14] =
-          otherMakersNew_k.ContinuesFlag[i14];
+      for (i18 = 0; i18 < 10; i18++) {
+        c_otherMakers_k_last_ContinuesF[i18] =
+          otherMakersNew_k.ContinuesFlag[i18];
       }
 
-      for (i14 = 0; i14 < 30; i14++) {
-        c_otherMakers_k_last_ContinuesL[i14] =
-          otherMakersNew_k.ContinuesLastPosition[i14];
+      for (i18 = 0; i18 < 30; i18++) {
+        c_otherMakers_k_last_ContinuesL[i18] =
+          otherMakersNew_k.ContinuesLastPosition[i18];
       }
 
-      for (i14 = 0; i14 < 10; i14++) {
-        d_otherMakers_k_last_ContinuesL[i14] =
-          otherMakersNew_k.ContinuesLastTime[i14];
-        e_otherMakers_k_last_ContinuesL[i14] =
-          otherMakersNew_k.ContinuesLastK[i14];
+      for (i18 = 0; i18 < 10; i18++) {
+        d_otherMakers_k_last_ContinuesL[i18] =
+          otherMakersNew_k.ContinuesLastTime[i18];
+        e_otherMakers_k_last_ContinuesL[i18] =
+          otherMakersNew_k.ContinuesLastK[i18];
       }
 
       //  otherMakers_k_last 必须是更新了判定结果的，检查一下
@@ -1007,24 +1068,24 @@ static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
       c_otherMakers_k_last_Position_s[0] = 3;
       c_otherMakers_k_last_Position_s[1] = b_expl_temp.Position.size[1];
       loop_ub = b_expl_temp.Position.size[0] * b_expl_temp.Position.size[1];
-      for (i14 = 0; i14 < loop_ub; i14++) {
-        c_otherMakers_k_last_Position_d[i14] = b_expl_temp.Position.data[i14];
+      for (i18 = 0; i18 < loop_ub; i18++) {
+        c_otherMakers_k_last_Position_d[i18] = b_expl_temp.Position.data[i18];
       }
 
       otherMakers_k_last_otherMakersN = b_expl_temp.otherMakersN;
       otherMakers_k_last_time = b_expl_temp.time;
-      for (i14 = 0; i14 < 10; i14++) {
-        c_otherMakers_k_last_ContinuesF[i14] = b_expl_temp.ContinuesFlag[i14];
+      for (i18 = 0; i18 < 10; i18++) {
+        c_otherMakers_k_last_ContinuesF[i18] = b_expl_temp.ContinuesFlag[i18];
       }
 
-      for (i14 = 0; i14 < 30; i14++) {
-        c_otherMakers_k_last_ContinuesL[i14] =
-          b_expl_temp.ContinuesLastPosition[i14];
+      for (i18 = 0; i18 < 30; i18++) {
+        c_otherMakers_k_last_ContinuesL[i18] =
+          b_expl_temp.ContinuesLastPosition[i18];
       }
 
-      for (i14 = 0; i14 < 10; i14++) {
-        d_otherMakers_k_last_ContinuesL[i14] = b_expl_temp.ContinuesLastTime[i14];
-        e_otherMakers_k_last_ContinuesL[i14] = b_expl_temp.ContinuesLastK[i14];
+      for (i18 = 0; i18 < 10; i18++) {
+        d_otherMakers_k_last_ContinuesL[i18] = b_expl_temp.ContinuesLastTime[i18];
+        e_otherMakers_k_last_ContinuesL[i18] = b_expl_temp.ContinuesLastK[i18];
       }
     }
 
@@ -1034,18 +1095,18 @@ static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
                otherMakers_k_last_time, c_otherMakers_k_last_ContinuesF,
                c_otherMakers_k_last_ContinuesL, d_otherMakers_k_last_ContinuesL,
                e_otherMakers_k_last_ContinuesL, k + 1, otherMakers[k].inertial_k,
-               trackedMakerPosition, InertialPosition, inertial_dT_k_last,
+               trackedMakerPosition, b_InertialPosition, inertial_dT_k_last,
                &makerTrackThreshold, tmp_data, tmp_size, &d1, &JudgeIndex);
-    for (i14 = 0; i14 < 3; i14++) {
-      trackedMakerPosition[i14 + 3 * k] = tmp_data[i14];
+    for (i18 = 0; i18 < 3; i18++) {
+      trackedMakerPosition[i18 + 3 * k] = tmp_data[i18];
     }
 
     //     %% 求  INSMarkH0  VNSMarkH0
     if (rtIsNaN(makerTrackThreshold.INSMarkH0) && (!rtIsNaN
          (trackedMakerPosition[3 * k]))) {
       //  检测Hip的俯仰和横滚小才取值！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！ 
-      makerTrackThreshold.INSMarkH0 = -InertialPosition[2 + 3 * (otherMakers[k].
-        inertial_k - 1)];
+      makerTrackThreshold.INSMarkH0 = -b_InertialPosition[2 + 3 * (otherMakers[k]
+        .inertial_k - 1)];
       makerTrackThreshold.VNSMarkH0 = -trackedMakerPosition[2 + 3 * k];
 
       //          HipQuaternion_k = HipQuaternion( :,inertial_k );
@@ -1078,13 +1139,13 @@ static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
                 &otherMakers_k_last_otherMakersN);
     if (otherMakers_k_last_otherMakersN > 0) {
       loop_ub = tmp_size[0];
-      for (i14 = 0; i14 < loop_ub; i14++) {
-        b_trackedMarkerVelocity_k_data[i14] = trackedMarkerVelocity_k_data[i14];
+      for (i18 = 0; i18 < loop_ub; i18++) {
+        b_trackedMarkerVelocity_k_data[i18] = trackedMarkerVelocity_k_data[i18];
       }
 
-      for (i14 = 0; i14 < 5; i14++) {
-        trackedMarkerVelocity[i14 + 5 * (otherMakers_k_last_otherMakersN - 1)] =
-          b_trackedMarkerVelocity_k_data[i14];
+      for (i18 = 0; i18 < 5; i18++) {
+        trackedMarkerVelocity[i18 + 5 * (otherMakers_k_last_otherMakersN - 1)] =
+          b_trackedMarkerVelocity_k_data[i18];
       }
 
       if (IsCalibDataEnough == 0.0) {
@@ -1097,7 +1158,7 @@ static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
                         dX_Vision_size);
         if (IsCalibDataEnough == 1.0) {
           INSVNSCalib(INSVNSCalib_VS_k, Calib_N_New, dX_Vision_data,
-                      dX_Vision_size, InertialPosition, Crw);
+                      dX_Vision_size, b_InertialPosition, Crw);
         }
       }
     }
@@ -1107,9 +1168,9 @@ static void GetRightOtherMaker(struct1_T otherMakers[3600], const double
 
     //  更新 otherMakers(k)
     //     %% 转成惯性马克点的时序
-    for (i14 = 0; i14 < 3; i14++) {
-      c_trackedMakerPosition_Inertial[i14 + 3 * (expl_temp.inertial_k - 1)] =
-        trackedMakerPosition[i14 + 3 * k];
+    for (i18 = 0; i18 < 3; i18++) {
+      c_trackedMakerPosition_Inertial[i18 + 3 * (expl_temp.inertial_k - 1)] =
+        trackedMakerPosition[i18 + 3 * k];
     }
 
     //
@@ -1162,13 +1223,13 @@ static void GetRightOtherMaker_init()
 //                double b_Calib_N_New
 //                const double dX_Vision_data[]
 //                const int dX_Vision_size[2]
-//                const double InertialPosition[34560]
+//                const double b_InertialPosition[34560]
 //                double b_Crw[9]
 // Return Type  : void
 //
 static void INSVNSCalib(const double b_INSVNSCalib_VS_k[100], double
   b_Calib_N_New, const double dX_Vision_data[], const int dX_Vision_size[2],
-  const double InertialPosition[34560], double b_Crw[9])
+  const double b_InertialPosition[34560], double b_Crw[9])
 {
   emxArray_real_T *dX_Inertial;
   int i5;
@@ -1187,6 +1248,8 @@ static void INSVNSCalib(const double b_INSVNSCalib_VS_k[100], double
   double dv0[4];
   static const signed char iv0[3] = { 0, 0, 1 };
 
+  double dv1[4];
+  double dv2[3];
   emxInit_real_T(&dX_Inertial, 2);
 
   // % xyz 2015 儿童节 特供
@@ -1212,8 +1275,9 @@ static void INSVNSCalib(const double b_INSVNSCalib_VS_k[100], double
       b_INSVNSCalib_VS_k[1 + (loop_ub << 1)] - 1];
     for (i5 = 0; i5 < 3; i5++) {
       dX_Inertial->data[i5 + dX_Inertial->size[0] * loop_ub] =
-        InertialPosition[i5 + 3 * ((int)INSVNSCalib_IS_k[1 + (loop_ub << 1)] - 1)]
-        - InertialPosition[i5 + 3 * ((int)INSVNSCalib_IS_k[loop_ub << 1] - 1)];
+        b_InertialPosition[i5 + 3 * ((int)INSVNSCalib_IS_k[1 + (loop_ub << 1)] -
+        1)] - b_InertialPosition[i5 + 3 * ((int)INSVNSCalib_IS_k[loop_ub << 1] -
+        1)];
     }
 
     dX_Inertial->data[2 + dX_Inertial->size[0] * loop_ub] = 0.0;
@@ -1314,6 +1378,24 @@ static void INSVNSCalib(const double b_INSVNSCalib_VS_k[100], double
 
   for (i5 = 0; i5 < 3; i5++) {
     b_Crw[2 + 3 * i5] = iv0[i5];
+  }
+
+  // % xyz 2015 儿童节
+  // % 方向余弦矩阵  -> 姿态角
+  // % xyz 2015.4.28
+  //  Qwb: [4*N]
+  //  NavigationFrame : NED(North-East-Down) / ENT(East-North-Tian) geography frame 
+  //  Attitude  rad
+  //  Attitude.yaw   [1*N] rad
+  //  Attitude.pitch
+  //  Attitude.roll
+  C2Q(b_Crw, dv1);
+  Q2Euler(dv1, dv2);
+  if (fabs(dv2[0]) > 0.17453292519943295) {
+    memset(&b_Crw[0], 0, 9U * sizeof(double));
+    for (loop_ub = 0; loop_ub < 3; loop_ub++) {
+      b_Crw[loop_ub + 3 * loop_ub] = 1.0;
+    }
   }
 }
 
@@ -1427,7 +1509,7 @@ static void JudgeIsCalibDataEnough(const double b_INSVNSCalib_VS_k[100], double
 //                int k_vision
 //                int b_inertial_k
 //                const double b_trackedMakerPosition[10800]
-//                const double InertialPosition[34560]
+//                const double b_InertialPosition[34560]
 //                int inertial_dT_k_last
 //                const struct_T *b_makerTrackThreshold
 //                double trackedMakerPosition_k_OK_data[]
@@ -1443,14 +1525,14 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
   c_otherMakers_k_last_ContinuesL[30], const double
   d_otherMakers_k_last_ContinuesL[10], const double
   e_otherMakers_k_last_ContinuesL[10], int k_vision, int b_inertial_k, const
-  double b_trackedMakerPosition[10800], const double InertialPosition[34560],
+  double b_trackedMakerPosition[10800], const double b_InertialPosition[34560],
   int inertial_dT_k_last, const struct_T *b_makerTrackThreshold, double
   trackedMakerPosition_k_OK_data[], int trackedMakerPosition_k_OK_size[1],
   double *TrackFlag, d_struct_T *JudgeIndex)
 {
   double vision_dT_k_last;
   double otherMakersPosition_k[30];
-  int i15;
+  int i19;
   struct1_T b_otherMakers_k;
   double stepK;
   int b_TrackFlag;
@@ -1462,7 +1544,7 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
   int ix;
   boolean_T exitg4;
   double invalid_i;
-  long long i16;
+  long long i20;
   double b_angleErr_dT_Min;
   boolean_T exitg3;
   boolean_T b;
@@ -1497,8 +1579,8 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
   *TrackFlag = 0.0;
 
   //  M = otherMakers_k.otherMakersN ;
-  for (i15 = 0; i15 < 30; i15++) {
-    otherMakersPosition_k[i15] = otherMakers_k->Position[i15];
+  for (i19 = 0; i19 < 30; i19++) {
+    otherMakersPosition_k[i19] = otherMakers_k->Position[i19];
   }
 
   if (rtIsNaN(otherMakers_k->Position[0])) {
@@ -1516,32 +1598,32 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
     if (rtIsNaN(b_makerTrackThreshold->INSMarkH0)) {
     } else {
       emxInit_real_T(&INSVNSMarkHC, 2);
-      i15 = INSVNSMarkHC->size[0] * INSVNSMarkHC->size[1];
+      i19 = INSVNSMarkHC->size[0] * INSVNSMarkHC->size[1];
       INSVNSMarkHC->size[0] = 1;
       INSVNSMarkHC->size[1] = otherMakers_k->otherMakersN;
-      emxEnsureCapacity((emxArray__common *)INSVNSMarkHC, i15, (int)sizeof
+      emxEnsureCapacity((emxArray__common *)INSVNSMarkHC, i19, (int)sizeof
                         (double));
       ixstart = otherMakers_k->otherMakersN;
-      for (i15 = 0; i15 < ixstart; i15++) {
-        INSVNSMarkHC->data[i15] = 0.0;
+      for (i19 = 0; i19 < ixstart; i19++) {
+        INSVNSMarkHC->data[i19] = 0.0;
       }
 
       for (i = 0; i + 1 <= otherMakers_k->otherMakersN; i++) {
-        INSVNSMarkHC->data[i] = (-InertialPosition[2 + 3 * (b_inertial_k - 1)] +
-          otherMakers_k->Position[2 + 3 * i]) -
+        INSVNSMarkHC->data[i] = (-b_InertialPosition[2 + 3 * (b_inertial_k - 1)]
+          + otherMakers_k->Position[2 + 3 * i]) -
           (b_makerTrackThreshold->INSMarkH0 - b_makerTrackThreshold->VNSMarkH0);
       }
 
       //  高度差最小的点
-      for (i15 = 0; i15 < 2; i15++) {
-        uv0[i15] = (unsigned int)INSVNSMarkHC->size[i15];
+      for (i19 = 0; i19 < 2; i19++) {
+        uv0[i19] = (unsigned int)INSVNSMarkHC->size[i19];
       }
 
       emxInit_real_T(&y, 2);
-      i15 = y->size[0] * y->size[1];
+      i19 = y->size[0] * y->size[1];
       y->size[0] = 1;
       y->size[1] = (int)uv0[1];
-      emxEnsureCapacity((emxArray__common *)y, i15, (int)sizeof(double));
+      emxEnsureCapacity((emxArray__common *)y, i19, (int)sizeof(double));
       for (ixstart = 0; ixstart < INSVNSMarkHC->size[1]; ixstart++) {
         y->data[ixstart] = fabs(INSVNSMarkHC->data[ixstart]);
       }
@@ -1582,16 +1664,16 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
         if (fabs(INSVNSMarkHC->data[i - 1]) > 0.4) {
           //  将高度差误差大的点剔除
           // % 剔除 otherMakers_k.Position 中的第 i 个点
-          i16 = b_otherMakers_k.otherMakersN - 1LL;
-          if (i16 > 2147483647LL) {
-            i16 = 2147483647LL;
+          i20 = b_otherMakers_k.otherMakersN - 1LL;
+          if (i20 > 2147483647LL) {
+            i20 = 2147483647LL;
           } else {
-            if (i16 < -2147483648LL) {
-              i16 = -2147483648LL;
+            if (i20 < -2147483648LL) {
+              i20 = -2147483648LL;
             }
           }
 
-          i15 = (int)i16;
+          i19 = (int)i20;
           b_angleErr_dT_Min = rt_roundd_snf((double)i - invalid_i);
           if (b_angleErr_dT_Min >= -2.147483648E+9) {
             ixstart = (int)b_angleErr_dT_Min;
@@ -1599,7 +1681,7 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
             ixstart = MIN_int32_T;
           }
 
-          while (ixstart <= i15) {
+          while (ixstart <= i19) {
             for (ix = 0; ix < 3; ix++) {
               b_otherMakers_k.Position[ix + 3 * (ixstart - 1)] =
                 b_otherMakers_k.Position[ix + 3 * ixstart];
@@ -1608,21 +1690,21 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
             ixstart++;
           }
 
-          for (i15 = 0; i15 < 3; i15++) {
-            b_otherMakers_k.Position[i15 + 3 * (b_otherMakers_k.otherMakersN - 1)]
+          for (i19 = 0; i19 < 3; i19++) {
+            b_otherMakers_k.Position[i19 + 3 * (b_otherMakers_k.otherMakersN - 1)]
               = rtNaN;
           }
 
-          i16 = b_otherMakers_k.otherMakersN - 1LL;
-          if (i16 > 2147483647LL) {
-            i16 = 2147483647LL;
+          i20 = b_otherMakers_k.otherMakersN - 1LL;
+          if (i20 > 2147483647LL) {
+            i20 = 2147483647LL;
           } else {
-            if (i16 < -2147483648LL) {
-              i16 = -2147483648LL;
+            if (i20 < -2147483648LL) {
+              i20 = -2147483648LL;
             }
           }
 
-          b_otherMakers_k.otherMakersN = (int)i16;
+          b_otherMakers_k.otherMakersN = (int)i20;
           invalid_i++;
         }
       }
@@ -1680,25 +1762,25 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
 
         b_angleErr_dT_Min = rt_roundd_snf((double)k_vision - vision_dT_k_last);
         if (b_angleErr_dT_Min >= -2.147483648E+9) {
-          i15 = (int)b_angleErr_dT_Min;
+          i19 = (int)b_angleErr_dT_Min;
         } else {
-          i15 = MIN_int32_T;
+          i19 = MIN_int32_T;
         }
 
-        b_angleErr_dT_Min = rt_roundd_snf((double)i15 / visionFre);
+        b_angleErr_dT_Min = rt_roundd_snf((double)i19 / visionFre);
         if (b_angleErr_dT_Min < 2.147483648E+9) {
           if (b_angleErr_dT_Min >= -2.147483648E+9) {
-            i15 = (int)b_angleErr_dT_Min;
+            i19 = (int)b_angleErr_dT_Min;
           } else {
-            i15 = MIN_int32_T;
+            i19 = MIN_int32_T;
           }
         } else if (b_angleErr_dT_Min >= 2.147483648E+9) {
-          i15 = MAX_int32_T;
+          i19 = MAX_int32_T;
         } else {
-          i15 = 0;
+          i19 = 0;
         }
 
-        if (i15 > 3) {
+        if (i19 > 3) {
           //          fprintf( '放弃搜索，作为新点重新搜索  k_vision = %d , vision_dT_k_last = %d \n',k_vision,vision_dT_k_last ); 
           exitg3 = true;
         }
@@ -1721,7 +1803,7 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
 
               //  第一个马克点搜索的关键：以当前马克点对应的连续点假设为跟踪成功点 
               Track_dT_Judge(otherMakers_k->Position,
-                             otherMakers_k->ContinuesFlag, InertialPosition,
+                             otherMakers_k->ContinuesFlag, b_InertialPosition,
                              b_inertial_k, inertial_dT_k_last, *(double (*)[3])&
                              otherMakers_k->ContinuesLastPosition[3 * i],
                              b_makerTrackThreshold->MaxHighMoveErrRate,
@@ -1761,7 +1843,7 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
       } else {
         //  之前有跟踪成功的数据
         Track_dT_Judge(otherMakers_k->Position, otherMakers_k->ContinuesFlag,
-                       InertialPosition, b_inertial_k, inertial_dT_k_last,
+                       b_InertialPosition, b_inertial_k, inertial_dT_k_last,
                        *(double (*)[3])&b_trackedMakerPosition[3 * ((int)
           vision_dT_k_last - 1)], b_makerTrackThreshold->MaxHighMoveErrRate,
                        trackedMakerPosition_k_OK_data,
@@ -1800,31 +1882,31 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
             invalid_i = floor(invalid_i);
           }
 
-          i16 = b_inertial_k - 1LL;
-          if (i16 > 2147483647LL) {
-            i16 = 2147483647LL;
+          i20 = b_inertial_k - 1LL;
+          if (i20 > 2147483647LL) {
+            i20 = 2147483647LL;
           } else {
-            if (i16 < -2147483648LL) {
-              i16 = -2147483648LL;
+            if (i20 < -2147483648LL) {
+              i20 = -2147483648LL;
             }
           }
 
-          ixstart = (int)i16;
+          ixstart = (int)i20;
           b_angleErr_dT_Min = rt_roundd_snf(invalid_i);
           if (b_angleErr_dT_Min < 2.147483648E+9) {
             if (b_angleErr_dT_Min >= -2.147483648E+9) {
-              i15 = (int)b_angleErr_dT_Min;
+              i19 = (int)b_angleErr_dT_Min;
             } else {
-              i15 = MIN_int32_T;
+              i19 = MIN_int32_T;
             }
           } else if (b_angleErr_dT_Min >= 2.147483648E+9) {
-            i15 = MAX_int32_T;
+            i19 = MAX_int32_T;
           } else {
-            i15 = 0;
+            i19 = 0;
           }
 
           if (ixstart > invalid_i) {
-            ixstart = i15;
+            ixstart = i19;
           }
 
           vision_dT_k_last = rtNaN;
@@ -1835,46 +1917,46 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
           exitg1 = false;
           while ((!exitg1) && ((((int)stepK > 0) && (i <= ixstart)) || (((int)
                     stepK < 0) && (i >= ixstart)))) {
-            i16 = (long long)b_inertial_k - i;
-            if (i16 > 2147483647LL) {
-              i16 = 2147483647LL;
+            i20 = (long long)b_inertial_k - i;
+            if (i20 > 2147483647LL) {
+              i20 = 2147483647LL;
             } else {
-              if (i16 < -2147483648LL) {
-                i16 = -2147483648LL;
+              if (i20 < -2147483648LL) {
+                i20 = -2147483648LL;
               }
             }
 
-            ix = (int)i16;
-            for (i15 = 0; i15 < 3; i15++) {
-              dP[i15] = InertialPosition[i15 + 3 * (ix - 1)] -
-                InertialPosition[i15 + 3 * (b_inertial_k - 1)];
+            ix = (int)i20;
+            for (i19 = 0; i19 < 3; i19++) {
+              dP[i19] = b_InertialPosition[i19 + 3 * (ix - 1)] -
+                b_InertialPosition[i19 + 3 * (b_inertial_k - 1)];
             }
 
             b_guard1 = false;
             if (normest(dP) > 0.5) {
               //          kCurrent_Vision = InertialK_to_VisionK(kCurrent-i);
-              i16 = (long long)b_inertial_k - i;
-              if (i16 > 2147483647LL) {
-                i16 = 2147483647LL;
+              i20 = (long long)b_inertial_k - i;
+              if (i20 > 2147483647LL) {
+                i20 = 2147483647LL;
               } else {
-                if (i16 < -2147483648LL) {
-                  i16 = -2147483648LL;
+                if (i20 < -2147483648LL) {
+                  i20 = -2147483648LL;
                 }
               }
 
               if (!rtIsNaN(b_trackedMakerPosition[3 * ((int)
-                    InertialData_visual_k[(int)i16 - 1] - 1)])) {
+                    InertialData_visual_k[(int)i20 - 1] - 1)])) {
                 //  距离满足，且 trackedMakerPosition 跟踪成功
-                i16 = (long long)b_inertial_k - i;
-                if (i16 > 2147483647LL) {
-                  i16 = 2147483647LL;
+                i20 = (long long)b_inertial_k - i;
+                if (i20 > 2147483647LL) {
+                  i20 = 2147483647LL;
                 } else {
-                  if (i16 < -2147483648LL) {
-                    i16 = -2147483648LL;
+                  if (i20 < -2147483648LL) {
+                    i20 = -2147483648LL;
                   }
                 }
 
-                vision_dT_k_last = (int)i16;
+                vision_dT_k_last = (int)i20;
                 exitg1 = true;
               } else {
                 b_guard1 = true;
@@ -1899,29 +1981,29 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
             invalid_i = -0.17453292519943295;
             *TrackFlag = -1.4;
           } else {
-            for (i15 = 0; i15 < 3; i15++) {
-              invalid_i = InertialPosition[i15 + 3 * (b_inertial_k - 1)] -
-                InertialPosition[i15 + 3 * ((int)vision_dT_k_last - 1)];
-              stepK = otherMakersPosition_k[i15 + 3 * ((int)min_dT_k - 1)] -
-                b_trackedMakerPosition[i15 + 3 * ((int)InertialData_visual_k
+            for (i19 = 0; i19 < 3; i19++) {
+              invalid_i = b_InertialPosition[i19 + 3 * (b_inertial_k - 1)] -
+                b_InertialPosition[i19 + 3 * ((int)vision_dT_k_last - 1)];
+              stepK = otherMakersPosition_k[i19 + 3 * ((int)min_dT_k - 1)] -
+                b_trackedMakerPosition[i19 + 3 * ((int)InertialData_visual_k
                 [(int)vision_dT_k_last - 1] - 1)];
-              b_dP[i15] = invalid_i - stepK;
-              dP[i15] = invalid_i;
-              dP_Vision[i15] = stepK;
+              b_dP[i19] = invalid_i - stepK;
+              dP[i19] = invalid_i;
+              dP_Vision[i19] = stepK;
             }
 
             stepK = normest(b_dP);
             b_angleErr_dT_Min = 0.0;
-            for (i15 = 0; i15 < 3; i15++) {
-              b_angleErr_dT_Min += dP[i15] * dP_Vision[i15];
+            for (i19 = 0; i19 < 3; i19++) {
+              b_angleErr_dT_Min += dP[i19] * dP_Vision[i19];
             }
 
             invalid_i = acos(b_angleErr_dT_Min / normest(dP) / normest(dP_Vision));
             if ((stepK < 0.35) && (invalid_i < 0.3490658503988659)) {
               //  距离和角度 满足
               trackedMakerPosition_k_OK_size[0] = 3;
-              for (i15 = 0; i15 < 3; i15++) {
-                trackedMakerPosition_k_OK_data[i15] = otherMakersPosition_k[i15
+              for (i19 = 0; i19 < 3; i19++) {
+                trackedMakerPosition_k_OK_data[i19] = otherMakersPosition_k[i19
                   + 3 * ((int)min_dT_k - 1)];
               }
 
@@ -1944,6 +2026,46 @@ static void JudgeMaker(struct1_T *otherMakers_k, const double
 }
 
 //
+// Arguments    : double euler[3]
+// Return Type  : void
+//
+static void MakeEuler_In2Pi(double euler[3])
+{
+  int k;
+  double b_euler;
+
+  // % xyz 2015.4.9
+  //  make euler angle in pi*2
+  for (k = 0; k < 3; k++) {
+    b_euler = euler[k];
+    if ((euler[k] <= 6.2831853071795862) && (euler[k] >= -6.2831853071795862)) {
+    } else {
+      if (euler[k] > 6.2831853071795862) {
+        b_euler = euler[k] / 6.2831853071795862;
+        if (fabs(b_euler - rt_roundd_snf(b_euler)) <= 2.2204460492503131E-16 *
+            fabs(b_euler)) {
+          b_euler = 0.0;
+        } else {
+          b_euler = (b_euler - floor(b_euler)) * 6.2831853071795862;
+        }
+      }
+
+      if (b_euler < -6.2831853071795862) {
+        b_euler /= -6.2831853071795862;
+        if (fabs(b_euler - rt_roundd_snf(b_euler)) <= 2.2204460492503131E-16 *
+            b_euler) {
+          b_euler = 0.0;
+        } else {
+          b_euler = (b_euler - floor(b_euler)) * -6.2831853071795862;
+        }
+      }
+    }
+
+    euler[k] = b_euler;
+  }
+}
+
+//
 // Arguments    : struct1_T otherMakers[3600]
 // Return Type  : void
 //
@@ -1951,13 +2073,14 @@ static void PreProcess(struct1_T otherMakers[3600])
 {
   int k;
   struct1_T b_otherMakers;
-  int i11;
-  int i12;
-  int i13;
+  int i15;
+  int i16;
+  int i17;
   static const signed char a[9] = { 0, -1, 0, 0, 0, -1, 1, 0, 0 };
 
   // % 视觉位置预处理
   //  1）将视觉数据  从视觉世界坐标系 转到 北东地坐标系
+  //  0时刻的视觉位置
   // % 先转到北东地的同名坐标系
   //  dbstop in BodyDirection2Cr_r1
   //    （法1）    要求人朝视觉标定标定的世界坐标系进行对准
@@ -1969,23 +2092,142 @@ static void PreProcess(struct1_T otherMakers[3600])
     //          position_offest = repmat(Position_1,1,m);
     //          Position_k_new = Cvr*(Position_k-position_offest) ;  % 从视觉世界坐标系 转到 北东地坐标系 
     b_otherMakers = otherMakers[k];
-    for (i11 = 0; i11 < 3; i11++) {
-      for (i12 = 0; i12 < 10; i12++) {
-        otherMakers[k].Position[i11 + 3 * i12] = 0.0;
-        for (i13 = 0; i13 < 3; i13++) {
-          otherMakers[k].Position[i11 + 3 * i12] += (double)a[i11 + 3 * i13] *
-            b_otherMakers.Position[i13 + 3 * i12];
+    for (i15 = 0; i15 < 3; i15++) {
+      for (i16 = 0; i16 < 10; i16++) {
+        otherMakers[k].Position[i15 + 3 * i16] = 0.0;
+        for (i17 = 0; i17 < 3; i17++) {
+          otherMakers[k].Position[i15 + 3 * i16] += (double)a[i15 + 3 * i17] *
+            b_otherMakers.Position[i17 + 3 * i16];
         }
       }
     }
 
-    i11 = (int)(otherMakers[k].CalculatedTime + 1U);
-    if ((unsigned int)i11 > 255U) {
-      i11 = 255;
+    i15 = (int)(otherMakers[k].CalculatedTime + 1U);
+    if ((unsigned int)i15 > 255U) {
+      i15 = 255;
     }
 
-    otherMakers[k].CalculatedTime = (unsigned char)i11;
+    otherMakers[k].CalculatedTime = (unsigned char)i15;
   }
+}
+
+//
+// Arguments    : const double Q[4]
+//                double C[9]
+// Return Type  : void
+//
+static void Q2C(const double Q[4], double C[9])
+{
+  double b_Q[4];
+  int i9;
+
+  // % buaa xyz 2014.1.10 -> 2015.4.9
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Intput
+  //  Q: quaternion from n to b
+  //        [ 4*Nframes ]
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Output
+  //  C: [3*3*N]
+  // % xyz 2015 4.8
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Intput
+  //  data: [N*const] or [const*N]
+  //  const
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Output
+  //  data: [const*N]
+  for (i9 = 0; i9 < 4; i9++) {
+    b_Q[i9] = Q[i9];
+  }
+
+  Q2C_One(b_Q, C);
+}
+
+//
+// Arguments    : double Q[4]
+//                double C[9]
+// Return Type  : void
+//
+static void Q2C_One(double Q[4], double C[9])
+{
+  double B;
+  int i10;
+  B = norm(Q);
+  for (i10 = 0; i10 < 4; i10++) {
+    Q[i10] /= B;
+  }
+
+  C[0] = ((Q[0] * Q[0] + Q[1] * Q[1]) - Q[2] * Q[2]) - Q[3] * Q[3];
+  C[3] = 2.0 * (Q[1] * Q[2] + Q[0] * Q[3]);
+  C[6] = 2.0 * (Q[1] * Q[3] - Q[0] * Q[2]);
+  C[1] = 2.0 * (Q[1] * Q[2] - Q[0] * Q[3]);
+  C[4] = ((Q[0] * Q[0] - Q[1] * Q[1]) + Q[2] * Q[2]) - Q[3] * Q[3];
+  C[7] = 2.0 * (Q[2] * Q[3] + Q[0] * Q[1]);
+  C[2] = 2.0 * (Q[1] * Q[3] + Q[0] * Q[2]);
+  C[5] = 2.0 * (Q[2] * Q[3] - Q[0] * Q[1]);
+  C[8] = ((Q[0] * Q[0] - Q[1] * Q[1]) - Q[2] * Q[2]) + Q[3] * Q[3];
+}
+
+//
+// Arguments    : const double Q[4]
+//                double euler[3]
+// Return Type  : void
+//
+static void Q2Euler(const double Q[4], double euler[3])
+{
+  double C[9];
+
+  // % xyz  2015.4.9
+  //  quaternion to Euler angle
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Input
+  //  Q: [ NFrames*4 ]
+  //  rotateOrder:  XYZ  XZY  ...
+  //  rotateDirection: anticlockwise(1) or clockwise(-1)  [1,1,1]
+  //  CosBeitaSign: 1 / -1 .
+  //        CosBeitaSign = 1 : cos(beita)>0, beita [ -pi/2,pi/2 ]
+  //        CosBeitaSign = -1 : cos(beita)<0, beita [ -pi,-pi/2 ] or [ pi/2,pi ] 
+  // %%  NOTE: There are two kinds of Euler Angles applied to the C.
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Output
+  //  euler:  [3*N];   euler(:,k) = [eu_1,eu_2,eu_3];   rad
+  //        store order of euler angle: the rotate order
+  //        eu_1,eu_3: [-pi,pi]
+  //        eu_2:   CosBeitaSign=1: [-pi/2,pi/2]
+  //                CosBeitaSign=-1:[ -pi,-pi/2 ] or [ pi/2,pi ]
+  Q2C(Q, C);
+
+  // % xyz  2015.4.9
+  //  direction cosine matrix  to Euler angle
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Input
+  //  C: [ 3*3*N ]
+  //  rotateOrder:  XYZ  XZY  ...
+  //  rotateDirection: anticlockwise(1) or clockwise(-1)  [1,1,1]
+  //  CosBeitaSign: 1 / -1 .
+  //        CosBeitaSign = 1 : cos(beita)>0, beita [ -pi/2,pi/2 ]
+  //        CosBeitaSign = -1 : cos(beita)<0, beita [ -pi,-pi/2 ] or [ pi/2,pi ] 
+  // %%  NOTE: There are two kinds of Euler Angles applied to the C.
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //  Output
+  //  euler:  [3*N];   euler(:,k) = [eu_1,eu_2,eu_3];   rad
+  //        store order of euler angle: the rotate order
+  //        eu_1,eu_3: [-pi,pi]
+  //        eu_2:   CosBeitaSign=1: [-pi/2,pi/2]
+  //                CosBeitaSign=-1:[ -pi,-pi/2 ] or [ pi/2,pi ]
+  //  C:[3*3]
+  //  第二个欧拉角定义范围 CosBeitaSign = 1： [ -pi/2,pi/2 ]
+  //                     CosBeitaSign = -1： [ -pi,-pi/2 ] [ pi/2,pi ]
+  // % calculate euler angles of " CosBeitaSign=1 "
+  //  euler2 = atan2( -C(1,3),sqrt( C(3,2)^2+C(3,3)^2 ) ) ;
+  //  第二个欧拉角定义范围 CosBeitaSign = 1： [ -pi/2,pi/2 ]
+  //                     CosBeitaSign = -1： [ -pi,-pi/2 ] [ pi/2,pi ]
+  euler[0] = rt_atan2d_snf(C[3], C[0]);
+  euler[1] = asin(-C[6]);
+  euler[2] = rt_atan2d_snf(C[7], C[8]);
+  MakeEuler_In2Pi(euler);
+  MakeEuler_In2Pi(euler);
 }
 
 //
@@ -2010,15 +2252,15 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
   int search_k;
   double search_k_end;
   boolean_T exitg4;
-  long long i18;
+  long long i22;
   double search_k_start;
   boolean_T exitg3;
   double IsCalibDataDistanceOK;
-  int i19;
+  int i23;
   boolean_T guard1 = false;
   int search_k_start_temp;
   double dX_xyNorm_VS;
-  int i20;
+  int i24;
   double VelocityDirection_data[3600];
   boolean_T exitg2;
   boolean_T exitg1;
@@ -2066,16 +2308,16 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
         //          fprintf('search_k_end = %d \n ',search_k_end)
         exitg4 = true;
       } else {
-        i18 = search_k - 1LL;
-        if (i18 > 2147483647LL) {
-          i18 = 2147483647LL;
+        i22 = search_k - 1LL;
+        if (i22 > 2147483647LL) {
+          i22 = 2147483647LL;
         } else {
-          if (i18 < -2147483648LL) {
-            i18 = -2147483648LL;
+          if (i22 < -2147483648LL) {
+            i22 = -2147483648LL;
           }
         }
 
-        search_k = (int)i18;
+        search_k = (int)i22;
       }
     }
 
@@ -2088,39 +2330,39 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
         IsCalibDataDistanceOK = rt_roundd_snf(search_k_end - (double)search_k);
         if (IsCalibDataDistanceOK < 2.147483648E+9) {
           if (IsCalibDataDistanceOK >= -2.147483648E+9) {
-            i19 = (int)IsCalibDataDistanceOK;
+            i23 = (int)IsCalibDataDistanceOK;
           } else {
-            i19 = MIN_int32_T;
+            i23 = MIN_int32_T;
           }
         } else if (IsCalibDataDistanceOK >= 2.147483648E+9) {
-          i19 = MAX_int32_T;
+          i23 = MAX_int32_T;
         } else {
-          i19 = 0;
+          i23 = 0;
         }
 
-        i18 = i19 + 1LL;
-        if (i18 > 2147483647LL) {
-          i18 = 2147483647LL;
+        i22 = i23 + 1LL;
+        if (i22 > 2147483647LL) {
+          i22 = 2147483647LL;
         } else {
-          if (i18 < -2147483648LL) {
-            i18 = -2147483648LL;
+          if (i22 < -2147483648LL) {
+            i22 = -2147483648LL;
           }
         }
 
-        if ((int)i18 < MaxN_Calib) {
+        if ((int)i22 < MaxN_Calib) {
           guard1 = false;
           if (CalibDataVelocityJudge(*(double (*)[5])&b_trackedMarkerVelocity[5 *
                (vision_k - 1)]) == 1.0) {
-            i18 = search_k + 1LL;
-            if (i18 > 2147483647LL) {
-              i18 = 2147483647LL;
+            i22 = search_k + 1LL;
+            if (i22 > 2147483647LL) {
+              i22 = 2147483647LL;
             } else {
-              if (i18 < -2147483648LL) {
-                i18 = -2147483648LL;
+              if (i22 < -2147483648LL) {
+                i22 = -2147483648LL;
               }
             }
 
-            search_k_start_temp = (int)i18;
+            search_k_start_temp = (int)i22;
 
             //  得到速度大小满足条件的 起始点，再判断位移长度
             CalibDataDistanceJudge(b_trackedMakerPosition, search_k_start_temp,
@@ -2136,16 +2378,16 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
           }
 
           if (guard1) {
-            i18 = search_k - 1LL;
-            if (i18 > 2147483647LL) {
-              i18 = 2147483647LL;
+            i22 = search_k - 1LL;
+            if (i22 > 2147483647LL) {
+              i22 = 2147483647LL;
             } else {
-              if (i18 < -2147483648LL) {
-                i18 = -2147483648LL;
+              if (i22 < -2147483648LL) {
+                i22 = -2147483648LL;
               }
             }
 
-            search_k = (int)i18;
+            search_k = (int)i22;
           }
         } else {
           exitg3 = true;
@@ -2156,31 +2398,31 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
       } else {
         // % 判断这段区间速度的角度变化是够小
         if (search_k_start > search_k_end) {
-          i19 = 1;
-          i20 = 1;
+          i23 = 1;
+          i24 = 1;
         } else {
-          i19 = (int)search_k_start;
-          i20 = (int)search_k_end + 1;
+          i23 = (int)search_k_start;
+          i24 = (int)search_k_end + 1;
         }
 
-        search_k_start_temp = i20 - i19;
+        search_k_start_temp = i24 - i23;
         for (search_k = 0; search_k < search_k_start_temp; search_k++) {
           VelocityDirection_data[search_k] = b_trackedMarkerVelocity[4 + 5 *
-            ((i19 + search_k) - 1)];
+            ((i23 + search_k) - 1)];
         }
 
         //  速度方向
         search_k_start_temp = 1;
-        IsCalibDataDistanceOK = b_trackedMarkerVelocity[4 + 5 * (i19 - 1)];
-        if (i20 - i19 > 1) {
-          if (rtIsNaN(b_trackedMarkerVelocity[4 + 5 * (i19 - 1)])) {
+        IsCalibDataDistanceOK = b_trackedMarkerVelocity[4 + 5 * (i23 - 1)];
+        if (i24 - i23 > 1) {
+          if (rtIsNaN(b_trackedMarkerVelocity[4 + 5 * (i23 - 1)])) {
             search_k = 2;
             exitg2 = false;
-            while ((!exitg2) && (search_k <= i20 - i19)) {
+            while ((!exitg2) && (search_k <= i24 - i23)) {
               search_k_start_temp = search_k;
-              if (!rtIsNaN(b_trackedMarkerVelocity[4 + 5 * ((i19 + search_k) - 2)]))
+              if (!rtIsNaN(b_trackedMarkerVelocity[4 + 5 * ((i23 + search_k) - 2)]))
               {
-                IsCalibDataDistanceOK = b_trackedMarkerVelocity[4 + 5 * ((i19 +
+                IsCalibDataDistanceOK = b_trackedMarkerVelocity[4 + 5 * ((i23 +
                   search_k) - 2)];
                 exitg2 = true;
               } else {
@@ -2189,11 +2431,11 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
             }
           }
 
-          if (search_k_start_temp < i20 - i19) {
-            while (search_k_start_temp + 1 <= i20 - i19) {
-              if (b_trackedMarkerVelocity[4 + 5 * ((i19 + search_k_start_temp) -
+          if (search_k_start_temp < i24 - i23) {
+            while (search_k_start_temp + 1 <= i24 - i23) {
+              if (b_trackedMarkerVelocity[4 + 5 * ((i23 + search_k_start_temp) -
                    1)] > IsCalibDataDistanceOK) {
-                IsCalibDataDistanceOK = b_trackedMarkerVelocity[4 + 5 * ((i19 +
+                IsCalibDataDistanceOK = b_trackedMarkerVelocity[4 + 5 * ((i23 +
                   search_k_start_temp) - 1)];
               }
 
@@ -2204,11 +2446,11 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
 
         search_k_start_temp = 1;
         dX_xyNorm_VS = VelocityDirection_data[0];
-        if (i20 - i19 > 1) {
+        if (i24 - i23 > 1) {
           if (rtIsNaN(VelocityDirection_data[0])) {
             search_k = 2;
             exitg1 = false;
-            while ((!exitg1) && (search_k <= i20 - i19)) {
+            while ((!exitg1) && (search_k <= i24 - i23)) {
               search_k_start_temp = search_k;
               if (!rtIsNaN(VelocityDirection_data[search_k - 1])) {
                 dX_xyNorm_VS = VelocityDirection_data[search_k - 1];
@@ -2219,8 +2461,8 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
             }
           }
 
-          if (search_k_start_temp < i20 - i19) {
-            while (search_k_start_temp + 1 <= i20 - i19) {
+          if (search_k_start_temp < i24 - i23) {
+            while (search_k_start_temp + 1 <= i24 - i23) {
               if (VelocityDirection_data[search_k_start_temp] < dX_xyNorm_VS) {
                 dX_xyNorm_VS = VelocityDirection_data[search_k_start_temp];
               }
@@ -2246,8 +2488,8 @@ static void SearchCalibData(double b_INSVNSCalib_VS_k[100], double Calib_N_Last,
           dX_Vision_size[0] = 3;
           dX_Vision_size[1] = b_dX_Vision_size[1];
           search_k_start_temp = b_dX_Vision_size[0] * b_dX_Vision_size[1];
-          for (i19 = 0; i19 < search_k_start_temp; i19++) {
-            dX_Vision_data[i19] = b_dX_Vision_data[i19];
+          for (i23 = 0; i23 < search_k_start_temp; i23++) {
+            dX_Vision_data[i23] = b_dX_Vision_data[i23];
           }
         }
       }
@@ -2364,7 +2606,7 @@ static void SetParameters(double *makerTrackThreshold_moveTime, double
 // global InertialData
 // Arguments    : const double otherMakers_k_Position[30]
 //                const double otherMakers_k_ContinuesFlag[10]
-//                const double InertialPosition[34560]
+//                const double b_InertialPosition[34560]
 //                int b_inertial_k
 //                int inertial_dT_k_last
 //                const double trackedMakerPosition_last_k_dT[3]
@@ -2380,7 +2622,7 @@ static void SetParameters(double *makerTrackThreshold_moveTime, double
 // Return Type  : void
 //
 static void Track_dT_Judge(const double otherMakers_k_Position[30], const double
-  otherMakers_k_ContinuesFlag[10], const double InertialPosition[34560], int
+  otherMakers_k_ContinuesFlag[10], const double b_InertialPosition[34560], int
   b_inertial_k, int inertial_dT_k_last, const double
   trackedMakerPosition_last_k_dT[3], const double
   c_makerTrackThreshold_MaxHighMo[2], double trackedMakerPosition_k_OK_data[],
@@ -2409,8 +2651,8 @@ static void Track_dT_Judge(const double otherMakers_k_Position[30], const double
   trackedMakerPosition_k_OK_size[0] = 1;
   trackedMakerPosition_k_OK_data[0] = rtNaN;
   for (ix = 0; ix < 3; ix++) {
-    dP_Inertial[ix] = InertialPosition[ix + 3 * (b_inertial_k - 1)] -
-      InertialPosition[ix + 3 * (inertial_dT_k_last - 1)];
+    dP_Inertial[ix] = b_InertialPosition[ix + 3 * (b_inertial_k - 1)] -
+      b_InertialPosition[ix + 3 * (inertial_dT_k_last - 1)];
   }
 
   //  向下为正
@@ -2574,149 +2816,63 @@ static void Track_dT_Judge(const double otherMakers_k_Position[30], const double
 
 //
 // Arguments    : double compensateRate
-//                const double d_trackedMakerPosition_Inertial[34560]
-//                const double HipDisplacement[34560]
-//                const double InertialPosition[34560]
-//                double InertialPositionCompensate_out[34560]
-//                double HipDisplacementNew_out[34560]
+//                const double d_trackedMakerPosition_Inertial[3]
+//                const double InertialPosition_k[6]
+//                const double InertialPositionNew_k_last[3]
+//                double SingleFrameCompensate_k[3]
+//                double b_AccumulateCompensate_k[3]
+//                double b_InertialPositionNew_k[3]
 // Return Type  : void
 //
-static void VNSCompensateINS(double compensateRate, const double
-  d_trackedMakerPosition_Inertial[34560], const double HipDisplacement[34560],
-  const double InertialPosition[34560], double InertialPositionCompensate_out
-  [34560], double HipDisplacementNew_out[34560])
+static void VNSCompensateINS_k(double compensateRate, const double
+  d_trackedMakerPosition_Inertial[3], const double InertialPosition_k[6], const
+  double InertialPositionNew_k_last[3], double SingleFrameCompensate_k[3],
+  double b_AccumulateCompensate_k[3], double b_InertialPositionNew_k[3])
 {
-  int i8;
-  int k;
-  long long i9;
-  int b_k;
-  int c_k;
+  int i11;
+  double c_InertialPositionNew_k;
+  double b_SingleFrameCompensate_k;
 
-  // % 位移补偿
+  // % 单帧 位移补偿 k时刻
   // %% Input
   //  trackedMakerPosition_InertialTime ： 马克点光学位置，按惯性时序存储
   //  HipDisplacement ： Hip在北东地下的位置 （由 BVH 得到）
-  //  InertialPosition： 惯性系与马克点安装位置对应关节的位置（安装在头上时，InertialPosition 为惯性头的位置） 
+  //  InertialPosition_k： [3,2] k-1和k时刻   惯性系与马克点安装位置对应关节的位置（安装在头上时，InertialPosition 为惯性头的位置） 
   // %% Output
   //  InertialPositionNew ： 补偿后惯性的位置
   //  HipDisplacementNew： 补偿后Hip的位置
-  // % BVH 读取的个数 N_BVH 可能会比 N1 多几个
-  // % 先补偿 InertialPositionNew
-  if (!c_InertialPositionCompensate_no) {
-    c_InertialPositionCompensate_no = true;
+  //  coder.extrinsic('fprintf');
+  //  coder.extrinsic('DrawCompensate');
+  //  global CalStartIN  CalEndIN
+  //  persistent InertialPositionNew_k  % 在k-1时刻补偿后位置的基础上，进行一步纯惯性递推得到的位置 
+  //  先用纯惯性递推：在前一时刻补偿后基础上，惯性递推一步得到的位移
+  for (i11 = 0; i11 < 3; i11++) {
+    c_InertialPositionNew_k = InertialPositionNew_k_last[i11] +
+      (InertialPosition_k[3 + i11] - InertialPosition_k[i11]);
 
-    //  每一步的累积位移补偿量 记录
-    for (i8 = 0; i8 < 3; i8++) {
-      InertialPositionCompensate[i8] = 0.0;
-    }
-
-    for (i8 = 0; i8 < 11520; i8++) {
-      InertialPositionNew[2 + 3 * i8] = InertialPosition[2 + 3 * i8];
-    }
-
-    //  高度不补偿
-    for (i8 = 0; i8 < 2; i8++) {
-      InertialPositionNew[i8] = InertialPosition[i8];
-    }
-
-    //  起始点选择惯性
-    for (i8 = 0; i8 < 11520; i8++) {
-      HipDisplacementNew[2 + 3 * i8] = HipDisplacement[2 + 3 * i8];
-    }
-
-    for (i8 = 0; i8 < 3; i8++) {
-      HipDisplacementNew[i8] = HipDisplacement[i8];
-    }
+    //  先求纯惯性误差
+    SingleFrameCompensate_k[i11] = d_trackedMakerPosition_Inertial[i11] -
+      c_InertialPositionNew_k;
+    b_InertialPositionNew_k[i11] = c_InertialPositionNew_k;
   }
 
-  if (2 < CalStartIN) {
-    k = CalStartIN - 1;
-  } else {
-    k = 1;
+  //  当前相对光学的误差
+  SingleFrameCompensate_k[2] = 0.0;
+
+  //  高度方向不补偿
+  for (i11 = 0; i11 < 3; i11++) {
+    b_SingleFrameCompensate_k = SingleFrameCompensate_k[i11] * compensateRate;
+
+    //  单帧补偿量
+    c_InertialPositionNew_k = b_InertialPositionNew_k[i11] +
+      b_SingleFrameCompensate_k;
+
+    //  补偿 ： 向光学靠近
+    b_AccumulateCompensate_k[i11] = c_InertialPositionNew_k -
+      InertialPosition_k[3 + i11];
+    SingleFrameCompensate_k[i11] = b_SingleFrameCompensate_k;
+    b_InertialPositionNew_k[i11] = c_InertialPositionNew_k;
   }
-
-  while (k + 1 <= CalEndIN) {
-    //  先用纯惯性递推
-    i9 = (k + 1) - 1LL;
-    if (i9 > 2147483647LL) {
-      i9 = 2147483647LL;
-    } else {
-      if (i9 < -2147483648LL) {
-        i9 = -2147483648LL;
-      }
-    }
-
-    b_k = (int)i9;
-    i9 = (k + 1) - 1LL;
-    if (i9 > 2147483647LL) {
-      i9 = 2147483647LL;
-    } else {
-      if (i9 < -2147483648LL) {
-        i9 = -2147483648LL;
-      }
-    }
-
-    c_k = (int)i9;
-    for (i8 = 0; i8 < 2; i8++) {
-      InertialPositionNew[i8 + 3 * k] = InertialPositionNew[i8 + 3 * (b_k - 1)]
-        + (InertialPosition[i8 + 3 * k] - InertialPosition[i8 + 3 * (c_k - 1)]);
-    }
-
-    //  先求纯惯性为误差
-    if (!rtIsNaN(d_trackedMakerPosition_Inertial[3 * k])) {
-      for (i8 = 0; i8 < 2; i8++) {
-        InertialErr[i8 + (k << 1)] = d_trackedMakerPosition_Inertial[i8 + 3 * k]
-          - InertialPositionNew[i8 + 3 * k];
-
-        //  补偿误差
-        InertialPositionNew[i8 + 3 * k] += InertialErr[i8 + (k << 1)] *
-          compensateRate;
-      }
-    }
-
-    for (i8 = 0; i8 < 2; i8++) {
-      InertialPositionCompensate[i8 + 3 * k] = InertialPositionNew[i8 + 3 * k] -
-        InertialPosition[i8 + 3 * k];
-    }
-
-    //  累积位移补偿量
-    k++;
-  }
-
-  // % 通过 InertialPositionNew 计算 HipDisplacementNew
-  //  将Head位置传到Hip，：保持头和head的相对位移
-  for (k = CalStartIN - 1; k + 1 <= CalEndIN; k++) {
-    for (i8 = 0; i8 < 2; i8++) {
-      HipDisplacementNew[i8 + 3 * k] = HipDisplacement[i8 + 3 * k] +
-        InertialPositionCompensate[i8 + 3 * k];
-    }
-
-    for (i8 = 0; i8 < 3; i8++) {
-      HipDisplacementNew[i8 + 3 * k] = HipDisplacement[i8 + 3 * k];
-    }
-  }
-
-  for (i8 = 0; i8 < 34560; i8++) {
-    InertialPositionCompensate_out[i8] = InertialPositionCompensate[i8];
-    HipDisplacementNew_out[i8] = HipDisplacementNew[i8];
-  }
-}
-
-//
-// Arguments    : void
-// Return Type  : void
-//
-static void VNSCompensateINS_init()
-{
-  int i10;
-  c_InertialPositionCompensate_no = false;
-  for (i10 = 0; i10 < 34560; i10++) {
-    InertialPositionCompensate[i10] = rtNaN;
-    InertialPositionNew[i10] = rtNaN;
-    HipDisplacementNew[i10] = rtNaN;
-  }
-
-  memset(&InertialErr[0], 0, 23040U * sizeof(double));
 }
 
 //
@@ -2869,7 +3025,7 @@ static double eml_matlab_zlarfg(int n, double *alpha1, double x_data[], int ix0)
   double tau;
   double xnorm;
   int knt;
-  int i21;
+  int i25;
   int k;
   tau = 0.0;
   if (n <= 0) {
@@ -2885,8 +3041,8 @@ static double eml_matlab_zlarfg(int n, double *alpha1, double x_data[], int ix0)
         knt = 0;
         do {
           knt++;
-          i21 = (ix0 + n) - 2;
-          for (k = ix0; k <= i21; k++) {
+          i25 = (ix0 + n) - 2;
+          for (k = ix0; k <= i25; k++) {
             x_data[k - 1] *= 9.9792015476736E+291;
           }
 
@@ -2902,8 +3058,8 @@ static double eml_matlab_zlarfg(int n, double *alpha1, double x_data[], int ix0)
 
         tau = (xnorm - *alpha1) / xnorm;
         *alpha1 = 1.0 / (*alpha1 - xnorm);
-        i21 = (ix0 + n) - 2;
-        for (k = ix0; k <= i21; k++) {
+        i25 = (ix0 + n) - 2;
+        for (k = ix0; k <= i25; k++) {
           x_data[k - 1] *= *alpha1;
         }
 
@@ -2915,8 +3071,8 @@ static double eml_matlab_zlarfg(int n, double *alpha1, double x_data[], int ix0)
       } else {
         tau = (xnorm - *alpha1) / xnorm;
         *alpha1 = 1.0 / (*alpha1 - xnorm);
-        i21 = (ix0 + n) - 2;
-        for (k = ix0; k <= i21; k++) {
+        i25 = (ix0 + n) - 2;
+        for (k = ix0; k <= i25; k++) {
           x_data[k - 1] *= *alpha1;
         }
 
@@ -3355,6 +3511,34 @@ static void emxInit_real_T(emxArray_real_T **pEmxArray, int b_numDimensions)
 }
 
 //
+// Arguments    : const double x[4]
+// Return Type  : double
+//
+static double norm(const double x[4])
+{
+  double y;
+  double scale;
+  int k;
+  double absxk;
+  double t;
+  y = 0.0;
+  scale = 2.2250738585072014E-308;
+  for (k = 0; k < 4; k++) {
+    absxk = fabs(x[k]);
+    if (absxk > scale) {
+      t = scale / absxk;
+      y = 1.0 + y * t * t;
+      scale = absxk;
+    } else {
+      t = absxk / scale;
+      y += t * t;
+    }
+  }
+
+  return scale * sqrt(y);
+}
+
+//
 // Arguments    : const double S[3]
 // Return Type  : double
 //
@@ -3413,6 +3597,47 @@ static void repmat(const double a[3], int varargin_2, emxArray_real_T *b)
 //                double u1
 // Return Type  : double
 //
+static double rt_atan2d_snf(double u0, double u1)
+{
+  double y;
+  int b_u0;
+  int b_u1;
+  if (rtIsNaN(u0) || rtIsNaN(u1)) {
+    y = rtNaN;
+  } else if (rtIsInf(u0) && rtIsInf(u1)) {
+    if (u0 > 0.0) {
+      b_u0 = 1;
+    } else {
+      b_u0 = -1;
+    }
+
+    if (u1 > 0.0) {
+      b_u1 = 1;
+    } else {
+      b_u1 = -1;
+    }
+
+    y = atan2((double)b_u0, (double)b_u1);
+  } else if (u1 == 0.0) {
+    if (u0 > 0.0) {
+      y = RT_PI / 2.0;
+    } else if (u0 < 0.0) {
+      y = -(double)(RT_PI / 2.0);
+    } else {
+      y = 0.0;
+    }
+  } else {
+    y = atan2(u0, u1);
+  }
+
+  return y;
+}
+
+//
+// Arguments    : double u0
+//                double u1
+// Return Type  : double
+//
 static double rt_hypotd_snf(double u0, double u1)
 {
   double y;
@@ -3462,17 +3687,22 @@ static double rt_roundd_snf(double u)
 //                struct1_T otherMakers[3600]
 //                double compensateRate
 //                const struct2_T *CalculateOrder
-//                double b_InertialPositionCompensate[34560]
-//                double b_HipDisplacementNew[34560]
+//                double AccumulateCompensate_k_Out[3]
 // Return Type  : void
 //
 void GetINSCompensateFromVNS(const struct0_T *InertialData, struct1_T
   otherMakers[3600], double compensateRate, const struct2_T *CalculateOrder,
-  double b_InertialPositionCompensate[34560], double b_HipDisplacementNew[34560])
+  double AccumulateCompensate_k_Out[3])
 {
   int k;
-  static double InertialPosition[34560];
+  int i12;
+  int i13;
+  int i;
+  int i14;
   static double d_trackedMakerPosition_Inertial[34560];
+  double dv3[6];
+  double dv4[3];
+  double SingleFrameCompensate_k[3];
 
   // % xyz 2015 5.25
   // % otherMakers
@@ -3506,8 +3736,8 @@ void GetINSCompensateFromVNS(const struct0_T *InertialData, struct1_T
   //    CalStartVN 和 CalStartIN 从1开始，且与上一时刻保持连续： CalStartIN = CalEndINSave+1; CalStartVN = CalStartVNSave+1; 
   //    CalEndIN 大于或等于 CalStartVN ，  CalEndVN 大于或等于CalStartVN
   // % 用 Optitrack 的 OtherMarker 补偿惯性系统
-  // % 得到惯性 Hip 位置补偿量 InertialPositionCompensate
-  //  InertialPositionCompensate [ 3*N ]  m  NED系
+  // % 得到惯性 Hip 位置补偿量 SingleFrameCompensate
+  //  SingleFrameCompensate [ 3*N ]  m  NED系
   //  CalStartVN_in ： 视觉计算起点（）
   //  CalEndVN_in ：计算终点（视觉）
   //  IsHandledVisual IsHandledInerital 记录每个数的处理次数 ： 0表示没处理，1表示1次-正常，2次则重复处理 
@@ -3543,8 +3773,23 @@ void GetINSCompensateFromVNS(const struct0_T *InertialData, struct1_T
   // % load data
   //  inertialTime = InertialData.time ;
   inertialFre = InertialData->frequency;
-  for (k = 0; k < 11520; k++) {
-    InertialData_visual_k[k] = InertialData->visual_k[k];
+  if (CalStartIN > CalEndIN) {
+    i12 = 1;
+    i13 = 0;
+  } else {
+    i12 = CalStartIN;
+    i13 = CalEndIN;
+  }
+
+  if (CalStartIN > CalEndIN) {
+    i = 0;
+  } else {
+    i = CalStartIN - 1;
+  }
+
+  k = i13 - i12;
+  for (i13 = 0; i13 <= k; i13++) {
+    InertialData_visual_k[i + i13] = InertialData->visual_k[(i12 + i13) - 1];
   }
 
   visionFre = otherMakers[0].frequency;
@@ -3552,32 +3797,120 @@ void GetINSCompensateFromVNS(const struct0_T *InertialData, struct1_T
    case 16:
     //  按中间数据骨骼编号
     //  'Head'
-    for (k = 0; k < 34560; k++) {
-      InertialPosition[k] = InertialData->HeadPosition[k];
+    if (CalStartIN > CalEndIN) {
+      i12 = 1;
+      i13 = 0;
+    } else {
+      i12 = CalStartIN;
+      i13 = CalEndIN;
+    }
+
+    if (CalStartIN > CalEndIN) {
+      i = 0;
+    } else {
+      i = CalStartIN - 1;
+    }
+
+    k = i13 - i12;
+    for (i13 = 0; i13 <= k; i13++) {
+      for (i14 = 0; i14 < 3; i14++) {
+        InertialPosition[i14 + 3 * (i + i13)] = InertialData->HeadPosition[i14 +
+          3 * ((i12 + i13) - 1)];
+      }
     }
     break;
 
    case 1:
     //   'Hip'
-    for (k = 0; k < 34560; k++) {
-      InertialPosition[k] = InertialData->HipPosition[k];
+    if (CalStartIN > CalEndIN) {
+      i12 = 1;
+      i13 = 0;
+    } else {
+      i12 = CalStartIN;
+      i13 = CalEndIN;
+    }
+
+    if (CalStartIN > CalEndIN) {
+      i = 0;
+    } else {
+      i = CalStartIN - 1;
+    }
+
+    k = i13 - i12;
+    for (i13 = 0; i13 <= k; i13++) {
+      for (i14 = 0; i14 < 3; i14++) {
+        InertialPosition[i14 + 3 * (i + i13)] = InertialData->HipPosition[i14 +
+          3 * ((i12 + i13) - 1)];
+      }
     }
     break;
 
    default:
-    for (k = 0; k < 34560; k++) {
-      InertialPosition[k] = InertialData->HeadPosition[k];
+    if (CalStartIN > CalEndIN) {
+      i12 = 1;
+      i13 = 0;
+    } else {
+      i12 = CalStartIN;
+      i13 = CalEndIN;
+    }
+
+    if (CalStartIN > CalEndIN) {
+      i = 0;
+    } else {
+      i = CalStartIN - 1;
+    }
+
+    k = i13 - i12;
+    for (i13 = 0; i13 <= k; i13++) {
+      for (i14 = 0; i14 < 3; i14++) {
+        InertialPosition[i14 + 3 * (i + i13)] = InertialData->HeadPosition[i14 +
+          3 * ((i12 + i13) - 1)];
+      }
     }
     break;
   }
 
+  //  HipQuaternion = InertialData.HipQuaternion ;
+  //  HeadQuaternion = InertialData.HeadQuaternion ;
   GetRightOtherMaker(otherMakers, InertialPosition,
                      d_trackedMakerPosition_Inertial);
 
   // % 位置补偿
-  VNSCompensateINS(compensateRate, d_trackedMakerPosition_Inertial,
-                   InertialData->HipPosition, InertialPosition,
-                   b_InertialPositionCompensate, b_HipDisplacementNew);
+  //  [ InertialPositionCompensate,HipDisplacementNew ] = VNSCompensateINS...
+  //      ( compensateRate,trackedMakerPosition_InertialTime,InertialData.HipPosition,InertialPosition ) ; 
+  for (k = CalStartIN - 1; k + 1 <= CalEndIN; k++) {
+    if (CalStartIN == 1) {
+      for (i12 = 0; i12 < 3; i12++) {
+        InertialPositionNew_k[i12] = InertialPosition[i12];
+        AccumulateCompensate_k[i12] = 0.0;
+      }
+    } else if (rtIsNaN(d_trackedMakerPosition_Inertial[3 * k])) {
+      //  上一时刻没有跟踪成功，直接纯惯性递推
+      for (i12 = 0; i12 < 3; i12++) {
+        InertialPositionNew_k[i12] += InertialPosition[i12 + 3 * k] -
+          InertialPosition[i12 + 3 * (k - 1)];
+      }
+    } else {
+      for (i12 = 0; i12 < 2; i12++) {
+        for (i13 = 0; i13 < 3; i13++) {
+          dv3[i13 + 3 * i12] = InertialPosition[i13 + 3 * ((i12 + k) - 1)];
+        }
+      }
+
+      for (i = 0; i < 3; i++) {
+        dv4[i] = InertialPositionNew_k[i];
+      }
+
+      VNSCompensateINS_k(compensateRate, *(double (*)[3])&
+                         d_trackedMakerPosition_Inertial[3 * k], dv3, dv4,
+                         SingleFrameCompensate_k, AccumulateCompensate_k,
+                         InertialPositionNew_k);
+    }
+  }
+
+  for (i = 0; i < 3; i++) {
+    AccumulateCompensate_k_Out[i] = AccumulateCompensate_k[i];
+  }
 }
 
 //
@@ -3604,7 +3937,7 @@ void GetINSCompensateFromVNS_initialize()
   CalStartIN = b_CalStartIN;
   CalEndVN = b_CalEndVN;
   CalStartVN = b_CalStartVN;
-  VNSCompensateINS_init();
+  GetINSCompensateFromVNS_init();
   GetRightOtherMaker_init();
 }
 

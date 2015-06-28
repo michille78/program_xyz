@@ -21,7 +21,7 @@ global      CalStartVN CalEndVN  CalStartIN  CalEndIN
 %% 阈值参数设置
 persistent makerTrackThreshold INSVNSCalibSet 
 if isempty(makerTrackThreshold)
-    [ makerTrackThreshold,INSVNSCalibSet ] = SetParameters( );
+    [ makerTrackThreshold,INSVNSCalibSet ] = SetConstParameters( );
 end
 
 IsGetFirstMarker = 0 ;
@@ -81,10 +81,10 @@ for k=CalStartVN:CalEndVN
     %  last_dT_k
     inertial_dT_k_last = inertial_k - dT_Ninertial ;
     inertial_dT_k_last = max(inertial_dT_k_last,1);        
-        
+
     if k>1
         otherMakers_k_last = otherMakers(k-1) ; 
-        if coder.target('MATLAB') && isnan(otherMakers_k_last.ContinuesFlag)
+        if coder.target('MATLAB') && isnan(otherMakers_k_last.ContinuesFlag) && otherMakers_k_last.otherMakersN>0
            fprintf('判定第%0.0f个点时，前一个otherMakers点没有结果\n',k); 
         end
         % otherMakers_k_last 必须是更新了判定结果的，检查一下
@@ -102,7 +102,6 @@ for k=CalStartVN:CalEndVN
     [ trackedMakerPosition(:,k),otherMakersNew_k,TrackFlag(k),JudgeIndex  ] = JudgeMaker...
         ( otherMakers_k,otherMakers_k_last,k,inertial_k,trackedMakerPosition,InertialPosition,inertial_dT_k_last,...
         makerTrackThreshold ) ;
-        
     if coder.target('MATLAB')
         dPi_ConJudge(k) = JudgeIndex.dPi_ConJudge  ;
         dPError_dT_xy(k) = JudgeIndex.dPError_dT_xy ;
@@ -186,7 +185,7 @@ trackedMakerPosition_InertialTime_Out = trackedMakerPosition_InertialTime ;
  
  %% result analyse
 
-if coder.target('MATLAB') && CalEndVN == MarkerTN
+if coder.target('MATLAB')  && (CalEndVN == MarkerTN  || CalEndIN >= InertialN-2  )
      trackedMaker.trackedMakerPosition = trackedMakerPosition ;
 %      trackedMaker.time = otherMakersTime ;
      trackedMaker.MarkerSet = otherMakers(1).MarkerSet ;
@@ -207,7 +206,7 @@ if coder.target('MATLAB') && CalEndVN == MarkerTN
     
 end
 
-if coder.target('MATLAB') && CalEndVN == MarkerTN
+if coder.target('MATLAB') && (CalEndVN == MarkerTN  || CalEndIN >= InertialN-2  )
     otherMakersTime = ( 1:MarkerTN )/1;
 
     figure('name','trackFlag')
@@ -281,42 +280,6 @@ if coder.target('MATLAB') && CalEndVN == MarkerTN
     fprintf( 'FailTrackFlagNum=%d ( %0.3f ) \n',FailTrackFlagNum,FailTrackFlagNum/length(TrackFlag) );
 end
 
-%% 阈值参数设置
-function [ makerTrackThreshold,INSVNSCalibSet ] = SetParameters(  )
-global visionFre  
-
-moveTime = 2 ;          % sec 轨迹连续判断时间步长
-moveDistance = 0.5 ;      % m   轨迹连续判断位移步长  （经验值建议0.4m-0.7m）
-MaxMoveSpeed = 1.5 ; % m/s  马克点运动允许的最大速度，超过这个速度则认为不连续
-makerTrackThreshold.moveTime = moveTime ;
-makerTrackThreshold.MaxMoveTime = 3 ;
-makerTrackThreshold.moveDistance = moveDistance ;
-makerTrackThreshold.MaxContinuesDisplacement = min( 1/visionFre*MaxMoveSpeed,0.1) ; % 马克点连续判断最大位移模
-makerTrackThreshold.PositionErrorBear_dT = 0.05*moveTime;   % 固定时间的最大运动距离误差（第一步）：位移差在这个范围内的，直接判定<校验1>通过
-makerTrackThreshold.ContinuesTrackedMagnifyRate = 1.3 ;      % 当连续于跟踪成功的点时，放大PositionErrorBear_dT
-MaxStaticSpeed = 0.1 ; % m/s 静止时，允许惯性最大测量误差
-makerTrackThreshold.MaxStaticDisp_dT = max(MaxStaticSpeed*moveTime,0.02) ;           % 固定时间的最大运动距离误差（第二步）：（第一步不通过后）位移差的长度是惯性位移长度的MaxPositionError_dT倍以内
-makerTrackThreshold.MaxPositionError_dS = moveDistance*0.7;     % 运动固定距离位移的最大运动距离误差：运动距离的50% （主要是依赖角度约束）
-makerTrackThreshold.Max_dPAngle_dS = 20*pi/180 ;      % 运动固定距离位移的最大位移方向角度差
-
-makerTrackThreshold.MaxMarkHighChange = 0.4 ;      % m 惯性与视觉目标马克点高度差变化最大范围，用于剔除高度相差较大的点
-
-makerTrackThreshold.MaxHighMoveErrRate = [ -0.3  0.5 ] ;  %  高度方向变化大时，若变化比例小于这个值，直接认定跟踪OK
-        % 发现高度方向的误差非常
-makerTrackThreshold.BigHighMove = 0.18 ;         % m 大于这个值则认为高度方向变化大
-%% 坐标系标定参数
-INSVNSCalibSet.Min_xyNorm_Calib = 0.3 ; % m  用于标定的数据的最小运动位移长度
-INSVNSCalibSet.MaxTime_Calib = 2  ;  % sec  用于标定的数据的最长时间
-INSVNSCalibSet.MaxVXY_DirectionChange_Calib = 30*pi/180 ;     % ° XY平面速度方向变化最大范围
-INSVNSCalibSet.MaxVZ_Calib = 0.1 ;     % m/s Z方向速度最大绝对值
-INSVNSCalibSet.MinVXY_Calib = 0.2;   	% m/s XY 平面速度模最小绝对值
-INSVNSCalibSet.angleUniformityErr = 10*pi/180 ; % ° 位移矢量方向均匀性误差
-% 速度计算
-INSVNSCalibSet.dT_CalV_Calib = 0.1 ; % 计算速度时间步长（标定位移数据选择）
-INSVNSCalibSet.MinXYVNorm_CalAngle = 0.1 ;  %  m/s xy速度模大于这个值才计算速度的反向
-
-makerTrackThreshold.INSMarkH0 = NaN ;
-makerTrackThreshold.VNSMarkH0 = NaN ;
 
 function otherMakersEmpty = GetEmpty_otherMakers(otherMakers_k)
 otherMakersEmpty = otherMakers_k;
@@ -647,111 +610,7 @@ if TrackFlag==0
    disp('error')  
 end
 
-%% 马克点连续性判断
-% dPi_ConJudge ： 连续性判断指标的大小：前后两帧的位移模
-% ContinuesFlag = 0   不连续
-%               =1    连续，且是与跟踪成功马克点连续
-%               =2   连续，和跟踪失败的点连续
-function [ otherMakers_k,dPi_ConJudge ] = ContinuesJudge( otherMakers_k,otherMakers_k_last,trackedMakerPosition,k_vision,makerTrackThreshold )
 
-
-% 前一时刻跟踪成功时，给出当前点是否相对跟踪成功的点连续。  Continues = 1
-% 前一时刻跟踪失败时，给出当前每个点是否为连续点的结果,且记录着个点能连续到往前最早（但不超过dT）的点的位置和时间。
-%        Continues = 2 ，
-
-% global inertialFre visionFre  moveDistance
-% 记录每个马克点的连续特性
-MaxOtherMarkerBufN = size(otherMakers_k.ContinuesFlag,2);
-M = otherMakers_k.otherMakersN ;
-otherMakers_k.ContinuesFlag = zeros(1,MaxOtherMarkerBufN) ; % 不连续
-otherMakers_k.ContinuesLastPosition = NaN(3,MaxOtherMarkerBufN) ;
-otherMakers_k.ContinuesLastTime = NaN(1,MaxOtherMarkerBufN) ;
-otherMakersPosition_k = otherMakers_k.Position ;  
-
-dPi_ConJudge=nan;
-
-if k_vision>1 
-    
-    if ~isnan(trackedMakerPosition(1,k_vision-1))
-        %% 只判断当前马克点是否与前时刻跟踪成功的马克点连续
-        trackedMakerPosition_kLast = trackedMakerPosition(:,k_vision-1) ;
-        otherMakersPosition_k_Dis = otherMakersPosition_k(:,1:M)-repmat(trackedMakerPosition_kLast,1,M) ;
-        otherMakersPosition_k_Dis_Norm = zeros(1,M);
-        for j=1:M
-            otherMakersPosition_k_Dis_Norm(j) = normest(otherMakersPosition_k_Dis(:,j));
-        end
-        [dPi_ConJudge,minCon_k] = min(otherMakersPosition_k_Dis_Norm);  
-        if dPi_ConJudge < makerTrackThreshold.MaxContinuesDisplacement
-    %         trackedMakerPosition_k_OK = otherMakersPosition_k(:,m) ;
-    %         TrackFlag = 1;
-    %         fprintf('马克点连续：位移=%0.4f，跟踪OK \n',Min_otherMakersPosition_k_Dis_Norm);
-            
-            otherMakers_k.ContinuesFlag(minCon_k) = 1 ; % 连续，且是与跟踪成功马克点连续
-            otherMakers_k.ContinuesLastPosition(:,minCon_k) = trackedMakerPosition_kLast ;
-            otherMakers_k.ContinuesLastTime(minCon_k) = otherMakers_k_last.time ;
-            otherMakers_k.ContinuesLastK(minCon_k) = k_vision-1 ;
-        end
-        
-    else
-        %% 判断当前马克点是否为连续马克点，记录每个点对应的最早（但不超过dT）连续点
-        M_last = otherMakers_k_last.otherMakersN ;
-        if M_last==0
-            % 上时刻无马克点
-            for i=1:M
-                otherMakers_k.ContinuesFlag(i) = 0 ; % 不连续
-                otherMakers_k.ContinuesLastPosition(:,i) = NaN ;
-                otherMakers_k.ContinuesLastTime(i) = NaN ;
-                otherMakers_k.ContinuesLastK(i) = NaN ;
-            end
-            dPi_ConJudge=nan;
-            return;
-        end
-        % 一共有 M*M_last 种组合
-        for i=1:M
-            dPi = repmat(otherMakers_k.Position( :,i ),1,M_last)- otherMakers_k_last.Position ;
-            dPiNorm = zeros(1,M_last);
-            for j=1:M_last
-                dPiNorm(j) = normest(dPi(:,j));
-            end
-            
-            [dPi_ConJudge,min_i] = min(dPiNorm);   
-            if normest(dPi_ConJudge) < makerTrackThreshold.MaxContinuesDisplacement
-                %  otherMakers_k.Position( :,i ) 与 otherMakers_k_last.Position(:,min_i) 连续
-                % 找到一个连续的点，记录上一点
-                otherMakers_k.ContinuesFlag(i) = 2 ; % 连续，和跟踪失败的点连续
-                % 如果前一个点为连续点，则将前一个点的连续记录传递过来
-                if otherMakers_k_last.ContinuesFlag(min_i) == 2
-                    otherMakers_k.ContinuesLastK(i) = otherMakers_k_last.ContinuesLastK(min_i) ; % 传递记录上一个时刻存储的连续信息
-                    otherMakers_k.ContinuesLastPosition(:,i) = otherMakers_k_last.ContinuesLastPosition(:,min_i) ;
-                    otherMakers_k.ContinuesLastTime(i) = otherMakers_k_last.ContinuesLastTime(min_i);
-                elseif otherMakers_k_last.ContinuesFlag(min_i) == 0
-                    otherMakers_k.ContinuesLastK(i) = k_vision-1 ; % 直接记录上一个时刻
-                    otherMakers_k.ContinuesLastPosition(:,i) = otherMakers_k_last.Position( :,min_i ) ;
-                    otherMakers_k.ContinuesLastTime(i) = otherMakers_k_last.time ;                    
-                elseif otherMakers_k_last.ContinuesFlag(min_i) == 1 
-                    % 与跟踪成功点连续检测成功，但跟踪识别失败的情况，传递到现在。如果传递时间超过2秒，则不再传递。
-                    if (otherMakers_k_last.ContinuesLastTime(min_i)-otherMakers_k.time) > 20
-                        otherMakers_k.ContinuesFlag(i) = 2 ;
-                    else
-                        otherMakers_k.ContinuesFlag(i) = 1 ;
-                    end                    
-                    otherMakers_k.ContinuesLastK(i) = otherMakers_k_last.ContinuesLastK(min_i) ; % 传递记录上一个时刻存储的连续信息
-                    otherMakers_k.ContinuesLastPosition(:,i) = otherMakers_k_last.ContinuesLastPosition(:,min_i) ;
-                    otherMakers_k.ContinuesLastTime(i) = otherMakers_k_last.ContinuesLastTime(min_i);
-                end
-            else
-                otherMakers_k.ContinuesFlag(i) = 0 ; % 不连续
-                otherMakers_k.ContinuesLastPosition(:,i) = NaN ;
-                otherMakers_k.ContinuesLastTime(i) = NaN ;
-                otherMakers_k.ContinuesLastK(i) = NaN ;
-            end
-                        
-        end
-        
-    end
-else
-    dPi_ConJudge=nan;
-end
 
 
 

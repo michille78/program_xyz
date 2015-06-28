@@ -113,7 +113,8 @@ void CHybidTrack::Get_M_otherMakers()
 
 
 CHybidTrack::CHybidTrack() :
-IsBothStart(0)
+IsBothStart(0),
+IsDoCompensate(false)
 {	
 	GetINSCompensateFromVNS_initialize();
 
@@ -145,22 +146,26 @@ IsBothStart(0)
 	CalculateOrder[0].CalStartIN = 0;
 	CalculateOrder[0].CalStartVN = 0;
 
-	M_compensateRate = 1;   //  位移补偿系数 默认值
+	M_compensateRate = 0;   //  位移补偿系数 默认值
 
-	// 初始化输出为 NaN
+	// 补偿量 初始化输出为 0
+	M_InertialPositionCompensate_k[0] = 0;
+	M_InertialPositionCompensate_k[1] = 0;
+	M_InertialPositionCompensate_k[2] = 0;
+
 	for (int k = 0; k < I_BufferN; k++)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			M_InertialPositionCompensate[3 * k + i] = rtNaN;
-			M_HipDisplacementNew[3 * k + i] = rtNaN;
+			M_InertialPositionCompensate[3 * k + i] = 0;
+		//	M_HipDisplacementNew[3 * k + i] = rtNaN;
 		}
 	}
 	
 
 	m_OffLineRead = false;
-	m_Opt_Path = "E:\\data_xyz\\Hybrid Motion Capture Data\\5.28\\5.28-head6\\Opt.txt";	
-	m_inertial_Path = "E:\\data_xyz\\Hybrid Motion Capture Data\\5.28\\5.28-head6\\RawData.raw";
+	m_Opt_Path = "E:\\data_xyz\\Hybrid Motion Capture Data\\5.28\\5.28-head3\\Opt.txt";	
+	m_inertial_Path = "E:\\data_xyz\\Hybrid Motion Capture Data\\5.28\\5.28-head3\\RawData.raw";
 	m_IneritalFrames = 0;
 
 /*
@@ -302,7 +307,7 @@ void CHybidTrack::Read_M_otherMakers_OffLine()
 	res = fscanf_s(m_OptStream, "%[^\n]%*c", str, _countof(str)); // 第一行是 头
 	// 第二行之后是数据
 	VisionData.clear();
-	CVisionData_t CVisionData_Cur;
+	
 	float fLatency = 0;
 	int m_mappingInertial_k;
 	int VN;
@@ -312,7 +317,7 @@ void CHybidTrack::Read_M_otherMakers_OffLine()
 		res = fscanf_s(m_OptStream, "%d:%d:%d", &min,&sec,&msec);
 		res = fscanf_s(m_OptStream, "%d", &OtherMarkersN);
 		
-		
+		CVisionData_t CVisionData_Cur;
 		CVisionData_Cur.m_OtherMarkersN = OtherMarkersN;
 
 		for (int k = 0; k < OtherMarkersN; k++)
@@ -392,13 +397,13 @@ void CHybidTrack::UpdateVisionData(int OtherMarkersN, float* pOtherMarkers, floa
 	int visualN = VisionData.size();
 	int InertialN = InertialData.size();
 	if (IsBothStart==0 && !VisionData.empty() && !InertialData.empty())
-	{
-		IsBothStart = 1; // 第一次捕捉到惯性和视觉都开始采集
+	{	// 第一次发现 惯性和视觉都已经采集了数据
+		IsBothStart = 1; // 只有这一个地方使 IsBothStart = 1;
 		// 将视觉清空
 		VisionData.clear();
 		SetM_otherMakers_Empty();
 
-		m_fLatency_StartTwo = fLatency - (InertialN-1)/m_I_Frequency;
+		m_fLatency_StartTwo = fLatency - (InertialN-1)/m_I_Frequency;	// 记录这个时刻
 	}
 	
 	CVisionData_t CVisionData_Cur;
@@ -457,10 +462,11 @@ void CHybidTrack::UpdateVisionData(int OtherMarkersN, float* pOtherMarkers, floa
 	CalVisualFrequency();
 	
 	// 将 CVisionData_Cur 更新到 M_otherMakers
-	Get_M_otherMakers();
+//	if (IsDoCompensate)
+//		Get_M_otherMakers();
 
 	// 计算补偿量
-	GetDisplacementCompensate();
+//	GetDisplacementCompensate();
 
 }
 
@@ -477,9 +483,10 @@ void CHybidTrack::GetDisplacementCompensate()
 			M_InertialPositionCompensate[1] = 0;
 			M_InertialPositionCompensate[2] = 0;
 
-			M_HipDisplacementNew[0] = M_InertialData->HipPosition[0];
+		/*	M_HipDisplacementNew[0] = M_InertialData->HipPosition[0];
 			M_HipDisplacementNew[1] = M_InertialData->HipPosition[1];
 			M_HipDisplacementNew[2] = M_InertialData->HipPosition[2];
+			*/
 		}
 			// 从最新的惯性数据中找到最新的 惯性视觉对应数据
 			int IneritalNew = InertialData.size();
@@ -512,9 +519,26 @@ void CHybidTrack::GetDisplacementCompensate()
 								
 				CalculateOrder[0].CalStartIN = CalculateOrder[0].CalEndIN+1;
 				CalculateOrder[0].CalEndIN = M_otherMakers[CalEndVN_new - 1].inertial_k;
+
+				if (CalculateOrder[0].CalEndIN > 447)
+				{
+					printf("e");
+				}
+				
+
 				M_compensateRate = 1;
 				GetINSCompensateFromVNS(M_InertialData, M_otherMakers, M_compensateRate, CalculateOrder,
-					M_InertialPositionCompensate, M_HipDisplacementNew);
+					M_InertialPositionCompensate_k);
+				if (abs(M_InertialPositionCompensate[CalculateOrder[0].CalEndIN - 1]) > 0.05)
+				{
+					printf("err");
+				}
+				if (rtIsNaN(M_otherMakers[CalEndVN_new - 1].ContinuesFlag[0]))
+				{
+
+					printf("ee");
+				}
+
 			}
 			
 	}
@@ -529,15 +553,20 @@ void CHybidTrack::GetDisplacementCompensate()
 // 用 m_fLatency 近似计算频率
 void CHybidTrack::CalVisualFrequency()
 {
-	if ( VisionData.size()>3)
+	if (VisionData.size() > 1)
 	{
 		/// 最新的视觉数据
-		CVisionData_t& VisionData_t = VisionData.back(); //  末尾 最新 的视觉数据
+	//	mtx.lock();
+		CVisionData_t VisionData_t = VisionData.back(); //  末尾 最新 的视觉数据		
 		deque <CVisionData_t>::const_iterator VisionData_cIter = VisionData.begin();
 		CVisionData_t VisionData_0 = *VisionData_cIter; //  第二末尾 的视觉数据
-
+//		mtx.unlock();
 		double  T = VisionData_t.m_fLatency - VisionData_0.m_fLatency;
-		m_V_Frequency = VisionData.size() / T;		
+		m_V_Frequency = VisionData.size() / T;
+	}
+	else
+	{
+		m_V_Frequency = 30;
 	}
 }
 
@@ -550,13 +579,14 @@ void CHybidTrack::UpdateInertialData(QUATERNION_t HipQ, Point3D_t HipP, QUATERNI
 		return;
 	}
 	// 第一次采集，记录系统时间
-	if (IsBothStart==1)
+	if (IsBothStart==1)  // 视觉刚刚发现同时采集后，第一次进入惯性回调
 	{
 		// 第一次 检测到惯性和视觉都开始采集
-		IsBothStart = 2;
+		IsBothStart = 2;	// 惯性也已经开始采集
 		// 清空以前的惯性数据
 		InertialData.clear();
 		SetM_InertialData_Empty();
+
 	}
 
 	CInertialData_t CInertialData_Cur(HipQ, HipP, HeadQ, HeadP);
@@ -580,7 +610,7 @@ void CHybidTrack::UpdateInertialData(QUATERNION_t HipQ, Point3D_t HipP, QUATERNI
 	else
 	{
 		int inertialTime = InertialData.size() / m_I_Frequency;
-		CVisionData_t& VisionData_t = VisionData.back();//  末尾 最新 的视觉数据
+		CVisionData_t VisionData_t = VisionData.back();//  末尾 最新 的视觉数据
 		int visualTime = VisionData_t.m_fLatency - m_fLatency_StartTwo;
 		int m_mappintVisual_k1 = VisionData.size() + (inertialTime - visualTime) * m_V_Frequency;
 
@@ -607,7 +637,9 @@ void CHybidTrack::UpdateInertialData(QUATERNION_t HipQ, Point3D_t HipP, QUATERNI
 		m_FaceDirection.Y = FaceDirection.y;
 		m_FaceDirection.Z = FaceDirection.z;
 	}	
-	Get_M_InertialData();
+
+//	if (IsDoCompensate)
+//		Get_M_InertialData();    // 内存访问有问题
 
 
 	if (m_OffLineRead)// 读离线文件模式
@@ -629,10 +661,6 @@ void CHybidTrack::UpdateInertialData(QUATERNION_t HipQ, Point3D_t HipP, QUATERNI
 	
 }
 
-void CHybidTrack::DoHipDispCompensate(  )
-{
-
-}
 
 
 CVisionData_t::CVisionData_t() :
@@ -643,7 +671,7 @@ m_fTimestamp(0),
 m_mappingInertial_k(0)
 {
 	m_OtherMarkersN = 0;
-	m_OtherMarkersP.resize(1);
+	m_OtherMarkersP.clear();
 	m_TrackedMarkerP = Point3D_t(0, 0, 0);
 }
 
@@ -736,7 +764,7 @@ void CHybidTrack::SetM_otherMakers_Empty()
 		M_otherMakers[k].time = rtNaN;
 		M_otherMakers[k].inertial_k = rtNaN;
 		M_otherMakers[k].MarkerSet = 16;
-
+		M_otherMakers[k].CalculatedTime = 0;
 		//  'head';
 		for (i = 0; i < 10; i++) {
 			M_otherMakers[k].ContinuesFlag[i] = rtNaN;

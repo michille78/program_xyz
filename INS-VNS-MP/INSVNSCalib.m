@@ -26,6 +26,11 @@ end
 Crw = dX_Inertial(1:2,:) / dX_Vision(1:2,:) ;
 Crw = [Crw [0;0]; [0 0 1]];
 
+Attitude = C2Attitude( Crw,'NED' ) ;
+if abs(Attitude.yaw) > 10*pi/180
+    Crw = eye(3);
+end
+
 if coder.target('MATLAB')
     Attitude = C2Attitude( Crw,'NED' ) ;
     fprintf( '视觉到惯性系的姿态： [ %0.2f  %0.2f  %0.2f ]° \n',Attitude.yaw*180/pi,Attitude.pitch*180/pi,Attitude.roll*180/pi );

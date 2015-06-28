@@ -13,7 +13,7 @@ function CalStruct = ReadCalData ( dataFolder,dataName )
 
 %  dataName = 'CalData_Avatar00';
 %  dataFolder = 'E:\data_xyz\Hybrid Motion Capture Data\5.28\5.28-head2';
-CalFilePath = [dataFolder,'\',dataName,'.calc'] ;
+CalFilePath = [dataFolder,'\',dataName,'.txt'] ;
 
 if ~exist([dataFolder,'\',dataName,'.mat'],'file')
 % if 1

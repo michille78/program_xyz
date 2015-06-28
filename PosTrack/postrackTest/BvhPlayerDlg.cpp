@@ -48,7 +48,7 @@ BOOL CBvhPlayerDlg::OnInitDialog()
 
 	PNSetSensorSuitType(SS_LegacySensors);
 
-	PNSetNodeCombinationMode(0, NC_FullBody);
+	PNSetSensorCombinationMode(0, SC_FullBody);
 
     // 设置一个带位移
     PNSetBvhDataFormat(TRUE, RO_YXZ);

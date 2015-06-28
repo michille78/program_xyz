@@ -2,7 +2,7 @@
  * File: _coder_GetINSCompensateFromVNS_api.c
  *
  * MATLAB Coder version            : 2.6
- * C/C++ source code generated on  : 18-Jun-2015 20:22:25
+ * C/C++ source code generated on  : 23-Jun-2015 17:08:58
  */
 
 /* Include files */
@@ -45,7 +45,7 @@ static struct2_T q_emlrt_marshallIn(const emlrtStack *sp, const mxArray
   *CalculateOrder, const char *identifier);
 static struct2_T r_emlrt_marshallIn(const emlrtStack *sp, const mxArray *u,
   const emlrtMsgIdentifier *parentId);
-static const mxArray *emlrt_marshallOut(const double u[34560]);
+static const mxArray *emlrt_marshallOut(const double u[3]);
 static const mxArray *b_emlrt_marshallOut(const struct1_T u[3600]);
 static void s_emlrt_marshallIn(const emlrtStack *sp, const mxArray *src, const
   emlrtMsgIdentifier *msgId, double ret[11520]);
@@ -118,14 +118,13 @@ void GetINSCompensateFromVNS_atexit(void)
 
 /*
  * Arguments    : const mxArray * const prhs[4]
- *                const mxArray *plhs[3]
+ *                const mxArray *plhs[2]
  * Return Type  : void
  */
 void GetINSCompensateFromVNS_api(const mxArray * const prhs[4], const mxArray
-  *plhs[3])
+  *plhs[2])
 {
-  double (*InertialPositionCompensate)[34560];
-  double (*HipDisplacementNew)[34560];
+  double (*AccumulateCompensate_k_Out)[3];
   static struct0_T InertialData;
   static struct1_T otherMakers[3600];
   double compensateRate;
@@ -133,8 +132,7 @@ void GetINSCompensateFromVNS_api(const mxArray * const prhs[4], const mxArray
   emlrtStack st = { NULL, NULL, NULL };
 
   st.tls = emlrtRootTLSGlobal;
-  InertialPositionCompensate = (double (*)[34560])mxMalloc(sizeof(double [34560]));
-  HipDisplacementNew = (double (*)[34560])mxMalloc(sizeof(double [34560]));
+  AccumulateCompensate_k_Out = (double (*)[3])mxMalloc(sizeof(double [3]));
 
   /* Marshall function inputs */
   emlrt_marshallIn(&st, emlrtAliasP((const mxArray *)prhs[0]), "InertialData",
@@ -148,12 +146,11 @@ void GetINSCompensateFromVNS_api(const mxArray * const prhs[4], const mxArray
 
   /* Invoke the target function */
   GetINSCompensateFromVNS(InertialData, otherMakers, compensateRate,
-    CalculateOrder, *InertialPositionCompensate, *HipDisplacementNew);
+    CalculateOrder, *AccumulateCompensate_k_Out);
 
   /* Marshall function outputs */
-  plhs[0] = emlrt_marshallOut(*InertialPositionCompensate);
-  plhs[1] = emlrt_marshallOut(*HipDisplacementNew);
-  plhs[2] = b_emlrt_marshallOut(otherMakers);
+  plhs[0] = emlrt_marshallOut(*AccumulateCompensate_k_Out);
+  plhs[1] = b_emlrt_marshallOut(otherMakers);
 }
 
 /*
@@ -529,21 +526,21 @@ static struct2_T r_emlrt_marshallIn(const emlrtStack *sp, const mxArray *u,
 }
 
 /*
- * Arguments    : const double u[34560]
+ * Arguments    : const double u[3]
  * Return Type  : const mxArray *
  */
-static const mxArray *emlrt_marshallOut(const double u[34560])
+static const mxArray *emlrt_marshallOut(const double u[3])
 {
   const mxArray *y;
-  static const int iv1[2] = { 0, 0 };
+  static const int iv1[1] = { 0 };
 
   const mxArray *m0;
-  static const int iv2[2] = { 3, 11520 };
+  static const int iv2[1] = { 3 };
 
   y = NULL;
-  m0 = emlrtCreateNumericArray(2, iv1, mxDOUBLE_CLASS, mxREAL);
+  m0 = emlrtCreateNumericArray(1, iv1, mxDOUBLE_CLASS, mxREAL);
   mxSetData((mxArray *)m0, (void *)u);
-  emlrtSetDimensions((mxArray *)m0, *(int (*)[2])&iv2[0], 2);
+  emlrtSetDimensions((mxArray *)m0, *(int (*)[1])&iv2[0], 1);
   emlrtAssign(&y, m0);
   return y;
 }

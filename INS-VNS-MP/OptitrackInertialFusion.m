@@ -65,7 +65,7 @@ InertialData.BodyDirection = InertialData1.BodyDirection;
 % InertialData = rmfield(InertialData,'DataStyle');
 
 [ otherMakers,InertialData ] = CalInertialVisualSyc( otherMakers,InertialData ) ;
-
+inertialN = size(InertialData.HipPosition,2);
 visualN = length(otherMakers);
 for k=1:visualN
     otherMakers(k).frequency = otherMakers(1).frequency;
@@ -99,10 +99,11 @@ for k = 1:visualN
 end
     
 wh = waitbar(0,'GetINSCompensateFromVNS');
-step = fix(visualN/visualN);
+step = 1;
 CalEndINSave = 0;
 CalStartVNSave = 0;
 for k=2:step:visualN
+    
     CalStartVN = CalStartVNSave+1;
     CalEndVN = k ;    
     if CalEndVN > visualN-step
@@ -118,14 +119,16 @@ for k=2:step:visualN
     CalculateOrder.CalEndVN = CalEndVN;
     CalculateOrder.CalStartIN = CalStartIN;
     CalculateOrder.CalEndIN = CalEndIN;
-    %% CalculateOrder 的设置规则
-    %   CalStartVN 和 CalStartIN 从1开始，且与上一时刻保持连续： CalStartIN = CalEndINSave+1; CalStartVN = CalStartVNSave+1;
-    %   CalEndIN 大于或等于 CalStartVN ，  CalEndVN 大于或等于CalStartVN
-
-%        dbstop in GetINSCompensateFromVNS
-     [ InertialPositionCompensate,HipDisplacementNew,otherMakersNew ] = GetINSCompensateFromVNS...
-    ( InertialData,otherMakersNew,compensateRate,CalculateOrder ) ;
     
+    if CalculateOrder.CalEndIN <= inertialN
+        %% CalculateOrder 的设置规则
+        %   CalStartVN 和 CalStartIN 从1开始，且与上一时刻保持连续： CalStartIN = CalEndINSave+1; CalStartVN = CalStartVNSave+1;
+        %   CalEndIN 大于或等于 CalStartVN ，  CalEndVN 大于或等于CalStartVN
+
+%            dbstop in GetINSCompensateFromVNS
+         [ AccumulateCompensate_k,otherMakersNew ] = GetINSCompensateFromVNS...
+        ( InertialData,otherMakersNew,compensateRate,CalculateOrder ) ;
+    end
     if mod(k,fix(visualN/10))==0
         waitbar(k/visualN);
     end
@@ -139,15 +142,8 @@ end
 
 
 %% 
-figure('name','ContinuesFlag')
-plot(ContinuesFlag)
 
-figure('name','InertialPositionCompensate')
-subplot(2,1,1)
-plot(InertialPositionCompensate(1,:))
-subplot(2,1,2)
-plot(InertialPositionCompensate(2,:))
-
+return;
 % [ InertialPositionCompensate,HipDisplacementNew ] = GetINSCompensateFromVNS_mex...
 %     ( InertialData,otherMakersNew,compensateRate,CalStartVN,CalEndVN ) ;
 
