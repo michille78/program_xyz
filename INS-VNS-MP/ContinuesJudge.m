@@ -5,7 +5,7 @@
 % ContinuesFlag = 0   不连续
 %               =1    连续，且是与跟踪成功马克点连续
 %               =2   连续，和跟踪失败的点连续
-function [ otherMakers_k,dPi_ConJudge ] = ContinuesJudge( otherMakers_k,otherMakers_k_last,trackedMakerPosition,...
+function [ otherMakers_k,dPi_ConJudgeOut ] = ContinuesJudge( otherMakers_k,otherMakers_k_last,trackedMakerPosition,...
     k_vision,makerTrackThreshold )
 
 
@@ -22,7 +22,8 @@ otherMakers_k.ContinuesLastPosition = NaN(3,MaxOtherMarkerBufN) ;
 otherMakers_k.ContinuesLastTime = NaN(1,MaxOtherMarkerBufN) ;
 otherMakersPosition_k = otherMakers_k.Position ;  
 
-dPi_ConJudge=nan;
+dPi_ConJudgeOut=nan;
+dPi_ConJudge = nan(1,M);
 
 if k_vision>1 
     trackedMakerPosition_kLast = trackedMakerPosition(:,k_vision-1) ;
@@ -63,7 +64,7 @@ if k_vision>1
                 otherMakers_k.ContinuesLastK(i) = NaN ;
                 otherMakers_k.ContinuesLasti(i) = NaN;  % 记录紧邻的上一时刻马克点序号
             end
-            dPi_ConJudge=nan;
+            dPi_ConJudgeOut=nan;
             return;
         end
         % 一共有 M*M_last 种组合
@@ -75,8 +76,8 @@ if k_vision>1
                 dPiNorm(j) = normest(dPi(:,j));
             end
             
-            [dPi_ConJudge,min_last_i] = min(dPiNorm);     % min_last_i 为当前点对应连续的上一时刻点的序号
-            if normest(dPi_ConJudge) < makerTrackThreshold.MaxContinuesDisplacement
+            [dPi_ConJudge(i),min_last_i] = min(dPiNorm);     % min_last_i 为当前点对应连续的上一时刻点的序号
+            if normest(dPi_ConJudge(i)) < makerTrackThreshold.MaxContinuesDisplacement
                 %  otherMakers_k.Position( :,i ) 与 otherMakers_k_last.Position(:,min_last_i) 连续
                 % 找到一个连续的点，记录上一点
                 if ~isnan(last_Tracked_i) && last_Tracked_i==min_last_i
@@ -114,9 +115,34 @@ if k_vision>1
                 otherMakers_k.ContinuesLastK(i) = NaN ;
                 otherMakers_k.ContinuesLasti(i) = NaN;  % 记录紧邻的上一时刻马克点序号
             end
-                        
+            % 如果之前已经有点对应着同一点，则保留最近的点的判断，其他给 NaN
+            for j=1:i-1
+               if  otherMakers_k.ContinuesLasti(j) == otherMakers_k.ContinuesLasti(i)
+                   if dPi_ConJudge(i) < dPi_ConJudge(j)
+                       % 当前的点距离上时刻该点更近
+                       otherMakers_k.ContinuesFlag(j) = 0;
+                       otherMakers_k.ContinuesLastPosition(:,j) = NaN ;
+                       otherMakers_k.ContinuesLastTime(j) = NaN ;
+                       otherMakers_k.ContinuesLastK(j) = NaN ;
+                       otherMakers_k.ContinuesLasti(j) = NaN;
+                   else
+                       otherMakers_k.ContinuesFlag(i) = 0;
+                       otherMakers_k.ContinuesLastPosition(:,i) = NaN ;
+                       otherMakers_k.ContinuesLastTime(i) = NaN ;
+                       otherMakers_k.ContinuesLastK(i) = NaN ;
+                       otherMakers_k.ContinuesLasti(i) = NaN;
+                   end
+               end
+            end
         end
-        
+        %%  记录 dPi_ConJudge 的最小值
+        if M>0
+            if dPi_ConJudge(i)<dPi_ConJudgeOut || isnan(dPi_ConJudgeOut)
+                dPi_ConJudgeOut = dPi_ConJudge(i);
+            end
+        else
+            dPi_ConJudgeOut = NaN;
+        end
 %     end
 else
     dPi_ConJudge=nan;

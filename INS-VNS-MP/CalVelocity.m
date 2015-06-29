@@ -7,6 +7,8 @@
 
 % fre： 频率
 % dT_CalV： 速度计算的步长时间
+% MinXYVNorm_CalAngle： 计算xy速度方向要求的最小xy速度模值
+% CalVFlag： 速度计算方法标志
 
 %% Velocity_k
 % Velocity_k(1:3,1) : xyz三维的速度
@@ -19,9 +21,10 @@ if ~exist('CalVFlag','var')
    CalVFlag = 1; 
 end
 % 速度计算的步长个数
+
+dT_CalV = min(dT_CalV,0.2);
 dN_CalV = fix(dT_CalV*fre) ;
 dN_CalV = max(dN_CalV,2);
-dN_CalV = min(dN_CalV,7);
 
 angleXY = NaN ;
 Velocity_k = NaN(5,1) ;
@@ -38,10 +41,12 @@ end
 %% xyz三维的速度
 switch CalVFlag
     case 1
+        %% 直接采用端区间端点起斜率
         Position1 = Position( :,k_calV+dN_CalV ) ;
         Position2 = Position( :,k_calV-dN_CalV ) ;
         
     case 2
+        %% 采用 [k_calV-dN_CalV:k_calV-1 ]和[k_calV+1:k_calV+dN_CalV]的均值求斜率
         Position1_A = Position( :,k_calV+1:k_calV+dN_CalV ) ;
         Position2_A = Position( :,k_calV-dN_CalV:k_calV-1 ) ;
         Position1 = mean(Position1_A,2);
