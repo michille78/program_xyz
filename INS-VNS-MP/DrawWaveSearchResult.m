@@ -1,13 +1,22 @@
 %% xyz 2015.6.28
-%% 绘制 波形分析结果
+%% 绘制 波形分析结果 （一个点）
 % k_End ： data 最后一位数在原始数组中的序号。  由于视觉的线段不是完整的，通过这个统一时间
+% data [3*N]
 function DrawWaveSearchResult( data,fre,dataV,data_WaveFlag,data_Acc_waveFront,data_Acc_waveBack,dataName,k_End )
 global dataFolder
 dataA_V_SubRate = 1/5;  % 成比例减小 HeadA_V （绘图时）
 
 N = size(data,2);
 time = ((1:N)+k_End-N) /fre;
+
+dataWave = NaN(3,N);
+for k=1:N
+    for i=1:3
+        dataWave(i,k) = data_WaveFlag(i,k)/data_WaveFlag(i,k)*data(i,k);
+    end
+end
 %% data 
+ftime = 0.06;
 figure('name',[dataName,' - WaveFlag'])
 
 subplot( 3,1,1 );
@@ -15,21 +24,39 @@ plot(time,data(1,:))
 title(get(gcf,'name'))
 hold on
 plot( time,dataV(1,:)*dataA_V_SubRate,'g' )
-plot( time,data_WaveFlag(1,:),'*r' )
+plot( time,dataWave(1,:),'*r' )
+i = 1;
+for k=1:N
+   if ~isnan(data_WaveFlag(i,k)) 
+       text( time(k)-ftime,dataWave(i,k),sprintf('%0.2f',data_WaveFlag(i,k)) );
+   end
+end
 ylabel('x')
 
 subplot( 3,1,2 );
 plot(time,data(2,:))
 hold on
 plot( time,dataV(2,:)*dataA_V_SubRate,'g' )
-plot( time,data_WaveFlag(2,:),'*r' )
+plot( time,dataWave(2,:),'*r' )
+i = 2;
+for k=1:N
+   if ~isnan(data_WaveFlag(i,k)) 
+       text( time(k)-ftime,dataWave(i,k),sprintf('%0.2f',data_WaveFlag(i,k)) );
+   end
+end
 ylabel('y')
 
 subplot( 3,1,3 );
 plot(time,data(3,:))
 hold on
 plot( time,dataV(3,:)*dataA_V_SubRate,'g' )
-plot( time,data_WaveFlag(3,:),'*r' )
+plot( time,dataWave(3,:),'*r' )
+i = 3;
+for k=1:N
+   if ~isnan(data_WaveFlag(i,k)) 
+       text( time(k)-ftime,dataWave(i,k),sprintf('%0.2f',data_WaveFlag(i,k)) );
+   end
+end
 ylabel('z')
 
 saveas(gcf,[dataFolder,'\',get(gcf,'name'),'.fig'])

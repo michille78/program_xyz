@@ -15,6 +15,7 @@
 % otherMakers(k).ContinuesLastPosition = NaN(3,M)  ;
 % otherMakers(k).ContinuesLastTime = NaN[1*M] ; 
 % otherMakers(k).ContinuesLastK = NaN[1*M];
+% otherMakers(k).InitialJointK = NaN(1,MaxotherMakersN_k);  % 对应惯性节点序号
 
 %% InertialData
 % InertialData.frequency (k)

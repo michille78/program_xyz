@@ -30,7 +30,7 @@ INSVNSCalibSet.MaxVZ_Calib = 0.1 ;     % m/s Z方向速度最大绝对值
 INSVNSCalibSet.MinVXY_Calib = 0.2;   	% m/s XY 平面速度模最小绝对值
 INSVNSCalibSet.angleUniformityErr = 10*pi/180 ; % ° 位移矢量方向均匀性误差
 % 速度计算
-INSVNSCalibSet.dT_CalV_Calib = 0.15 ; % 计算速度时间步长（标定位移数据选择）  0.1 
+INSVNSCalibSet.dT_CalV_Calib = 0.11 ; % 计算速度时间步长（标定位移数据选择）  0.1 
 INSVNSCalibSet.MinXYVNorm_CalAngle = 0.1 ;  %  m/s xy速度模大于这个值才计算速度的反向
 
 makerTrackThreshold.INSMarkH0 = NaN ;

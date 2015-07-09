@@ -32,7 +32,8 @@ void CALLBACK recievePosTrackor(void * pOwner, float* optiTracData)
 // 光学数据
 void CALLBACK recieveOtherMark(void * pOwner, float* otherMarkData, int nOtherMarkers, float fLatency, unsigned int Timecode, unsigned int TimecodeSubframe, double fTimestamp)
 {
-
+	SYSTEMTIME  time;
+	
 	
 	if (pOwner == NULL) return;
 	CControlDlg* dlg = (CControlDlg*)pOwner;
@@ -46,9 +47,16 @@ void CALLBACK recieveOtherMark(void * pOwner, float* otherMarkData, int nOtherMa
 
 	// 记录 OtherMarks
 
-	if (dlg->fpOpt && dlg->HybidTrack.IsBothStart >= 1)
+//	if (dlg->fpOpt && dlg->HybidTrack.IsBothStart >= 1)
+	if (dlg->fpOpt)
 	{
-		
+		dlg->framesN += 1;
+		if (dlg->framesN == 1)
+		{
+			GetLocalTime(&time);
+			fprintf(dlg->fpOpt, "%02d : %02d : %02d : %02d \n", time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+		}
+
 		fprintf(dlg->fpOpt, "%0.7f    %d", fLatency, nOtherMarkers);
 		if (nOtherMarkers)
 		{
@@ -384,7 +392,7 @@ BOOL CControlDlg::OnInitDialog()
     }
 
 	PNSetRunningMode(RM_Realtime);
-
+	framesN = 0;
 
     // 设置BoneQ的中间数据格式
 	PNSetCalculatedQuaternionDataType(qType);
@@ -694,7 +702,7 @@ void CControlDlg::OnBnClickedBtnWritefile()
             fpPos = NULL;
         }
 
-        fpPos = fopen("D:\\pos.txt", "w+");
+        fpPos = fopen("E:\\pos.txt", "w+");
 
         if (fpPos == NULL)
         {
@@ -712,7 +720,7 @@ void CControlDlg::OnBnClickedBtnWritefile()
         fclose(fpPos);
         fpPos =NULL;
 
-        m_Msg = "pos记录文件已经关闭 位置：D:\\pos.txt\r\n  posCali数据保存在D：\\posCali.txt\r\n";
+        m_Msg = "pos记录文件已经关闭 位置：E:\\pos.txt\r\n  posCali数据保存在E：\\posCali.txt\r\n";
         m_wndMessage.SetWindowText(m_Msg);
 
 		SetDlgItemText(IDC_BTN_WRITEFILE, L"光学采集");
@@ -749,13 +757,13 @@ void CControlDlg::OnBnClickedBtnWriterawfile(  )
 {
 	
 
-	if (!HybidTrack.IsBothStart)
+/*	if (!HybidTrack.IsBothStart)
 	{
 		m_Msg = _T("惯性和视觉没有都开启！");
 		m_wndMessage.SetWindowText(m_Msg);
 		return;
 	}
-
+	*/
 	isWriteRawFile = (isWriteRawFile == false) ? true : false;
 	if (isWriteRawFile)
 	{
@@ -800,8 +808,8 @@ void CControlDlg::OnBnClickedBtnWriterawfile(  )
 			fclose(fpOpt);
 			fpOpt = NULL;
 		}
-
-		fpOpt = fopen("D:\\Opt.txt", "w+");
+		framesN = 0;
+		fpOpt = fopen("E:\\Opt.txt", "w+");
 
 		if (fpOpt == NULL)
 		{
@@ -824,7 +832,7 @@ void CControlDlg::OnBnClickedBtnWriterawfile(  )
 		fclose(fpOpt);
 		fpOpt = NULL;
 
-		m_Msg = "记录文件已经保存\r\n 位置：D盘 文件名： Opt.txt";
+		m_Msg = "记录文件已经保存\r\n 位置：E盘 文件名： Opt.txt";
 		m_wndMessage.SetWindowText(m_Msg);
 		wnd_qType.EnableWindow(TRUE);
 		SetDlgItemText(IDC_BTN_WRITERAWFILE, L"开始采集原始数据");

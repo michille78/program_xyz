@@ -50,6 +50,7 @@ public:
     FILE* fpPos;
 	FILE* fpInertia;
 	FILE* fpOpt;
+	int framesN;
    // FILE* fpCali;
     char tmpstr[200];
     CStatic m_wndProgress;

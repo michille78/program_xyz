@@ -16,7 +16,7 @@ while ~feof(fid)
     line_n = line_n+1 ;  
     if ~isempty(tline)
         lineData = textscan( tline,'%s' ) ;     
-        if ~isempty(str2double(lineData{1}{1}) )  && ~isnan(str2double(lineData{1}{1}) )
+        if length(lineData{1}) == 11 && ~isempty(str2double(lineData{1}{1}) )  && ~isnan(str2double(lineData{1}{1}) )
             k = k+1;
             time = str2double(lineData{1}{1});
             otherMakersN = str2double(lineData{1}{2});

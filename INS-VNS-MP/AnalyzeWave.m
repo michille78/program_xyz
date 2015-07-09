@@ -19,13 +19,13 @@
 function [ data_WaveFlag,dataV,dataA_waveFront,dataA_waveBack,k_waves_OKLast ] = AnalyzeWave...
     ( data,k_data,fre,dataV,data_WaveFlag,k_waves_OKLast,dataA_waveFront,dataA_waveBack,waveThreshold )
 
+IsRecordWaveMiddle = 0;  % 是否记录波腰
 %% 预设输出
+
 
 %% 读参数设置
 adjacentT = waveThreshold.adjacentT;
 adjacentN = fix(adjacentT*fre);
-waveThreshold_Min_dataA = waveThreshold.waveThreshold_Min_dataA;
-MinWaveData = waveThreshold.MinWaveData;
 dT_CalV = waveThreshold.dT_CalV;
 MinXYVNorm_CalAngle = waveThreshold.MinXYVNorm_CalAngle;
  %% 计算速度
@@ -34,32 +34,32 @@ MinXYVNorm_CalAngle = waveThreshold.MinXYVNorm_CalAngle;
         dataV(:,k_calV) = Velocity_k ;
    end
    %% 判断 第 k_wave_i = k_calV - adjacentN; 个点的 波峰波谷特征
-   [ WaveFlag_k,k_waves,data_Acc_k_wave ] = FindCrestThrough( data,fre,dataV,k_calV,adjacentN,...
-       waveThreshold_Min_dataA,MinWaveData );
+      
+   [ WaveFlag_k,k_waves,data_Acc_k_wave ] = FindCrestThrough( data,fre,dataV,k_calV,...
+       waveThreshold,k_data );
    % 第 k_waves(i) 个点判断成功后，后续的 adjacentN 个点就不再判断（不然可能会出现误判反而覆盖的现象）
-   for i=1:3       
-       if k_waves(i)>0 && k_waves(i)~=k_waves_OKLast(i)   % 不是之前判断OK的点
+   for i=1:3   
+       if k_waves(i)>0 && k_waves(i) - k_waves_OKLast(i) > adjacentN/2    % 不是之前判断OK的点
            data_WaveFlag(i,k_waves(i)) = WaveFlag_k(i);
            dataA_waveFront(i,k_waves(i)) = data_Acc_k_wave(i,1);
            dataA_waveBack(i,k_waves(i)) = data_Acc_k_wave(i,2);
            %% 寻找波峰波谷中间点
-           if ~isnan(WaveFlag_k(i)) && k_waves_OKLast(i)>0 
-               % 波峰波谷相邻
-               k1 = k_waves_OKLast(i);
-               k2 = k_waves(i);
-              if  size(data,2)>=k1 && ~isnan(data(i,k1)) && sign(data(i,k1)) * sign( data(i,k2) ) == -1
-                    % 在 k_waves_OKLast(i) 到 k_waves(i) 搜索中间点                                   
-                    dataV_Search = dataV(i,k1+1:k2-1);
-                    % 要求 dataV_Search 全大于0  或全小于0
-                    if abs(sum(sign(dataV_Search))) >= k2-k1-2+1-2
-                        dataSearch = abs(data(i,k1:k2));
-                        [min_dataAbs,min_k] = min(dataSearch,[],2);
-                        if i==3
-                           disp('test') 
+           if ~isnan(WaveFlag_k(i)) && IsRecordWaveMiddle == 1  % 是波峰/波谷
+               if k_waves_OKLast(i)>0 
+                   % 波峰波谷相邻
+                   k1 = k_waves_OKLast(i);
+                   k2 = k_waves(i);
+                  if  size(data,2)>=k1 && ~isnan(data(i,k1)) && sign(data(i,k1)) * sign( data(i,k2) ) == -1
+                        % 在 k_waves_OKLast(i) 到 k_waves(i) 搜索中间点                                   
+                        dataV_Search = dataV(i,k1+1:k2-1);
+                        % 要求 dataV_Search 全大于0  或全小于0
+                        if abs(sum(sign(dataV_Search))) >= k2-k1-2+1-2
+                            dataSearch = abs(data(i,k1:k2));
+                            [min_dataAbs,min_k] = min(dataSearch,[],2);
+                            data_WaveFlag(i,min_k+k1-1) = 0;   %  中间点 搜索OK
                         end
-                        data_WaveFlag(i,min_k+k1-1) = 0;   %  中间点 搜索OK
-                    end
-              end
+                  end
+               end
            end
        end
        
@@ -69,3 +69,5 @@ MinXYVNorm_CalAngle = waveThreshold.MinXYVNorm_CalAngle;
            k_waves_OKLast(i) = k_waves(i);
        end
    end
+   
+   

@@ -15,11 +15,13 @@ function [ otherMakers_k,dPi_ConJudgeOut ] = ContinuesJudge( otherMakers_k,other
 
 % global inertialFre visionFre  moveDistance
 % 记录每个马克点的连续特性
-MaxOtherMarkerBufN = size(otherMakers_k.ContinuesFlag,2);
+% MaxOtherMarkerBufN = size(otherMakers_k.ContinuesFlag,2);
+MaxOtherMarkerBufN = 20;
 M = otherMakers_k.otherMakersN ;
 otherMakers_k.ContinuesFlag = zeros(1,MaxOtherMarkerBufN) ; % 不连续
 otherMakers_k.ContinuesLastPosition = NaN(3,MaxOtherMarkerBufN) ;
 otherMakers_k.ContinuesLastTime = NaN(1,MaxOtherMarkerBufN) ;
+otherMakers_k.InitialJointK = NaN(1,MaxOtherMarkerBufN) ;
 otherMakersPosition_k = otherMakers_k.Position ;  
 
 dPi_ConJudgeOut=nan;
@@ -134,6 +136,7 @@ if k_vision>1
                    end
                end
             end
+                       
         end
         %%  记录 dPi_ConJudge 的最小值
         if M>0
@@ -146,6 +149,14 @@ if k_vision>1
 %     end
 else
     dPi_ConJudge=nan;
+end
+
+%% 更新 otherMakers_k.InitialJointK
+for i=1:M
+    ContinuesLasti_i = otherMakers_k.ContinuesLasti(i) ;
+    if ~isnan(ContinuesLasti_i) && otherMakers_k.ContinuesFlag(i) > 0
+        otherMakers_k.InitialJointK(i) = otherMakers_k_last.InitialJointK(ContinuesLasti_i);
+    end
 end
 
 % 根据 trackedMakerPosition_k 计算跟踪成功的马克点对应的序号（很不好的办法，但由于不想破坏之前的数据结构，暂时这么做）

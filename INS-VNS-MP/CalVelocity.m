@@ -15,16 +15,19 @@
 % Velocity_k(4,1) : xy平面速度的模
 % Velocity_k(5,1) : xy平面速度与正前方之间的夹角（模大于0.2m/s时才计算）
 
+%% DataStore 数据存储格式
+% DataStore.IsLoopStore =0/1  是否循环存储
+% DataStore.BN   BufferN    缓存大小
+% DataStore.EN   EndN       结束序号
+% DataStore.SN   StartN     起始序号
 
 function [ Velocity_k,k_calV ] = CalVelocity( Position,data_k,fre,dT_CalV,MinXYVNorm_CalAngle,CalVFlag )
-if ~exist('CalVFlag','var')
-   CalVFlag = 1; 
-end
+
 % 速度计算的步长个数
 
 dT_CalV = min(dT_CalV,0.2);
 dN_CalV = fix(dT_CalV*fre) ;
-dN_CalV = max(dN_CalV,2);
+dN_CalV = max(dN_CalV,1);
 
 angleXY = NaN ;
 Velocity_k = NaN(5,1) ;
@@ -33,6 +36,7 @@ Velocity_k = NaN(5,1) ;
 % 计算第 k_calV 个数的速度：用 [ k_calV-dN_CalV, k_calV+dN_CalV  ] 的一段数据
 % 得到 data_k 数据后，计算第 data_k-dN_CalV 个数的速度
 k_calV = data_k-dN_CalV ;
+
 if k_calV-dN_CalV<1 || k_calV+dN_CalV>length(Position)    
     return; 
 end
@@ -61,7 +65,7 @@ Velocity_k = ( Position1 - Position2 ) / (dT_CalV*2) ;
         
 
 % 第四行存储xy平面速度的模
-trackedMarkerVelocity_xyNorm = normest(Velocity_k(1:2)) ; 
+trackedMarkerVelocity_xyNorm = normest(Velocity_k(1:3)) ; 
 
 % 第五行存储xy平面速度与正前方之间的夹角（模大于0.2m/s时才计算）
 if trackedMarkerVelocity_xyNorm >  MinXYVNorm_CalAngle 
