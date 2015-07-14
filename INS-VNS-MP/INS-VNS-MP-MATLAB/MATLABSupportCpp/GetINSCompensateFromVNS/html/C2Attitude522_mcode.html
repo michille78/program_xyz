@@ -1,0 +1,12 @@
+<!-- saved from url=(0014)about:internet -->
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="139,1" id="srcline1"> 1</a></span><span class="line"><span class="comment">%% xyz 2015 儿童节</span></span></span>
+<span class="srcline"><span class="lineno"><a href="139,2" id="srcline2"> 2</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="139,3" id="srcline3"> 3</a></span><span class="line"><span class="comment">%% 方向余弦矩阵  -&gt; 姿态角</span></span></span>
+<span class="srcline"><span class="lineno"><a href="139,4" id="srcline4"> 4</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="139,5" id="srcline5"> 5</a></span><span class="line"><span class="keyword">function</span> <span class="var type1" id="S2T65U3">Attitude</span> = C2Attitude( <span class="var type1" id="S3T24U6">Cwb</span>,<span class="mxinfo" id="T32:U3"><span class="var type2" id="S4T32V3U7">NavigationFrame</span></span> )</span></span>
+<span class="srcline"><span class="lineno"><a href="139,6" id="srcline6"> 6</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="139,7" id="srcline7"> 7</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="139,8" id="srcline8"> 8</a></span><span class="line"><span class="mxinfo" id="T63:U5"><span class="var type1" id="S5T63U10">Qwb</span> = <span class="mxinfo" id="T63:U7"><span class="fcn" id="F494N6:B12">C2Q</span>(<span class="var type1" id="S3T24U13">Cwb</span>)</span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="139,9" id="srcline9"> 9</a></span><span class="line"><span class="mxinfo" id="T65:U9"><span class="var type1" id="S2T65U16">Attitude</span> = <span class="mxinfo" id="T65:U11"><span class="fcn" id="F521N30:B18">Q2Attitude</span>( <span class="var type1" id="S5T63U19">Qwb</span>,<span class="var type1" id="S4T32U20">NavigationFrame</span> )</span></span> ;</span></span>
+</pre>

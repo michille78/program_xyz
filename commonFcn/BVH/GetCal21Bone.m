@@ -27,11 +27,6 @@ JointName_Cal = {
     'Spine1'
     'Spine'
     
-    
-    
-    
-    
-    
 %     'RightHandThumb1'
 %     'RightHandThumb2'
 %     'RightHandThumb3'
