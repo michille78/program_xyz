@@ -1,29 +1,23 @@
-﻿生成启动时间为 2015/7/14 22:10:12。
+﻿生成启动时间为 2015/7/15 21:51:27。
      1>项目“E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\MarkIdentifyByAcc\MarkIdentifyByAcc.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\eigen /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MarkIdentifyByAcc.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MarkIdentifyByAcc.cpp
-         MarkIdentifyByAcc.cpp
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\insdata.h(4): warning C4068: 未知的杂注
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\insdata_hybid.h(2): warning C4068: 未知的杂注
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\wavethresholdps.h(38): warning C4305: “=”: 从“double”到“float”截断
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\wavethresholdps.h(40): warning C4305: “=”: 从“double”到“float”截断
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\wavethresholdps.h(41): warning C4305: “=”: 从“double”到“float”截断
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\wavethresholdps.h(47): warning C4305: “=”: 从“double”到“float”截断
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\wavethresholdps.h(49): warning C4305: “=”: 从“double”到“float”截断
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\wavethresholdps.h(50): warning C4305: “=”: 从“double”到“float”截断
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\markidentifybyacc.cpp(56): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\markidentifybyacc.cpp(56): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\eigen /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MarkIdentifyByAcc.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt DataAnalyze.cpp
+         DataAnalyze.cpp
+     1>e:\document and program\program_xyz\ins-vns-mp\markidentifybyacc\markidentifybyacc\dataanalyze.cpp(25): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
        Link:
-         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\Debug\MarkIdentifyByAcc.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\Debug\MarkIdentifyByAcc.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\Debug\MarkIdentifyByAcc.lib" /MACHINE:X86 Debug\INSData.obj
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\Debug\MarkIdentifyByAcc.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\Debug\MarkIdentifyByAcc.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\Debug\MarkIdentifyByAcc.lib" /MACHINE:X86 Debug\DataAnalyze.obj
+         Debug\INSData.obj
          Debug\INSData_Hybid.obj
          Debug\MarkerTrackPS.obj
          Debug\Marker_t.obj
          Debug\MarkIdentifyByAcc.obj
          Debug\stdafx.obj
+         Debug\VelocityCalPS.obj
          Debug\VNSData.obj
+         Debug\WaveThresholdPS.obj
          MarkIdentifyByAcc.vcxproj -> E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\Debug\MarkIdentifyByAcc.exe
      1>已完成生成项目“E:\document and program\program_xyz\INS-VNS-MP\MarkIdentifyByAcc\MarkIdentifyByAcc\MarkIdentifyByAcc.vcxproj”(Build 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:00.96
+已用时间 00:00:01.06

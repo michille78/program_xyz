@@ -48,6 +48,12 @@
     <ClInclude Include="WaveThresholdPS.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="DataAnalyze.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VelocityCalPS.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -69,6 +75,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MarkerTrackPS.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DataAnalyze.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WaveThresholdPS.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VelocityCalPS.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -8,7 +8,7 @@ m_MarkerN(MarkerN),
 m_time(NAN),
 m_MappingInertial_t(NAN)
 {
-	if (m_MarkerN<1 || m_MarkerN>10000)
+	if (m_MarkerN<0 || m_MarkerN>10000)
 	{
 		printf("m_MarkerN 出错 (in CMarker_t) \n");
 		return;
@@ -68,7 +68,7 @@ void CMarker_t::SetUnContinues(  )
 	for (int m = 0; m < m_MarkerN; m++)
 	{
 		m_ContinuesLasti(m) = NAN;
-		m_ContinuesNum(m) = 0;	// 不连续
+		m_ContinuesNum(m) = 1;	// 不连续
 	}
 }
 

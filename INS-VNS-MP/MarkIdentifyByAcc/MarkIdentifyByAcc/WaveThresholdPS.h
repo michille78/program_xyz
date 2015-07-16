@@ -3,12 +3,19 @@
 
 #pragma once
 
+enum DataType 
+{
+	DT_INS,
+	DT_VNS
+};
+
 /*波形分析参数*/
 class CWaveThresholdPS
 {
 public:
+
 	CWaveThresholdPS();
-	CWaveThresholdPS(char DataFlag);
+	void SetData(DataType DataFlag);
 	~CWaveThresholdPS();
 
 	// 波峰波谷判断延迟时间（决定速度斜率计算区间，取越大，速度斜率的额平滑程度越大，波出现的阈值也越小）
@@ -23,40 +30,8 @@ public:
 	float m_MinXYVNorm_CalAngle;
 	// 100% 波强度时的 data 范围
 	float m_FullWaveDataScope;
-
+	DataType dataFlag;
 private:
 
 };
 
-CWaveThresholdPS::CWaveThresholdPS()
-{}
-CWaveThresholdPS::CWaveThresholdPS(char DataFlag)
-{
-	switch (DataFlag)
-	{
-	case 'I':
-		m_adjacentT = 0.15;
-		m_waveThreshold_Min_dataA = 6;
-		m_MinWaveData = 0.1;
-		m_dT_CalV = 0.1;
-		m_MinXYVNorm_CalAngle = 0.5;
-		m_FullWaveDataScope = 1;
-		break;
-
-	case 'V':
-		m_adjacentT = 0.15;
-		m_waveThreshold_Min_dataA = 15;
-		m_MinWaveData = 0.4;
-		m_dT_CalV = 0.1;
-		m_MinXYVNorm_CalAngle = 2;
-		m_FullWaveDataScope = 5;
-		break;
-
-	default:
-		break;
-	}
-}
-
-CWaveThresholdPS::~CWaveThresholdPS()
-{
-}

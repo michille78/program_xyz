@@ -24,8 +24,10 @@ public:
 	Vector3d m_MappingInertial_i;// 马克点识别结果：对应的惯性节点序号
 
 	// 连续性信息
-	VectorXi m_ContinuesNum;	// 每个点对应的连续曲线长度。NAN：未判断。0：不连续。n：连续长度n个
-	VectorXi m_ContinuesLasti;// 紧邻连续的上时刻马克点 在 上时刻所有马克点集中的序号
+	VectorXi m_ContinuesNum;	// 每个点对应的连续曲线长度。NAN：未判断。1：不连续。n：连续长度n个
+	// 紧邻连续的上时刻马克点 在 上时刻所有马克点集中的序号
+	// 若当前时刻的马克点 在上时刻不存在连续马克点时，为 NAN，存在时为 0 1 2 ...
+	VectorXi m_ContinuesLasti;
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 private:

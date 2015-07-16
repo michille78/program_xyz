@@ -7,8 +7,11 @@
 #include "VNSData.h"
 #include "ParametersSetGroup.h"
 
+void Test();
+
 int _tmain(int argc, _TCHAR* argv[])
 {
+	//Test();
 
 	int MaxReadT = 5;
 	// Read optitrack data
@@ -35,8 +38,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	const int INSJointN = 6;
 	CINSData_Hybid INSData_Hybid(INSData1.m_frequency, INSJointN);
 
-	CVNSData VNSData(MaxLengthT);
-	CIV_ParametersSet  IV_ParametersSet;
+	CVNSData VNSData(MaxLengthT);	
 	
 	double INSJointAcc_t[3 * INSJointN];
 	memset(INSJointAcc_t, 0, sizeof(INSJointAcc_t));
@@ -64,15 +66,30 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			 // 将以上数据更新到视觉混捕缓存中
 			 VNSData.UpdateOneInstant(time_t, MarkerN_t, Position_tP, INSfrequency);
-			 VNSData.ContinuesJudge_t(IV_ParametersSet.m_pMarkerTrackPS);
-
+			 
+			 
 		}
 		vStart_t = vEnd_t;
 	}
 
-
-
+	VNSData.PrintfContinuesMarker(5);
+	printf("\n end \n");
 	getchar();
 	return 0;
+}
+
+
+
+void Test()
+{
+	using namespace std;
+
+	MatrixXd M;
+	M.resize(3,3);
+	M(1, 1) = 2;
+	cout << endl << M << endl;
+	M.resize(2,6);
+	M(1, 5) = 12;
+	cout << endl << M << endl;
 }
 
